@@ -1,0 +1,453 @@
+<?xml version="1.0"?>
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_dds_qos_profiles.xsd">
+
+  <qos_library name="act_qos_lib">
+
+    <!--              
+
+                      QOS Profiles used across the COMMS link       
+    
+    -->
+
+    <qos_profile name="comms_status_qos">
+      <!-- 
+        This profile is intended for Periodic "STATUS" data. 
+
+        Deadline: INF [Default]
+        Liveliness: INF [Default]
+        -->
+
+      <datawriter_qos>
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- How many samples to keep around. BEST_EFFORT only needs 1 as it doesn't resend -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+
+      </datawriter_qos>
+
+      <datareader_qos>
+
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- KEEP_LAST will overwrite data if cache is "full" -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>50</depth>
+        </history>
+
+      </datareader_qos>
+    </qos_profile>
+
+    <qos_profile name="comms_command_qos">
+      <!-- 
+        QoS profile for Command Messages across the comms link.
+
+        Currently Liveliness(Small heartbeats to maintain "presence") is disabled 
+        for bandwidth optimization as well as for Content Filtering use
+    
+        Liveliness: INF - DISABLED (DEFAULT)
+        Deadline: INF - DISABLED (DEFAULT) 
+        Durability: VOLATILE - DISABLED (DEFAULT)
+        -->
+
+      <datawriter_qos>
+        <!-- 
+          This spins up a separate thread to send out samples asynchronously
+          Commands tend to be larger and including "repairs" can bog down the main write thread
+          -->
+        <publish_mode>
+          <kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
+        </publish_mode>
+
+        <!-- Messages are resent if not delivered -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+
+          <!-- Will block with KEEP_ALL if the queue is "full" from samples not being acknowledged -->
+          <max_blocking_time>
+            <sec>120</sec>
+            <nanosec>0</nanosec>
+          </max_blocking_time>
+        </reliability>
+
+        <!-- 
+          KEEP_ALL will not overwrite any samples, only removed from queue if acknowledged by ALL readers
+        -->
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+          <depth>200</depth>
+        </history>
+
+        <protocol>
+
+          <rtps_reliable_writer>
+
+            <!-- Using Default Heartbeat Period of 3 seconds -->
+
+            <!-- 
+              Increase heartbeat retries to allow for latency/intermittent dropouts
+              Default is 10. Adjust to allow for intermittent latency in system 
+
+              Will give up on needing acknowledgement per reader if no response received from
+              reader after heartbeat_period(3 secs) * max_heartbeat_retries(1000) = 50 minutes
+
+              Will still send messages but will be BEST_EFFORT
+              -->
+            <max_heartbeat_retries>1000</max_heartbeat_retries>
+
+          </rtps_reliable_writer>
+        </protocol>
+
+      </datawriter_qos>
+
+      <!-- Data Reader QOS -->
+      <datareader_qos>
+
+        <!-- Messages are resent if not delivered -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- 
+          Queue for samples being provided to the application
+
+          KEEP_ALL will not overwrite older messages but will start rejecting new samples
+          if queue becomes full
+          -->
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+          <depth>300</depth>
+        </history>
+
+        <!-- 
+          This increases the buffer of messages before they are fully received 
+          FIFO and provided to the application queue.
+
+          In scenarios with high latency/long RTT(Round Trip Time) it allows for
+          missing dropped samples.
+
+          Default: 256
+          -->
+        <protocol>
+          <rtps_reliable_reader>
+            <receive_window_size>512</receive_window_size>
+          </rtps_reliable_reader>
+        </protocol>
+
+      </datareader_qos>
+
+    </qos_profile>
+
+    <qos_profile name="comms_qos">
+
+      <!-- 
+        This profile is intended for use across a network comms link. 
+        It assumes an instance of RTI's Routing Service is on both ends and is using Connext 7.3.0 
+        -->      
+      <domain_participant_qos>
+
+
+        <!-- Minimizes participant discovery packets -->
+        <base_name>
+          <element>BuiltinQosSnippetLib::Optimization.Discovery.Participant.Compact</element>
+        </base_name>
+
+        <transport_builtin>
+          <!-- Select only the UDP transport/ Disable SHMEM -->
+          <mask>UDPv4</mask>
+
+          <!-- Set Multicast TTL -->
+          <udpv4>
+            <multicast_ttl>6</multicast_ttl>
+          </udpv4>
+        </transport_builtin>
+
+
+        <discovery_config>
+          <!-- 
+            Defines amount of messages broadcast on startup to announce a participants presence. 
+            DEFAULT: 5.
+            This can cause issues when many participants are "announcing" themselves at the same time. 
+            -->
+          <initial_participant_announcements>3</initial_participant_announcements>
+
+          <!-- 
+            Adjust how often applications will assert their presence here per requirements
+            These are very lightweight messages but period can be extended to optimize network usage.
+            DEFAULT: 30 secs 
+            -->
+          <participant_liveliness_assert_period>
+            <sec>30</sec>
+            <!-- nanosec defaults to infinite- ensure a value is always set -->
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period>
+
+          <!-- 
+            This is the timeout period by which other applications will consider this to
+            be "offline" and remove from internal database.
+
+            Must be > participant_liveliness_assert_period
+
+            If you are getting a lot of timeout's due to lossy comms this can be 
+            extended to minimize re-discovery events.
+
+            Currently extended to maintain assumption of "presence" once detected.
+
+            Adjust per system behavior/requirements
+
+            DEFAULT: 100 secs 
+            -->
+          <participant_liveliness_lease_duration>
+            <sec>12000</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+
+          <!-- 
+            The maximum amount of time between when a remote entity stops maintaining its 
+            liveliness and when the matched local entity detects it
+            i.e. how often the event thread check's if the remote participant is still there
+
+            Extended to assume presence/minimize re-discovery events due to intermittent dropouts.
+
+            Adjust per system behavior/requirements.
+
+            DEFAULT: 60 secs 
+            -->
+          <max_liveliness_loss_detection_period>
+            <sec>3000</sec>
+            <nanosec>0</nanosec>
+          </max_liveliness_loss_detection_period>
+
+        </discovery_config>
+
+        <!-- 
+          Disable Type Definitions being propagated across the COMMS link during 
+          discovery to optimize bandiwdth usage.
+          During integration enable to make it easier to debug/use Admin Console
+        -->
+        <resource_limits>
+          <type_code_max_serialized_length>0</type_code_max_serialized_length>
+          <type_object_max_serialized_length>0</type_object_max_serialized_length>
+        </resource_limits>
+
+        <!-- Uncomment below to enable CRC checking for all messages -->
+        <!-- 
+          <wire_protocol>
+            <compute_crc>true</compute_crc>
+            <check_crc>true</check_crc>
+          </wire_protocol> 
+          -->
+
+      </domain_participant_qos>
+
+      <!-- Assign QOS as needed here per topic reader and writer -->
+      <datawriter_qos topic_filter="C2Command" base_name="comms_command_qos" />
+      <datareader_qos topic_filter="C2Command" base_name="comms_command_qos" />
+
+      <datawriter_qos topic_filter="C2CommandAck" base_name="comms_command_qos" />
+      <datareader_qos topic_filter="C2CommandAck" base_name="comms_command_qos" />
+
+      <datawriter_qos topic_filter="PlatformStatus" base_name="comms_status_qos" />
+      <datareader_qos topic_filter="PlatformStatus" base_name="comms_status_qos" />
+
+    </qos_profile>
+
+
+    <!--              
+
+                      QOS Profiles used on the LAN side      
+    
+    -->
+
+
+    <qos_profile name="lan_qos">
+
+      <domain_participant_qos>
+
+        <!-- Insert LAN Participant QoS settings here -->
+
+      </domain_participant_qos>
+    </qos_profile>
+
+
+    <!-- Default Remote Admin QoS:
+             
+        This profile contains the QoS that Requesters and Repliers 
+        would use by default. We can use it as a base profile to inherit
+        from and override some parameters 
+      -->
+    <qos_profile name="remote_admin_default">
+      <datawriter_qos>
+
+        <!-- Strict reliable -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+          <max_blocking_time>
+            <sec>10</sec>
+            <nanosec>0</nanosec>
+          </max_blocking_time>
+        </reliability>
+
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+        </history>
+
+        <!-- These are typical protocol parameters for a reliable DataWriter -->
+        <protocol>
+          <rtps_reliable_writer>
+            <max_heartbeat_retries>
+              LENGTH_UNLIMITED
+            </max_heartbeat_retries>
+            <heartbeats_per_max_samples>
+              2
+            </heartbeats_per_max_samples>
+            <heartbeat_period>
+              <sec>0</sec>
+              <nanosec>100000000</nanosec> <!--100ms -->
+            </heartbeat_period>
+            <fast_heartbeat_period>
+              <sec>0</sec>
+              <nanosec>10000000</nanosec> <!--10ms -->
+            </fast_heartbeat_period>
+            <late_joiner_heartbeat_period>
+              <sec>0</sec>
+              <nanosec>10000000</nanosec> <!--10ms -->
+            </late_joiner_heartbeat_period>
+            <max_nack_response_delay>
+              <sec>0</sec>
+              <nanosec>0</nanosec>
+            </max_nack_response_delay>
+            <min_nack_response_delay>
+              <sec>0</sec>
+              <nanosec>0</nanosec>
+            </min_nack_response_delay>
+            <max_send_window_size>32</max_send_window_size>
+            <min_send_window_size>32</min_send_window_size>
+          </rtps_reliable_writer>
+        </protocol>
+
+        <writer_resource_limits>
+          <!-- 
+            This setting enables efficient communication
+            between a replier and an arbitrary number of requesters 
+            -->
+          <max_remote_reader_filters>
+            LENGTH_UNLIMITED
+          </max_remote_reader_filters>
+        </writer_resource_limits>
+      </datawriter_qos>
+
+      <datareader_qos>
+        <!-- Strict reliable -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+          <max_blocking_time>
+            <sec>10</sec>
+            <nanosec>0</nanosec>
+          </max_blocking_time>
+        </reliability>
+
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+        </history>
+
+        <!-- These are typical protocol parameters for a reliable DataReader -->
+        <protocol>
+          <rtps_reliable_reader>
+            <max_heartbeat_response_delay>
+              <sec>0</sec>
+              <nanosec>0</nanosec>
+            </max_heartbeat_response_delay>
+            <min_heartbeat_response_delay>
+              <sec>0</sec>
+              <nanosec>0</nanosec>
+            </min_heartbeat_response_delay>
+          </rtps_reliable_reader>
+        </protocol>
+
+      </datareader_qos>
+
+    </qos_profile>
+
+    <!-- 
+      This is the profile used by the Requester. 
+      It inherits from "default", defined above, and overrides some QoS 
+      settings (durability and QoS settings related to unbounded 
+      types (recall that the service administration types are 
+      unbounded) 
+      -->
+    <qos_profile name="remote_admin_requester_qos" base_name="remote_admin_default">
+
+      <!-- QoS for the data writer that sends requests -->
+      <datawriter_qos>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>16384</value>
+            </element>
+          </value>
+        </property>
+      </datawriter_qos>
+
+      <!-- QoS for the data reader that receives replies -->
+      <datareader_qos>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>16384</value>
+            </element>
+          </value>
+        </property>
+      </datareader_qos>
+    </qos_profile>
+
+    <!-- 
+      This is the profile used by the Replier. 
+      It inherits from "default", defined above, and overrides some QoS 
+      settings (durability and QoS settings related to unbounded 
+      types (recall that the service administration types are 
+      unbounded) 
+      -->
+    <qos_profile name="remote_admin_replier_qos" base_name="remote_admin_default">
+
+      <!-- QoS for the data writer that sends replies -->
+      <datawriter_qos>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>16384</value>
+            </element>
+          </value>
+        </property>
+      </datawriter_qos>
+
+      <!-- QoS for the data reader that receives requests -->
+      <datareader_qos>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>16384</value>
+            </element>
+          </value>
+        </property>
+      </datareader_qos>
+    </qos_profile>
+
+  </qos_library>
+
+</dds>
