@@ -27,8 +27,7 @@
 
       <!-- 
         Generally both "sides" i.e. Platform and C2 likely are using the same QoS 
-        however there could be scenarios where they would be different such 
-        as separate teams ownership.
+        however there could be scenarios where they would be different(separate teams ownership).
         In that case, assign each side independently.
       -->
       <element>

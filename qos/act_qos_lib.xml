@@ -5,10 +5,25 @@
 
   <qos_library name="act_qos_lib">
 
-    <!--              
+    <qos_profile name="xml_logging_control" is_default_participant_factory_profile="true">
 
-                      QOS Profiles used across the COMMS link       
+      <participant_factory_qos>
+        <!-- Can control logging verbosity here for all apps using this QOS File -->
+        <logging>
+          <verbosity>ERROR</verbosity>
+          <category>COMMUNICATION</category>
+          <print_format>DEBUG</print_format>
+          <!-- <output_file>router_dbg</output_file> -->
+        </logging>
+      </participant_factory_qos>
+    </qos_profile>
+
+
+    <!--              
+    ____________________________________________________________________________
     
+                      QOS Profiles used across the COMMS link       
+    ____________________________________________________________________________
     -->
 
     <qos_profile name="comms_status_qos">
@@ -265,9 +280,10 @@
 
 
     <!--              
+    ____________________________________________________________________________
 
                       QOS Profiles used on the LAN side      
-    
+    ____________________________________________________________________________
     -->
 
 
