@@ -31,7 +31,7 @@ else
     exit=true
 fi
 
-##### XML Files #######
+# XML Files
 export NDDS_QOS_PROFILES=""
 
 # QOS File
@@ -40,8 +40,20 @@ NDDS_QOS_PROFILES+="./qos/act_qos_lib.xml;"
 NDDS_QOS_PROFILES+="./router_config/routing_service_config.xml"
 
 
-##### Topics #####
-export PLATFORM_STATUS_TOPICS=NULL #PLATFORM -> C2 (Full Rate)
+# Topics (Data "Lanes")
+# Comma separated, no spaces, NULL if empty
+export PLATFORM_COMMAND_TOPICS=PlatformCommandAck #PLATFORM -> C2 (Aperiodic- Ensured Delivery CommandAck etc.)
+
+export PLATFORM_STATUS_TOPICS=NULL #PLATFORM -> C2 (Periodic- Full Rate)
+export PLATFORM_STATUS_1SEC_TOPICS=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec)
+export PLATFORM_STATUS_1SEC_TOPICS=PlatformStatus #PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec)
+export PLATFORM_STATUS_10SEC_TOPICS=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 10 Secs)
+export PLATFORM_STATUS_30SEC_TOPICS=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 30 Secs)
+export PLATFORM_STATUS_60SEC_TOPICS=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 60 Secs)
+
+export C2_COMMAND_TOPICS=C2Command #C2 -> Platform Aperiodic- (Ensured Delivery CommandAck etc.)
+
+export PLATFORM_TO_PLATFORM_TOPICS=NULL #Platform -> Platform (Periodic- Full Rate)
 
 
 
