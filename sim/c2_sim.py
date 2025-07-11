@@ -40,9 +40,9 @@ class C2Sim:
           "C2Command",
           self.c2_cmd_type
       )
-      self.c2_cmd_ack_topic = dds.DynamicData.Topic(
+      self.platform_cmd_ack_topic = dds.DynamicData.Topic(
           self.participant,
-          "C2CommandAck",
+          "PlatformCommandAck",
           self.c2_cmd_ack_type
       )
       self.platform_status_topic = dds.DynamicData.Topic(
@@ -56,8 +56,8 @@ class C2Sim:
           self.c2_cmd_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
-      self.c2_cmd_ack_reader = dds.DynamicData.DataReader(
-          self.c2_cmd_ack_topic,
+      self.platform_cmd_ack_reader = dds.DynamicData.DataReader(
+          self.platform_cmd_ack_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.platform_status_reader = dds.DynamicData.DataReader(
@@ -65,50 +65,50 @@ class C2Sim:
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
 
-    async def read_comms_status_data(self):
+    async def read_status_data(self):
       print("Waiting for Status data")
       async for data in self.platform_status_reader.take_data_async():
         print(f'- Received Status data with Session ID: {data["msg.session_id[1]"]}')
        
 
-    async def read_comms_cmd_ack_data(self):
+    async def read_cmd_ack_data(self):
       print("Waiting for CommandAck data")
-      async for data in self.c2_cmd_ack_reader.take_data_async():
+      async for data in self.platform_cmd_ack_reader.take_data_async():
         print(f'- Received CommandAck data with Session ID: {data["msg.session_id[1]"]}')
 
-    async def write_comms_cmd(self):
+    async def write_cmd(self):
       # Create sample
-      comms_cmd_sample = dds.DynamicData(self.c2_cmd_type)
+      cmd_sample = dds.DynamicData(self.c2_cmd_type)
 
       # Set Source GUID
       source_guid = uuid.UUID(str(args.src_guid))
       source_guid_list = list(source_guid.bytes)
-      comms_cmd_sample["msg.source"] = source_guid_list
+      cmd_sample["msg.source"] = source_guid_list
 
       # Set Destination GUID
       dest_guid = uuid.UUID(str(args.dest_guid))
       dest_guid_list = list(dest_guid.bytes)
-      comms_cmd_sample["msg.destination"] = dest_guid_list
+      cmd_sample["msg.destination"] = dest_guid_list
 
       # Set Session "GUID"
       session_guid = [args.session_id for d in range(16)]
-      comms_cmd_sample["msg.session_id"] = session_guid
+      cmd_sample["msg.session_id"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
-      comms_cmd_sample["msg.payload"] = payload
+      cmd_sample["msg.payload"] = payload
 
       while True:
-          self.c2_cmd_writer.write(comms_cmd_sample)
-          print("Writing to CommsCommand topic")
+          self.c2_cmd_writer.write(cmd_sample)
+          print("Writing to C2Command topic")
           await asyncio.sleep(1)
 
 
     async def run(self) -> None:
         await asyncio.gather(
-            self.write_comms_cmd(),
-            self.read_comms_status_data(),
-            self.read_comms_cmd_ack_data()
+            self.write_cmd(),
+            self.read_status_data(),
+            self.read_cmd_ack_data()
             )
 
 
