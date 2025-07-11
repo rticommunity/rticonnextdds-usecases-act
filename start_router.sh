@@ -9,14 +9,12 @@ if [[ -z "${NDDSHOME}" ]]; then
 fi
 
 if [ "$1" == "platform" ] ; then
-    export PLATFORM_MODE=true
     type=$1
 
     if [ "$3" ] ; then 
         export PLATFORM_DOMAIN=$3
     fi
 elif [ "$1" == "c2" ] ; then
-    export C2_MODE=true
     type=$1
 
     if [ "$3" ] ; then 
@@ -33,16 +31,19 @@ else
     exit=true
 fi
 
-
-
-# Add Necessary Files to XML ENV Variable
+##### XML Files #######
 export NDDS_QOS_PROFILES=""
 
-# Add QOS File
+# QOS File
 NDDS_QOS_PROFILES+="./qos/act_qos_lib.xml;"
-
-# Add Routing Service file
+# Routing Service file
 NDDS_QOS_PROFILES+="./router_config/routing_service_config.xml"
+
+
+##### Topics #####
+export PLATFORM_STATUS_TOPICS=NULL #PLATFORM -> C2 (Full Rate)
+
+
 
 if $exit; then
     echo 'pass in: \n

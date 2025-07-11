@@ -2,13 +2,13 @@
 
 ################################################################################
 #            Modify below as needed                                            #
-#            Run as ./start_listener <domain> [c2,platform,comms]                    #
+#            Run as ./start_checkout <domain> [c2,platform,wan]                #
 ################################################################################
 
-if [ "$1" == "c2" ] || [ "$1" == "platform" ] || [ "$1" == "comms" ] ; then
+if [ "$1" == "c2" ] || [ "$1" == "platform" ] || [ "$1" == "wan" ] ; then
   export TYPE=$1
 else
-  echo 'Pass in either "c2","platform" or "comms"'
+    echo 'Pass in either "c2", "platform" or "wan"'
   exit
 fi
 
@@ -28,17 +28,17 @@ VERBOSITY=2
 if [ ${TYPE} == "platform" ]; then
 
   DOMAIN_ID=0
-  QOS_PROFILE="act_qos_lib::lan_qos"
+  QOS_PROFILE="LAN::default_participant_qos"
 
-elif [ ${TYPE} == "comms" ]; then
+elif [ ${TYPE} == "wan" ]; then
 
   DOMAIN_ID=1
-  QOS_PROFILE="act_qos_lib::comms_qos"
+  QOS_PROFILE="WAN::default_participant_qos"
 
 elif [ ${TYPE} == "c2" ]; then
 
   DOMAIN_ID=2
-  QOS_PROFILE="act_qos_lib::lan_qos"
+  QOS_PROFILE="LAN::default_participant_qos"
 fi
 
 
