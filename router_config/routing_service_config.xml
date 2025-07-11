@@ -144,20 +144,20 @@
         -->
 
       <element>
-        <!-- PLATFORM -> C2 Ensure Delivery (RELIABILITY QoS) -->
+        <!-- PLATFORM -> C2 Aperiodic- Ensure Delivery (RELIABILITY QoS) -->
         <name>PLATFORM_COMMAND_TOPICS</name>
         <value>PlatformCommandAck</value>
         </element>
 
       <element>
-        <!-- PLATFORM -> C2 FULL RATE -->
+        <!-- PLATFORM -> C2 Periodic- FULL RATE -->
         <name>PLATFORM_STATUS_TOPICS</name>
         <value>NULL</value>
       </element>
 
       <element>
         <!-- 
-          PLATFORM -> C2 Downsampled (SAMPLE every 1 SEC)
+          PLATFORM -> C2 Periodic - Downsampled (SAMPLE every 1 SEC)
           -->
         <name>PLATFORM_STATUS_1SEC_TOPICS</name>
         <value>PlatformStatus</value>
@@ -165,7 +165,7 @@
 
       <element>
         <!-- 
-          PLATFORM -> C2 Downsampled (SAMPLE every 10 SECs)
+          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 10 SECs)
           -->
         <name>PLATFORM_STATUS_10SEC_TOPICS</name>
         <value>NULL</value>
@@ -173,7 +173,7 @@
 
       <element>
         <!-- 
-          PLATFORM -> C2 Downsampled (SAMPLE every 30 SECs)
+          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 30 SECs)
           -->
         <name>PLATFORM_STATUS_30SEC_TOPICS</name>
         <value>NULL</value>
@@ -181,14 +181,14 @@
 
       <element>
         <!-- 
-          PLATFORM -> C2 Downsampled (SAMPLE every 60 SECs)
+          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 60 SECs)
           -->
         <name>PLATFORM_STATUS_60SEC_TOPICS</name>
         <value>NULL</value>
       </element>
 
       <!-- 
-        C2 -> PLATFORM FILTERED by destination.parentID
+        C2 -> PLATFORM Aperiodic- FILTERED by destination.parentID
         (Content Filter that will only allow messages to the matching parentID)
         -->
       <element>
