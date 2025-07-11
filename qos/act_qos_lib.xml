@@ -3,7 +3,7 @@
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_dds_qos_profiles.xsd">
 
-  <qos_library name="act_qos_lib">
+  <qos_library name="UTIL">
 
     <qos_profile name="xml_logging_control" is_default_participant_factory_profile="true">
 
@@ -18,158 +18,24 @@
       </participant_factory_qos>
     </qos_profile>
 
+  </qos_library>
+
+  <qos_library name="WAN">
 
     <!--              
     ____________________________________________________________________________
     
-                      QOS Profiles used across the COMMS link       
+                      QOS Profiles used across the WAN/COMMS link       
     ____________________________________________________________________________
     -->
 
-    <qos_profile name="comms_status_qos">
-      <!-- 
-        This profile is intended for Periodic "STATUS" data. 
 
-        Deadline: INF [Default]
-        Liveliness: INF [Default]
-        -->
-
-      <datawriter_qos>
-        <!-- Messages are sent once, does NOT ensure delivery -->
-        <reliability>
-          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
-        </reliability>
-
-        <!-- How many samples to keep around. BEST_EFFORT only needs 1 as it doesn't resend -->
-        <history>
-          <kind>KEEP_LAST_HISTORY_QOS</kind>
-          <depth>1</depth>
-        </history>
-
-      </datawriter_qos>
-
-      <datareader_qos>
-
-        <!-- Messages are sent once, does NOT ensure delivery -->
-        <reliability>
-          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
-        </reliability>
-
-        <!-- KEEP_LAST will overwrite data if cache is "full" -->
-        <history>
-          <kind>KEEP_LAST_HISTORY_QOS</kind>
-          <depth>50</depth>
-        </history>
-
-      </datareader_qos>
-    </qos_profile>
-
-    <qos_profile name="comms_command_qos">
-      <!-- 
-        QoS profile for Command Messages across the comms link.
-
-        Currently Liveliness(Small heartbeats to maintain "presence") is disabled 
-        for bandwidth optimization as well as for Content Filtering use
-    
-        Liveliness: INF - DISABLED (DEFAULT)
-        Deadline: INF - DISABLED (DEFAULT) 
-        Durability: VOLATILE - DISABLED (DEFAULT)
-        -->
-
-      <datawriter_qos>
-        <!-- 
-          This spins up a separate thread to send out samples asynchronously
-          Commands tend to be larger and including "repairs" can bog down the main write thread
-          -->
-        <publish_mode>
-          <kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
-        </publish_mode>
-
-        <!-- Messages are resent if not delivered -->
-        <reliability>
-          <kind>RELIABLE_RELIABILITY_QOS</kind>
-
-          <!-- Will block with KEEP_ALL if the queue is "full" from samples not being acknowledged -->
-          <max_blocking_time>
-            <sec>120</sec>
-            <nanosec>0</nanosec>
-          </max_blocking_time>
-        </reliability>
-
-        <!-- 
-          KEEP_ALL will not overwrite any samples, only removed from queue if acknowledged by ALL readers
-        -->
-        <history>
-          <kind>KEEP_ALL_HISTORY_QOS</kind>
-          <depth>200</depth>
-        </history>
-
-        <protocol>
-
-          <rtps_reliable_writer>
-
-            <!-- Using Default Heartbeat Period of 3 seconds -->
-
-            <!-- 
-              Increase heartbeat retries to allow for latency/intermittent dropouts
-              Default is 10. Adjust to allow for intermittent latency in system 
-
-              Will give up on needing acknowledgement per reader if no response received from
-              reader after heartbeat_period(3 secs) * max_heartbeat_retries(1000) = 50 minutes
-
-              Will still send messages but will be BEST_EFFORT
-              -->
-            <max_heartbeat_retries>1000</max_heartbeat_retries>
-
-          </rtps_reliable_writer>
-        </protocol>
-
-      </datawriter_qos>
-
-      <!-- Data Reader QOS -->
-      <datareader_qos>
-
-        <!-- Messages are resent if not delivered -->
-        <reliability>
-          <kind>RELIABLE_RELIABILITY_QOS</kind>
-        </reliability>
-
-        <!-- 
-          Queue for samples being provided to the application
-
-          KEEP_ALL will not overwrite older messages but will start rejecting new samples
-          if queue becomes full
-          -->
-        <history>
-          <kind>KEEP_ALL_HISTORY_QOS</kind>
-          <depth>300</depth>
-        </history>
-
-        <!-- 
-          This increases the buffer of messages before they are fully received 
-          FIFO and provided to the application queue.
-
-          In scenarios with high latency/long RTT(Round Trip Time) it allows for
-          missing dropped samples.
-
-          Default: 256
-          -->
-        <protocol>
-          <rtps_reliable_reader>
-            <receive_window_size>512</receive_window_size>
-          </rtps_reliable_reader>
-        </protocol>
-
-      </datareader_qos>
-
-    </qos_profile>
-
-    <qos_profile name="comms_qos">
+    <qos_profile name="default_participant_qos">
 
       <!-- 
         This profile is intended for use across a network comms link. 
         It assumes an instance of RTI's Routing Service is on both ends and is using Connext 7.3.0 
-        -->      
+        -->
       <domain_participant_qos>
 
 
@@ -249,7 +115,7 @@
         <!-- 
           Disable Type Definitions being propagated across the COMMS link during 
           discovery to optimize bandiwdth usage.
-          During integration enable to make it easier to debug/use Admin Console
+          Enable during integration to make it easier to debug/use Admin Console
         -->
         <resource_limits>
           <type_code_max_serialized_length>0</type_code_max_serialized_length>
@@ -265,20 +131,153 @@
           -->
 
       </domain_participant_qos>
+    </qos_profile>
 
-      <!-- Assign QOS as needed here per topic reader and writer -->
-      <datawriter_qos topic_filter="C2Command" base_name="comms_command_qos" />
-      <datareader_qos topic_filter="C2Command" base_name="comms_command_qos" />
+    <qos_profile name="status_qos">
+      <!-- 
+        This profile is intended for Periodic "STATUS" data. 
 
-      <datawriter_qos topic_filter="C2CommandAck" base_name="comms_command_qos" />
-      <datareader_qos topic_filter="C2CommandAck" base_name="comms_command_qos" />
+        Deadline: INF [Default]
+        Liveliness: INF [Default]
+        -->
 
-      <datawriter_qos topic_filter="PlatformStatus" base_name="comms_status_qos" />
-      <datareader_qos topic_filter="PlatformStatus" base_name="comms_status_qos" />
+      <datawriter_qos>
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- How many samples to keep around. BEST_EFFORT only needs 1 as it doesn't resend -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+
+      </datawriter_qos>
+
+      <datareader_qos>
+
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- KEEP_LAST will overwrite data if cache is "full" -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>50</depth>
+        </history>
+
+      </datareader_qos>
+    </qos_profile>
+
+    <qos_profile name="command_qos">
+      <!-- 
+        QoS profile for Command Messages across the comms link.
+
+        Currently Liveliness(Small heartbeats to maintain "presence") is disabled 
+        for bandwidth optimization as well as for Content Filtering use
+    
+        Liveliness: INF - DISABLED (DEFAULT)
+        Deadline: INF - DISABLED (DEFAULT) 
+        Durability: VOLATILE - DISABLED (DEFAULT)
+        -->
+
+      <datawriter_qos>
+        <!-- 
+          This spins up a separate thread to send out samples asynchronously
+          Commands tend to be larger and including "repairs" can bog down the main write thread
+          -->
+        <publish_mode>
+          <kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
+        </publish_mode>
+
+        <!-- Messages are resent if not delivered -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+
+          <!-- Will block with KEEP_ALL if the queue is "full" from samples not being
+        acknowledged -->
+          <max_blocking_time>
+            <sec>120</sec>
+            <nanosec>0</nanosec>
+          </max_blocking_time>
+        </reliability>
+
+        <!-- 
+          KEEP_ALL will not overwrite any samples, only removed from queue if acknowledged by ALL readers
+        -->
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+          <depth>200</depth>
+        </history>
+
+        <protocol>
+
+          <rtps_reliable_writer>
+
+            <!-- Using Default Heartbeat Period of 3 seconds -->
+
+            <!-- 
+              Increase heartbeat retries to allow for latency/intermittent dropouts
+              Default is 10. Adjust to allow for intermittent latency in system 
+
+              Will give up on needing acknowledgement per reader if no response received from
+              reader after heartbeat_period(3 secs) * max_heartbeat_retries(1000) = 50 minutes
+
+              Will still send messages but will be BEST_EFFORT
+              -->
+            <max_heartbeat_retries>1000</max_heartbeat_retries>
+
+          </rtps_reliable_writer>
+        </protocol>
+
+      </datawriter_qos>
+
+      <!-- Data Reader QOS -->
+      <datareader_qos>
+
+        <!-- Messages are resent if not delivered -->
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- 
+          Queue for samples being provided to the application
+
+          KEEP_ALL will not overwrite older messages but will start rejecting new samples
+          if queue becomes full
+          -->
+        <history>
+          <kind>KEEP_ALL_HISTORY_QOS</kind>
+          <depth>300</depth>
+        </history>
+
+        <!-- 
+          This increases the buffer of messages before they are fully received 
+          FIFO and provided to the application queue.
+
+          In scenarios with high latency/long RTT(Round Trip Time) it allows for
+          missing dropped samples.
+
+          Default: 256
+          -->
+        <protocol>
+          <rtps_reliable_reader>
+            <receive_window_size>512</receive_window_size>
+          </rtps_reliable_reader>
+        </protocol>
+
+      </datareader_qos>
 
     </qos_profile>
 
 
+
+  </qos_library>
+
+
+  <qos_library name="LAN">
     <!--              
     ____________________________________________________________________________
 
@@ -286,16 +285,134 @@
     ____________________________________________________________________________
     -->
 
-
-    <qos_profile name="lan_qos">
+    <qos_profile name="default_participant_qos">
 
       <domain_participant_qos>
 
-        <!-- Insert LAN Participant QoS settings here -->
-
+        <!-- Match QoS in your LAN -->
+      
       </domain_participant_qos>
     </qos_profile>
 
+    <qos_profile name="status_qos">
+      <!-- 
+        This profile is intended for Periodic "STATUS" data. 
+
+        Deadline: INF [Default]
+        Liveliness: INF [Default]
+        -->
+
+      <datawriter_qos>
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- How many samples to keep around. BEST_EFFORT only needs 1 as it doesn't resend -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+
+      </datawriter_qos>
+
+      <datareader_qos>
+
+        <!-- Messages are sent once, does NOT ensure delivery -->
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+
+        <!-- KEEP_LAST will overwrite data if cache is "full" -->
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>50</depth>
+        </history>
+
+      </datareader_qos>
+    </qos_profile>
+
+    <qos_profile name="status_1sec_qos" base_name="LAN::status_qos">
+
+      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
+
+      <datareader_qos>
+        <!-- We want to downsample on the LAN reader before it goes into Routing Service -->
+        <time_based_filter>
+          <minimum_separation>
+            <sec>1</sec>
+            <nanosec>0</nanosec>
+          </minimum_separation>
+        </time_based_filter>
+      </datareader_qos>
+
+    </qos_profile>
+
+    <qos_profile name="status_10sec_qos" base_name="LAN::status_qos">
+
+      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
+
+      <datareader_qos>
+        <!-- We want to downsample on the LAN reader before it goes into Routing Service -->
+        <time_based_filter>
+          <minimum_separation>
+            <sec>10</sec>
+            <nanosec>0</nanosec>
+          </minimum_separation>
+        </time_based_filter>
+      </datareader_qos>
+
+    </qos_profile>
+
+    <qos_profile name="status_30sec_qos" base_name="LAN::status_qos">
+
+      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
+
+      <datareader_qos>
+        <!-- We want to downsample on the LAN reader before it goes into Routing Service -->
+        <time_based_filter>
+          <minimum_separation>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </minimum_separation>
+        </time_based_filter>
+      </datareader_qos>
+
+    </qos_profile>
+
+    <qos_profile name="status_60sec_qos" base_name="LAN::status_qos">
+
+      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
+
+      <datareader_qos>
+        <!-- We want to downsample on the LAN reader before it goes into Routing Service -->
+        <time_based_filter>
+          <minimum_separation>
+            <sec>60</sec>
+            <nanosec>0</nanosec>
+          </minimum_separation>
+        </time_based_filter>
+      </datareader_qos>
+
+    </qos_profile>
+
+
+    <qos_profile name="command_qos">
+      <!-- Update here per an Aperiodic Command Data Pattern/your system -->
+
+    </qos_profile>
+
+  </qos_library>
+
+
+  <!--              
+    ____________________________________________________________________________
+
+                      QOS Profiles used for the REMOTE ADMIN interface    
+    ____________________________________________________________________________
+    -->
+
+  <qos_library name="REMOTE_ADMIN">
 
     <!-- Default Remote Admin QoS:
              
