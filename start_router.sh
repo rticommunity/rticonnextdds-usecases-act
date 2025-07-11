@@ -53,7 +53,7 @@ export PLATFORM_STATUS_60SEC_TOPICS=NULL #PLATFORM -> C2 (Periodic- Downsampled 
 
 export C2_COMMAND_TOPICS=C2Command #C2 -> Platform Aperiodic- (Ensured Delivery CommandAck etc.)
 
-export PLATFORM_TO_PLATFORM_TOPICS=NULL #Platform -> Platform (Periodic- Full Rate)
+export PLATFORM_TO_PLATFORM_TOPICS=PlatformData #Platform -> Platform (Periodic- Full Rate)
 
 
 

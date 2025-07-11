@@ -33,6 +33,8 @@ class PlatformSim:
       self.c2_cmd_type = self.qos_provider.type("c2_command")
       self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
       self.platform_status_type = self.qos_provider.type("platform_status")
+      self.platform_data_type = self.qos_provider.type("platform_data")
+
 
       # Create Topics and associate with types
       self.c2_cmd_topic = dds.DynamicData.Topic(
@@ -50,10 +52,19 @@ class PlatformSim:
           "PlatformStatus",
           self.platform_status_type
       )
+      self.platform_data_topic = dds.DynamicData.Topic(
+          self.participant,
+          "PlatformData",
+          self.platform_data_type
+      )
 
       # Create DataWriters/DataReaders with the specified QoS profiles
       self.c2_cmd_reader = dds.DynamicData.DataReader(
           self.c2_cmd_topic,
+          self.qos_provider.datareader_qos_from_profile(args.qos_profile)
+      )
+      self.platform_data_reader = dds.DynamicData.DataReader(
+          self.platform_data_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.c2_cmd_ack_writer = dds.DynamicData.DataWriter(
@@ -64,11 +75,26 @@ class PlatformSim:
           self.platform_status_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
+      self.platform_data_writer = dds.DynamicData.DataWriter(
+          self.platform_data_topic,
+          self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
+      )
 
-    async def read_cmd_data(self):
-      print("Waiting for Command data")
+      time.sleep(2)
+
+      print("ignoring self published PlatformData")
+      self.participant.ignore_datawriter(self.platform_data_writer.instance_handle)
+
+
+    async def read_c2_command(self):
+      print("Waiting for C2 Commands")
       async for data in self.c2_cmd_reader.take_data_async():
-        print(f'- Received Command data with Session ID: {data["msg.session_id[1]"]}')
+        print(f'- Received Command with Session ID: {data["msg.session_id[1]"]}')
+
+    async def read_platform_data(self):
+      print("Waiting for Platform Data ")
+      async for data in self.platform_data_reader.take_data_async():
+        print(f'- Received Platform Data with Session ID: {data["msg.session_id[1]"]}')
 
 
     async def write_cmd_ack(self):
@@ -125,12 +151,40 @@ class PlatformSim:
           print("Writing to PlatformStatus topic")
           await asyncio.sleep(1)
 
+    async def write_data(self):
+      # Create sample
+      data_sample = dds.DynamicData(self.platform_data_type)
+
+      # Set Source GUID
+      source_guid = uuid.UUID(str(args.src_guid))
+      source_guid_list = list(source_guid.bytes)
+      data_sample["msg.source"] = source_guid_list
+
+      # Set Destination GUID
+      dest_guid = uuid.UUID(str(args.dest_guid))
+      dest_guid_list = list(dest_guid.bytes)
+      data_sample["msg.destination"] = dest_guid_list
+
+      # Set Session "GUID"
+      session_guid = [args.session_id for d in range(16)]
+      data_sample["msg.session_id"] = session_guid
+
+      # Create sim "Payload"
+      payload = [random.randrange(0, 10, 2) for d in range(16)]
+      data_sample["msg.payload"] = payload
+
+      while True:
+          self.platform_data_writer.write(data_sample)
+          print("Writing to PlatformData topic")
+          await asyncio.sleep(1)
 
     async def run(self) -> None:
         await asyncio.gather(
-            self.read_cmd_data(),
+            self.read_c2_command(),
+            self.read_platform_data(),
             self.write_cmd_ack(),
-            self.write_status()
+            self.write_status(),
+            self.write_data()
             )
 
 

@@ -35,6 +35,9 @@ C2_GUID="cb8e8858c8c2277f94b632287bed9d05"
 if [ ${TYPE} == "platform" ]; then
 
   DOMAIN_ID=0
+  if [ "$2" ] ; then 
+    DOMAIN_ID=$2
+  fi
   QOS_PROFILE="LAN::default_participant_qos"
   SRC_GUID=${PLATFORM_GUID}
   DEST_GUID=${C2_GUID}
@@ -43,6 +46,9 @@ if [ ${TYPE} == "platform" ]; then
 elif [ ${TYPE} == "c2" ]; then
 
   DOMAIN_ID=2
+  if [ "$2" ] ; then 
+    DOMAIN_ID=$2
+  fi
   QOS_PROFILE="LAN::default_participant_qos"
   SRC_GUID=${C2_GUID}
   DEST_GUID=${PLATFORM_GUID}

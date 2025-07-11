@@ -115,7 +115,7 @@
       -->
       <element>
         <name>P2P_ENABLE</name>
-        <value>false</value>
+        <value>true</value>
       </element>
 
       <!-- 
