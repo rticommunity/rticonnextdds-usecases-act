@@ -58,7 +58,7 @@ After sending a *RELIABLE* message, Connext will send out "heartbeats" either pi
 with another message or separately. A response will be sent back if the expected  
 message sequence has been received. If not, another copy will be sent out again.  
 
-For example, in `start_router.sh`, the `*EVENT*` Topic route assigns the `WAN_EVENT_QOS` QoS  
+For example, in `start_router.sh`, the `*EVENT*` Topic [Lane](#data-lanes) assigns the `WAN_EVENT_QOS` QoS  
 to be used across the WAN.  
 Looking at `./router_config/routing_service_config.xml` this is defined in `./qos/act_qos_lib.xml`  
 in profile `WAN::event_qos`.
@@ -244,7 +244,7 @@ the desired status topics from the Platform to *any* C2 station.
 
 Topics can be downsampled to different rates by using the desired filter.
 
-The QoS applied for this route across the WAN is the `WAN_STATUS_QOS` which sets  
+The QoS applied for this "Lane" across the WAN is the `WAN_STATUS_QOS` which sets  
 the Reliability QoS to [[BEST_EFFORT]](#best_effort-delivery)
 
 ### Test:
