@@ -120,7 +120,7 @@ class PlatformSim:
       print("Waiting for Contact Report")
       async for data in self.contact_report_reader.take_data_async():
         print(
-            f'- Received Contact Report with Session ID: {data["msg.session_id[1]"]} from {data["msg.source_type"]}')
+            f'- Received Contact Report with Session ID: {data["msg.session_id[1]"]} from source type: {data["msg.source_type"]}')
 
 
     async def write_cmd_ack(self):
@@ -198,6 +198,11 @@ class PlatformSim:
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
       data_sample["msg.payload"] = payload
+
+      while True:
+        self.platform_data_writer.write(data_sample)
+        print("Writing to PlatformData topic")
+        await asyncio.sleep(1)
 
     async def write_contact_report(self):
       # Create sample
