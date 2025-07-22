@@ -2,8 +2,9 @@
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_routing_service.xsd" version="7.3.0">
     <types>
       <struct name="base_type">
-        <member name="source" type="byte" arrayDimensions="16"/>
-        <member name="destination" type="byte" arrayDimensions="16"/>
+        <member name="source_id" type="byte" arrayDimensions="16"/>
+        <member name="source_type" type="string" stringMaxLength="100"/>
+        <member name="destination_id" type="byte" arrayDimensions="16"/>
         <member name="session_id" type="byte" arrayDimensions="16"/>
         <member name="payload" type="byte" sequenceMaxLength="100"/>
       </struct>
@@ -17,6 +18,9 @@
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>
       <struct name="platform_data">
+        <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
+      </struct>
+      <struct name="contact_report">
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>
     </types>
