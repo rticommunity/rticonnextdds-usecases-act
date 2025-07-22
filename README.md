@@ -80,7 +80,7 @@ message once and does *NOT* apply any resend mechanism.
 This allows us to control different data "lanes" behaviour separately as needed.
 
 
-## Data "Lanes"
+## Topic "Lanes"
 In `./start_router.sh` you will see a section titled "Data Lanes".
 These variables are used to move selected topics from the Platform to C2  
 and apply the appropriate QoS per Data Pattern such a Status(Periodic, [BEST_EFFORT](#best_effort-delivery))  
@@ -93,7 +93,8 @@ REGEX matching is used including wildcards such as * so `*Status` will match wit
 all `*Status` topics.  
 *NOTE: Comma separated list, no spaces*
 
-
+### Topic Lanes Logical View
+![ACT Topic Lanes Logical View](/images/ACT%20Lanes.jpeg)
 
 
 ## C2 Events
