@@ -88,9 +88,8 @@ and Event(Aperiodic, [RELIABLE](#reliable-delivery)).
 
 By using these "*Lanes*" in the Start Routing script you can abstract away lower  
 level configuration/management and just focus on selecting the right "*Lane*" for your  
-Topic to be added into.
-REGEX matching is used including wildcards such as * so `*Status` will match with  
-all `*Status` topics.  
+Topic to be added into.  
+REGEX matching is used including wildcards so `*Status` will match with any prefix.    
 *NOTE: Comma separated list, no spaces*
 
 ### Topic Lanes Logical View
@@ -98,10 +97,10 @@ all `*Status` topics.
 
 
 ## C2 Events
-In `start_router.sh`, the `C2_EVENT` [Lane](#data-lanes) can be   
-modified to move topic messages(i.e."ContactReport") RELIABLY to *only* Platforms.
+In `start_router.sh`, the `C2_EVENT` [Lane](#data-lanes) is used to move topic   
+messages(i.e."ContactReport") to *only* Platforms.
 
-QoS applied for this [Lane](#data-lanes) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
+QoS applied to this [Lane](#data-lanes) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
 reliability with the assumption the data is being sent aperiodically.
 
 
@@ -140,8 +139,8 @@ simulate physical isolation*
 
 
 ## GUID Commands
-In `start_router.sh`, the `C2_COMMAND_GUID_FILTER` [Lanes](#data-lanes can be   
-modified to move the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
+In `start_router.sh`, the `C2_COMMAND_GUID_FILTER` [Lanes](#data-lanes) is used to move  
+the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
 the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
@@ -190,9 +189,8 @@ simulate physical isolation*
 
 
 ## Platform Events
-In `start_router.sh`, the `PLATFORM_EVENT` [Lane](#data-lanes) can be   
-modified to move the desired "Event"(`CommandAck`,`ContactReport` etc.) topics from  
-the Platform to *any* C2 station. 
+In `start_router.sh`, the `PLATFORM_EVENT` [Lane](#data-lanes) is used to move the  
+desired "Event"(`CommandAck`,`ContactReport` etc.) topics from the Platform to *any* C2 station. 
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
 the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
@@ -241,8 +239,8 @@ simulate physical isolation*
 
 
 ## Platform Status
-In `start_router.sh`, the `PLATFORM_<RATE>_STATUS` [Lane](#data-lanes) can be   
-modified to move the desired status topics from the Platform to *any* C2 station. 
+In `start_router.sh`, the `PLATFORM_<RATE>_STATUS` [Lane](#data-lanes) is used to move  
+the desired status topics from the Platform to *any* C2 station.  
 
 Topics can be downsampled to different rates by using the desired filter.
 
@@ -276,8 +274,8 @@ desired downsampled rate
 
 
 ## Platform to Platform
-In `start_router.sh`, the `PLATFORM_TO_PLATFORM` [Lane](#data-lanes) can be   
-modified to move topic messages(i.e.`PlatformData`) between *only* Platforms.
+In `start_router.sh`, the `PLATFORM_TO_PLATFORM` [Lane](#data-lanes) is used to move topic  
+messages(i.e.`PlatformData`) between *only* Platforms.
 
 QoS applied for this [Lane](#data-lanes)  is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
 reliability with the assumption the data is being sent periodically.
