@@ -40,7 +40,7 @@ NDDS_QOS_PROFILES+="./qos/act_qos_lib.xml;"
 NDDS_QOS_PROFILES+="./router_config/routing_service_config.xml"
 
 
-# Topics (Data "Lanes")
+# Topic Routes
 # Comma separated, no spaces, NULL if empty i.e. PlatformStatus1,PlatformStatus2
 export PLATFORM_EVENT_TOPICS=PlatformCommandAck,ContactReport #PLATFORM -> C2 (Aperiodic- Ensured Delivery CommandAck etc.)
 
