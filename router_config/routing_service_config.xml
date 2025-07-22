@@ -147,20 +147,24 @@
       </element>
 
       <!-- 
-        ___________________________ TOPICS______________________________________
-        Use to select Topics to move between C2/PLATFORM 
+        ___________________________DATA "LANES"_________________________________
+
+        Add Topics with REGEX match to move between C2/PLATFORM 
         NOTE: No spaces in the lists or they break silently
+
+        ___________________________DATA "LANES"_________________________________
+
         -->
 
       <element>
         <!-- PLATFORM -> C2 Aperiodic Events/CommandAcks- Ensure Delivery (RELIABILITY QoS) -->
-        <name>PLATFORM_EVENT_TOPICS</name>
+        <name>PLATFORM_EVENT</name>
         <value>PlatformCommandAck,ContactReport</value>
         </element>
 
       <element>
         <!-- PLATFORM -> C2 Periodic- FULL RATE -->
-        <name>PLATFORM_STATUS_FULL_TOPICS</name>
+        <name>PLATFORM_STATUS_FULL</name>
         <value>NULL</value>
       </element>
 
@@ -168,7 +172,7 @@
         <!-- 
           PLATFORM -> C2 Periodic - Downsampled (SAMPLE every 1 SEC)
           -->
-        <name>PLATFORM_STATUS_1SEC_TOPICS</name>
+        <name>PLATFORM_STATUS_1SEC</name>
         <value>PlatformStatus</value>
       </element>
 
@@ -176,7 +180,7 @@
         <!-- 
           PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 10 SECs)
           -->
-        <name>PLATFORM_STATUS_10SEC_TOPICS</name>
+        <name>PLATFORM_STATUS_10SEC</name>
         <value>NULL</value>
       </element>
 
@@ -184,7 +188,7 @@
         <!-- 
           PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 30 SECs)
           -->
-        <name>PLATFORM_STATUS_30SEC_TOPICS</name>
+        <name>PLATFORM_STATUS_30SEC</name>
         <value>NULL</value>
       </element>
 
@@ -192,7 +196,7 @@
         <!-- 
           PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 60 SECs)
           -->
-        <name>PLATFORM_STATUS_60SEC_TOPICS</name>
+        <name>PLATFORM_STATUS_60SEC</name>
         <value>NULL</value>
       </element>
 
@@ -201,18 +205,18 @@
         (Content Filter that will only allow messages to the matching parentID)
         -->
       <element>
-        <name>C2_COMMAND_GUID_FILTER_TOPICS</name>
+        <name>C2_COMMAND_GUID_FILTER</name>
         <value>C2Command</value>
       </element>
 
       <element>
-        <name>C2_EVENT_TOPICS</name>
+        <name>C2_EVENT</name>
         <value>ContactReport</value>
       </element>
 
       <!-- PLATFORM -> PLATFORM -->
       <element>
-        <name>PLATFORM_TO_PLATFORM_TOPICS</name>
+        <name>PLATFORM_TO_PLATFORM</name>
         <value>PlatformData</value>
       </element>
     </value>
@@ -335,11 +339,11 @@
         <auto_topic_route name="c2_command_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER)</allow_topic_name_filter>
             <datareader_qos base_name="$(C2_EVENT_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -347,11 +351,11 @@
         <auto_topic_route name="c2_events">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_participant">
-            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_EVENT)</allow_topic_name_filter>
             <datareader_qos base_name="$(C2_EVENT_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_EVENT)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -381,11 +385,11 @@
         <auto_topic_route name="platform_status_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -393,11 +397,11 @@
         <auto_topic_route name="platform_status_1sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -405,11 +409,11 @@
         <auto_topic_route name="platform_status_10sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -417,11 +421,11 @@
         <auto_topic_route name="platform_status_30sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -429,11 +433,11 @@
         <auto_topic_route name="platform_status_60sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -468,11 +472,11 @@
         <auto_topic_route name="platform_event_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENT)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENT)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -586,11 +590,11 @@
         <auto_topic_route name="platform_status_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -599,11 +603,11 @@
         <auto_topic_route name="platform_status_1sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_1SEC_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -613,11 +617,11 @@
         <auto_topic_route name="platform_status_10sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_10SEC_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -626,11 +630,11 @@
         <auto_topic_route name="platform_status_30sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_30SEC_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -640,11 +644,11 @@
         <auto_topic_route name="platform_status_60sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_60SEC_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -679,11 +683,11 @@
         <auto_topic_route name="platform_event_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENT)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENT)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -714,7 +718,7 @@
         <auto_topic_route name="c2_command_guid_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
 
             <!-- Use a SQL style syntax to filter on message content -->
@@ -723,7 +727,7 @@
             </content_filter>
           </input>
           <output participant="platform_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -732,11 +736,11 @@
         <auto_topic_route name="c2_event">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_EVENT)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
           </input>
           <output participant="platform_participant">
-            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(C2_EVENT)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -750,11 +754,11 @@
         <auto_topic_route name="platform_to_wan">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_P2P_QOS)" />
           </output>
         </auto_topic_route>
@@ -763,11 +767,11 @@
         <auto_topic_route name="wan_to_platform">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_P2P_QOS)" />
           </input>
           <output participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>

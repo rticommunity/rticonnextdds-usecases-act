@@ -12,7 +12,7 @@ the *external* WAN Domain.
 
 Performs the following roles:
 - Dynamic instantiation of readers/writers based on a regex match filter
-- Dynamic application of QoS per Routes
+- Dynamic application of QoS per *Lanes*
 - Segmentation of traffic at the logical layer between LAN and WAN environments
 - Routing of selected topics between *only*:
   - Platform - C2
@@ -71,7 +71,7 @@ This allows us to control different data "lanes" behaviour separately as needed.
 For data that is sent Periodically such as Status updates, we generally aren't  
 too concerned if we miss a sample as there will be another one coming along shortly.  
 
-In `start_router.sh`, the `*STATUS*` Topic *Routes* assign an appropriate QoS as  
+In `start_router.sh`, the `*STATUS*` [Lane](#data-lanes) assigns an appropriate QoS as  
 defined in `./qos/act_qos_lib.xml` in profile `WAN::status_qos`.
 
 The `status_qos` sets the Reliability QoS to BEST_EFFORT. This just sends the  
@@ -80,18 +80,33 @@ message once and does *NOT* apply any resend mechanism.
 This allows us to control different data "lanes" behaviour separately as needed.
 
 
+## Data "Lanes"
+In `./start_router.sh` you will see a section titled "Data Lanes".
+These variables are used to move selected topics from the Platform to C2  
+and apply the appropriate QoS per Data Pattern such a Status(Periodic, [BEST_EFFORT](#best_effort-delivery))  
+and Event(Aperiodic, [RELIABLE](#reliable-delivery)).  
+
+By using these "*Lanes*" in the Start Routing script you can abstract away lower  
+level configuration/management and just focus on selecting the right "*Lane*" for your  
+Topic to be added into.
+REGEX matching is used including wildcards such as * so `*Status` will match with  
+all `*Status` topics.  
+*NOTE: Comma separated list, no spaces*
+
+
+
 
 ## C2 Events
-In `start_router.sh`, the `C2_EVENT_TOPICS` Topic *Routes* can be   
+In `start_router.sh`, the `C2_EVENT` [Lane](#data-lanes) can be   
 modified to move topic messages(i.e."ContactReport") RELIABLY to *only* Platforms.
 
-QoS applied for this "*Route*" is `event_qos` configured for [RELIABLE](#reliable-delivery)  
+QoS applied for this [Lane](#data-lanes) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
 reliability with the assumption the data is being sent aperiodically.
 
 
 ### Test:
 In `start_router.sh`, ensure the `ContactReport` topic is assigned to the  
-`C2_EVENT_TOPICS` *Route*.
+`C2_EVENT` [Lane](#data-lanes) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`
@@ -120,11 +135,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 #### Pass criteria:
-- Ensure `C2_EVENT_TOPICS` topics are *only* received on Platforms from C2 source type
+- Ensure the `C2_EVENT` topics are *only* received on Platforms from C2 source type
 
 
 ## GUID Commands
-In `start_router.sh`, the `C2_COMMAND_GUID_FILTER_TOPICS` Topic *Routes* can be   
+In `start_router.sh`, the `C2_COMMAND_GUID_FILTER` [Lanes](#data-lanes can be   
 modified to move the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
@@ -141,7 +156,7 @@ of `c2_21.sh`
 
 ### Test:
 In `start_router.sh`, ensure the `C2Command` topic is assigned to the 
-`C2_COMMAND_GUID_FILTER_TOPICS` *Route*.
+`C2_COMMAND_GUID_FILTER` [Lane](#data-lanes) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`
@@ -174,7 +189,7 @@ simulate physical isolation*
 
 
 ## Platform Events
-In `start_router.sh`, the `PLATFORM_EVENT_TOPICS` Topic *Routes* can be   
+In `start_router.sh`, the `PLATFORM_EVENT` [Lane](#data-lanes) can be   
 modified to move the desired "Event"(`CommandAck`,`ContactReport` etc.) topics from  
 the Platform to *any* C2 station. 
 
@@ -182,7 +197,7 @@ The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets
 the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
 
 As the `ContactReport` Topic is published and subscribed to by both C2 and PLATFORM,  
-(see `C2_EVENT_TOPICS`) Partitions have been applied to isolate the data planes.  
+(see `C2_EVENT`) Partitions have been applied to isolate the data planes.  
 
 This constrains the data flow so Platforms will *only* receive ContactReports  
 from other C2 stations and C2 stations will only receive ContactReports from Platforms. 
@@ -192,7 +207,7 @@ Partitions can be adjusted with XML as needed.
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformCommandAck` and `ContactReport` topics  
-are assigned to the `PLATFORM_EVENT_TOPICS` *Route*.
+are assigned to the `PLATFORM_EVENT` [Lane](#data-lanes) .
 
 1. Start Platform-10 sim  
 - `source ./platform_10.sh`  
@@ -221,11 +236,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 #### Pass criteria:
-- Ensure `PLATFORM_EVENT_TOPICS` topics are *only* received on C2 from PLATFORM source type
+- Ensure `PLATFORM_EVENT` topics are *only* received on C2 from PLATFORM source type
 
 
 ## Platform Status
-In `start_router.sh`, the `PLATFORM_<RATE>_STATUS_TOPICS` Topic *Routes* can be   
+In `start_router.sh`, the `PLATFORM_<RATE>_STATUS` [Lane](#data-lanes) can be   
 modified to move the desired status topics from the Platform to *any* C2 station. 
 
 Topics can be downsampled to different rates by using the desired filter.
@@ -235,7 +250,7 @@ the Reliability QoS to [[BEST_EFFORT]](#best_effort-delivery)
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired   
-`PLATFORM_<RATE>_STATUS_TOPICS` *Route*.
+`PLATFORM_<RATE>_STATUS` [Lane](#data-lanes) .
 
 1. Start Platform-10 sim  
 - `source ./platform_10.sh`  
@@ -254,23 +269,23 @@ In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired
 - `./start_router.sh`  
 
 #### Pass criteria:
-- C2 will be receiving selected `PLATFORM_<RATE>_STATUS_TOPICS` messages at the  
+- C2 will be receiving selected `PLATFORM_<RATE>_STATUS` messages at the  
 desired downsampled rate
 
 
 
 ## Platform to Platform
-In `start_router.sh`, the `PLATFORM_TO_PLATFORM_TOPICS` *Routes* can be   
+In `start_router.sh`, the `PLATFORM_TO_PLATFORM` [Lane](#data-lanes) can be   
 modified to move topic messages(i.e.`PlatformData`) between *only* Platforms.
 
-QoS applied for this *Route* is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
+QoS applied for this [Lane](#data-lanes)  is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
 reliability with the assumption the data is being sent periodically.
 
 This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` variable.  
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the  
-`PLATFORM_TO_PLATFORM_TOPICS` *Route*.
+`PLATFORM_TO_PLATFORM` [Lane](#data-lanes) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`
