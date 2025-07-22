@@ -171,9 +171,9 @@
       </datareader_qos>
     </qos_profile>
 
-    <qos_profile name="command_qos">
+    <qos_profile name="event_qos">
       <!-- 
-        QoS profile for Command Messages across the comms link.
+        QoS profile for Event Messages(Commands/CommandAck/ContactReport etc) across the comms link.
 
         Currently Liveliness(Small heartbeats to maintain "presence") is disabled 
         for bandwidth optimization as well as for Content Filtering use
@@ -397,7 +397,7 @@
     </qos_profile>
 
 
-    <qos_profile name="command_qos">
+    <qos_profile name="event_qos">
       <!-- Update here per an Aperiodic Command Data Pattern/your system -->
 
     </qos_profile>
