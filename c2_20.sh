@@ -2,13 +2,13 @@
 
 # Used for Routing Service
 export GUID="21192b12469b48d0b8bcdbde51c3ab81"
-export C2_DOMAIN=21
+export C2_DOMAIN=20
 export TYPE="c2"
-export ROUTER_NAME="C2-21"
+export ROUTER_NAME="C2-20"
 
 # Used for Platform Sim
 export LAN_QOS_PROFILE="LAN::default_participant_qos"
-export SESSION_ID=21
+export SESSION_ID=20
 export DOMAIN_ID=$C2_DOMAIN
 
 # Matches Platform10

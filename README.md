@@ -126,12 +126,12 @@ simulate physical isolation*
 - `source ./platform_11.sh`
 - `./start_router.sh`  
 
-5. Start C2-21 sim
-- `source ./c2.21.sh`
+5. Start C2-20 sim
+- `source ./c2.20.sh`
 -  `./start_sim.sh`  
 
-6. Start a C2-21 Routing Service
-- `source ./c2.21.sh`
+6. Start a C2-20 Routing Service
+- `source ./c2.20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -152,7 +152,7 @@ This filters at the *writer* side i.e. only the message to the destined PLATFORM
 sent and the other PLATFORM's are ignored.
 
 This example is set up so the GUID in `platform_10.sh` match the destination GUID  
-of `c2_21.sh`
+of `c2_20.sh`
 
 ### Test:
 In `start_router.sh`, ensure the `C2Command` topic is assigned to the 
@@ -176,12 +176,12 @@ simulate physical isolation*
 - `source ./platform_11.sh`
 - `./start_router.sh`  
 
-5. Start C2-21 sim
-- `source ./c2.21.sh`
+5. Start C2-20 sim
+- `source ./c2.20.sh`
 -  `./start_sim.sh`  
 
-6. Start a C2-21 Routing Service
-- `source ./c2.21.sh`
+6. Start a C2-20 Routing Service
+- `source ./c2.20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -227,12 +227,12 @@ simulate physical isolation*
 - `source ./platform_11.sh`  
 - `./start_router.sh`  
 
-5. Start C2-21 sim  
-- `source ./c2.21.sh`  
+5. Start C2-20 sim  
+- `source ./c2.20.sh`  
 -  `./start_sim.sh`  
 
-6. Start a C2-21 Routing Service  
-- `source ./c2.21.sh`  
+6. Start a C2-20 Routing Service  
+- `source ./c2.20.sh`  
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -260,12 +260,12 @@ In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired
 - `source ./platform_10.sh`  
 - `./start_router.sh`  
 
-3. Start C2-21 sim  
-- `source ./c2.21.sh`  
+3. Start C2-20 sim  
+- `source ./c2.20.sh`  
 -  `./start_sim.sh`  
 
-4. Start a C2-21 Routing Service  
-- `source ./c2.21.sh`  
+4. Start a C2-20 Routing Service  
+- `source ./c2.20.sh`  
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -305,12 +305,12 @@ simulate physical isolation*
 - `source ./platform_11.sh`
 - `./start_router.sh`  
 
-5. Start C2-21 sim
-- `source ./c2.21.sh`
+5. Start C2-20 sim
+- `source ./c2.20.sh`
 -  `./start_sim.sh`  
 
-6. Start a C2-21 Routing Service
-- `source ./c2.21.sh`
+6. Start a C2-20 Routing Service
+- `source ./c2.20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:

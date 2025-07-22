@@ -2,7 +2,7 @@
 
 # Used for Routing Service
 
-# Matches with Destination GUID from C2-21
+# Matches with Destination GUID from C2-20
 export GUID="ef32b88e6e0c49e99886ae20c28d7f3c"
 export PLATFORM_DOMAIN=10
 export TYPE="platform"
