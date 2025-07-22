@@ -34,6 +34,8 @@ class PlatformSim:
       self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
       self.platform_status_type = self.qos_provider.type("platform_status")
       self.platform_data_type = self.qos_provider.type("platform_data")
+      self.contact_report_type = self.qos_provider.type("contact_report")
+
 
 
       # Create Topics and associate with types
@@ -57,6 +59,11 @@ class PlatformSim:
           "PlatformData",
           self.platform_data_type
       )
+      self.contact_report_topic = dds.DynamicData.Topic(
+          self.participant,
+          "ContactReport",
+          self.contact_report_type
+      )
 
       # Create DataWriters/DataReaders with the specified QoS profiles
       self.c2_cmd_reader = dds.DynamicData.DataReader(
@@ -65,6 +72,10 @@ class PlatformSim:
       )
       self.platform_data_reader = dds.DynamicData.DataReader(
           self.platform_data_topic,
+          self.qos_provider.datareader_qos_from_profile(args.qos_profile)
+      )
+      self.contact_report_reader = dds.DynamicData.DataReader(
+          self.contact_report_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.c2_cmd_ack_writer = dds.DynamicData.DataWriter(
@@ -79,11 +90,20 @@ class PlatformSim:
           self.platform_data_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
+      self.contact_report_writer = dds.DynamicData.DataWriter(
+          self.contact_report_topic,
+          self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
+      )
 
       time.sleep(2)
 
+      # Ignore self published Topics
       print("ignoring self published PlatformData")
       self.participant.ignore_datawriter(self.platform_data_writer.instance_handle)
+
+      print("ignoring self published ContactReport")
+      self.participant.ignore_datawriter(
+          self.contact_report_writer.instance_handle)
 
 
     async def read_c2_command(self):
@@ -96,6 +116,12 @@ class PlatformSim:
       async for data in self.platform_data_reader.take_data_async():
         print(f'- Received Platform Data with Session ID: {data["msg.session_id[1]"]}')
 
+    async def read_contact_report(self):
+      print("Waiting for Contact Report")
+      async for data in self.contact_report_reader.take_data_async():
+        print(
+            f'- Received Contact Report with Session ID: {data["msg.session_id[1]"]} from {data["msg.source_type"]}')
+
 
     async def write_cmd_ack(self):
       # Create sample
@@ -104,12 +130,12 @@ class PlatformSim:
       # Set Source GUID
       source_guid = uuid.UUID(str(args.src_guid))
       source_guid_list = list(source_guid.bytes)
-      cmd_ack_sample["msg.source"] = source_guid_list
+      cmd_ack_sample["msg.source_id"] = source_guid_list
 
       # Set Destination GUID
       dest_guid = uuid.UUID(str(args.dest_guid))
       dest_guid_list = list(dest_guid.bytes)
-      cmd_ack_sample["msg.destination"] = dest_guid_list
+      cmd_ack_sample["msg.destination_id"] = dest_guid_list
 
       # Set Session "GUID"
       session_guid = [args.session_id for d in range(16)]
@@ -131,12 +157,12 @@ class PlatformSim:
       # Set Source GUID
       source_guid = uuid.UUID(str(args.src_guid))
       source_guid_list = list(source_guid.bytes)
-      status_sample["msg.source"] = source_guid_list
+      status_sample["msg.source_id"] = source_guid_list
 
       # Set Destination GUID
       dest_guid = uuid.UUID(str(args.dest_guid))
       dest_guid_list = list(dest_guid.bytes)
-      status_sample["msg.destination"] = dest_guid_list
+      status_sample["msg.destination_id"] = dest_guid_list
 
       # Set Session "GUID"
       session_guid = [args.session_id for d in range(16)]
@@ -158,12 +184,12 @@ class PlatformSim:
       # Set Source GUID
       source_guid = uuid.UUID(str(args.src_guid))
       source_guid_list = list(source_guid.bytes)
-      data_sample["msg.source"] = source_guid_list
+      data_sample["msg.source_id"] = source_guid_list
 
       # Set Destination GUID
       dest_guid = uuid.UUID(str(args.dest_guid))
       dest_guid_list = list(dest_guid.bytes)
-      data_sample["msg.destination"] = dest_guid_list
+      data_sample["msg.destination_id"] = dest_guid_list
 
       # Set Session "GUID"
       session_guid = [args.session_id for d in range(16)]
@@ -173,18 +199,45 @@ class PlatformSim:
       payload = [random.randrange(0, 10, 2) for d in range(16)]
       data_sample["msg.payload"] = payload
 
+    async def write_contact_report(self):
+      # Create sample
+      contact_report_sample = dds.DynamicData(self.contact_report_type)
+
+      # Set Source GUID
+      source_guid = uuid.UUID(str(args.src_guid))
+      source_guid_list = list(source_guid.bytes)
+      contact_report_sample["msg.source_id"] = source_guid_list
+
+      # Set Source Name
+      contact_report_sample["msg.source_type"] = "Platform"
+
+      # Set Destination GUID
+      dest_guid = uuid.UUID(str(args.dest_guid))
+      dest_guid_list = list(dest_guid.bytes)
+      contact_report_sample["msg.destination_id"] = dest_guid_list
+
+      # Set Session "GUID"
+      session_guid = [args.session_id for d in range(16)]
+      contact_report_sample["msg.session_id"] = session_guid
+
+      # Create sim "Payload"
+      payload = [random.randrange(0, 10, 2) for d in range(16)]
+      contact_report_sample["msg.payload"] = payload
+
       while True:
-          self.platform_data_writer.write(data_sample)
-          print("Writing to PlatformData topic")
+          self.contact_report_writer.write(contact_report_sample)
+          print("Writing to ContactReport topic")
           await asyncio.sleep(1)
 
     async def run(self) -> None:
         await asyncio.gather(
             self.read_c2_command(),
             self.read_platform_data(),
+            self.read_contact_report(),
             self.write_cmd_ack(),
             self.write_status(),
-            self.write_data()
+            self.write_data(),
+            self.write_contact_report()
             )
 
 
@@ -202,7 +255,7 @@ if __name__ == "__main__":
         "--src_guid", type=str, default=0, help="Source GUID"
     )
     parser.add_argument(
-        "--dest_guid", type=str, default=0, help="Destination GUID"
+        "--dest_guid", type=str, default="", help="Destination GUID"
     )
     parser.add_argument(
         "--qos_profile", type=str, default=0, help="QOS Profile"

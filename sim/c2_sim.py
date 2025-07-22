@@ -33,6 +33,8 @@ class C2Sim:
       self.c2_cmd_type = self.qos_provider.type("c2_command")
       self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
       self.platform_status_type = self.qos_provider.type("platform_status")
+      self.contact_report_type = self.qos_provider.type("contact_report")
+
 
       # Create Topics and associate with types
       self.c2_cmd_topic = dds.DynamicData.Topic(
@@ -51,9 +53,19 @@ class C2Sim:
           self.platform_status_type
       )
 
+      self.contact_report_topic = dds.DynamicData.Topic(
+          self.participant,
+          "ContactReport",
+          self.contact_report_type
+      )
+
       # Create DataWriters/DataReaders with the specified QoS profiles
       self.c2_cmd_writer = dds.DynamicData.DataWriter(
           self.c2_cmd_topic,
+          self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
+      )
+      self.c2_contact_report_writer = dds.DynamicData.DataWriter(
+          self.contact_report_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
       self.platform_cmd_ack_reader = dds.DynamicData.DataReader(
@@ -64,6 +76,14 @@ class C2Sim:
           self.platform_status_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
+      self.contact_report_reader = dds.DynamicData.DataReader(
+          self.contact_report_topic,
+          self.qos_provider.datareader_qos_from_profile(args.qos_profile)
+      )
+
+      print("ignoring self published ContactReports")
+      self.participant.ignore_datawriter(
+          self.c2_contact_report_writer.instance_handle)
 
     async def read_status_data(self):
       print("Waiting for Status data")
@@ -76,19 +96,28 @@ class C2Sim:
       async for data in self.platform_cmd_ack_reader.take_data_async():
         print(f'- Received CommandAck data with Session ID: {data["msg.session_id[1]"]}')
 
+    async def read_contact_report_data(self):
+      print("Waiting for ContactReport data")
+      async for data in self.contact_report_reader.take_data_async():
+        print(
+            f'- Received ContactReport Data: {data["msg.session_id[1]"]} from {data["msg.source_type"]}')
+
     async def write_cmd(self):
-      # Create sample
+      # Create GUID's
+      source_guid = uuid.UUID(str(args.src_guid))
+      source_guid_list = list(source_guid.bytes)
+
+      dest_guid = uuid.UUID(str(args.dest_guid))
+      dest_guid_list = list(dest_guid.bytes)
+
+      # Create Command sample
       cmd_sample = dds.DynamicData(self.c2_cmd_type)
 
       # Set Source GUID
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-      cmd_sample["msg.source"] = source_guid_list
+      cmd_sample["msg.source_id"] = source_guid_list
 
       # Set Destination GUID
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-      cmd_sample["msg.destination"] = dest_guid_list
+      cmd_sample["msg.destination_id"] = dest_guid_list
 
       # Set Session "GUID"
       session_guid = [args.session_id for d in range(16)]
@@ -98,9 +127,37 @@ class C2Sim:
       payload = [random.randrange(0, 10, 2) for d in range(16)]
       cmd_sample["msg.payload"] = payload
 
+
+      # Create Contact Report sample
+      contact_report_sample = dds.DynamicData(self.c2_cmd_type)
+
+      # Set Source GUID
+      contact_report_sample["msg.source_id"] = source_guid_list
+
+      # Set Source Name
+      contact_report_sample["msg.source_type"] = "C2"
+
+      # Set Destination GUID
+      contact_report_sample["msg.destination_id"] = dest_guid_list
+
+      # Set Session "GUID"
+      session_guid = [args.session_id for d in range(16)]
+      contact_report_sample["msg.session_id"] = session_guid
+
+      # Create sim "Payload"
+      payload = [random.randrange(0, 10, 2) for d in range(16)]
+      contact_report_sample["msg.payload"] = payload
+
+
       while True:
+          # Send C2 Command
           self.c2_cmd_writer.write(cmd_sample)
           print("Writing to C2Command topic")
+
+          # Send C2 Contact Report
+          self.c2_contact_report_writer.write(contact_report_sample)
+          print("Writing to ContactReport topic")
+
           await asyncio.sleep(1)
 
 
@@ -108,7 +165,8 @@ class C2Sim:
         await asyncio.gather(
             self.write_cmd(),
             self.read_status_data(),
-            self.read_cmd_ack_data()
+            self.read_cmd_ack_data(),
+            self.read_contact_report_data()
             )
 
 
@@ -126,7 +184,7 @@ if __name__ == "__main__":
         "--src_guid", type=str, default=0, help="Source GUID"
     )
     parser.add_argument(
-        "--dest_guid", type=str, default=0, help="Destination GUID"
+        "--dest_guid", type=str, default=1, help="Destination GUID"
     )
     parser.add_argument(
         "--qos_profile", type=str, default=0, help="QOS Profile"
