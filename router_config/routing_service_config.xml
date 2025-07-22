@@ -19,8 +19,26 @@
       </element>
 
       <element>
-        <name>PLATFORM_GUID</name>
+        <name>GUID</name>
         <value>ef32b88e6e0c49e99886ae20c28d7f3c</value>
+      </element>
+
+      <!-- ________________________ Domain IDS _____________________________ -->
+      <element>
+        <name>CONTROL_DOMAIN</name>
+        <value>100</value>
+      </element>
+      <element>
+        <name>PLATFORM_DOMAIN</name>
+        <value>0</value>
+      </element>
+      <element>
+        <name>WAN_DOMAIN</name>
+        <value>1</value>
+      </element>
+      <element>
+        <name>C2_DOMAIN</name>
+        <value>2</value>
       </element>
 
       <!-- ________________________ QOS Profiles____________________________ -->
@@ -30,9 +48,16 @@
         however there could be scenarios where they would be different(separate teams ownership).
         In that case, assign each side independently.
       -->
+
+      <!-- LAN QOS -->
       <element>
         <name>PLATFORM_PARTICIPANT_QOS</name>
         <value>LAN::default_participant_qos</value>
+      </element>
+
+      <element>
+        <name>PLATFORM_EVENT_QOS</name>
+        <value>LAN::event_qos</value>
       </element>
 
       <element>
@@ -61,20 +86,17 @@
       </element>
 
       <element>
-        <name>PLATFORM_COMMAND_QOS</name>
-        <value>LAN::command_qos</value>
-      </element>
-
-      <element>
         <name>C2_PARTICIPANT_QOS</name>
         <value>LAN::default_participant_qos</value>
       </element>
 
       <element>
-        <name>C2_COMMAND_QOS</name>
-        <value>LAN::command_qos</value>
+        <name>C2_EVENT_QOS</name>
+        <value>LAN::event_qos</value>
       </element>
 
+
+      <!-- WAN QOS -->
       <element>
         <name>WAN_PARTICIPANT_QOS</name>
         <value>WAN::default_participant_qos</value>
@@ -86,28 +108,15 @@
       </element>
 
       <element>
-        <name>WAN_COMMAND_QOS</name>
-        <value>WAN::command_qos</value>
+        <name>WAN_EVENT_QOS</name>
+        <value>WAN::event_qos</value>
       </element>
 
+      <element>
+        <name>WAN_P2P_QOS</name>
+        <value>WAN::status_qos</value>
+      </element>
 
-      <!-- ________________________ Domain IDS _____________________________ -->
-      <element>
-        <name>CONTROL_DOMAIN</name>
-        <value>100</value>
-      </element>
-      <element>
-        <name>PLATFORM_DOMAIN</name>
-        <value>0</value>
-      </element>
-      <element>
-        <name>WAN_DOMAIN</name>
-        <value>1</value>
-      </element>
-      <element>
-        <name>C2_DOMAIN</name>
-        <value>2</value>
-      </element>
 
       <!-- ________________________ SWITCHES _______________________________ -->
       <!-- 
@@ -144,14 +153,14 @@
         -->
 
       <element>
-        <!-- PLATFORM -> C2 Aperiodic- Ensure Delivery (RELIABILITY QoS) -->
-        <name>PLATFORM_COMMAND_TOPICS</name>
-        <value>PlatformCommandAck</value>
+        <!-- PLATFORM -> C2 Aperiodic Events/CommandAcks- Ensure Delivery (RELIABILITY QoS) -->
+        <name>PLATFORM_EVENT_TOPICS</name>
+        <value>PlatformCommandAck,ContactReport</value>
         </element>
 
       <element>
         <!-- PLATFORM -> C2 Periodic- FULL RATE -->
-        <name>PLATFORM_STATUS_TOPICS</name>
+        <name>PLATFORM_STATUS_FULL_TOPICS</name>
         <value>NULL</value>
       </element>
 
@@ -192,14 +201,19 @@
         (Content Filter that will only allow messages to the matching parentID)
         -->
       <element>
-        <name>C2_COMMAND_TOPICS</name>
+        <name>C2_COMMAND_GUID_FILTER_TOPICS</name>
         <value>C2Command</value>
+      </element>
+
+      <element>
+        <name>C2_EVENT_TOPICS</name>
+        <value>ContactReport</value>
       </element>
 
       <!-- PLATFORM -> PLATFORM -->
       <element>
         <name>PLATFORM_TO_PLATFORM_TOPICS</name>
-        <value>NULL</value>
+        <value>PlatformData</value>
       </element>
     </value>
 
@@ -282,7 +296,7 @@
         <domain_id>$(WAN_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(WAN_PARTICIPANT_QOS)">
           <participant_name>
-            <name>$(ROUTER_NAME)-WAN</name>
+            <name>$(ROUTER_NAME) WAN</name>
           </participant_name>
         </domain_participant_qos>
       </participant>
@@ -291,7 +305,7 @@
         <domain_id>$(C2_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(C2_PARTICIPANT_QOS)">
           <participant_name>
-            <name>$(ROUTER_NAME)-C2</name>
+            <name>$(ROUTER_NAME) C2</name>
           </participant_name>
         </domain_participant_qos>
       </participant>
@@ -299,31 +313,79 @@
 
       <session name="c2_to_wan_guid_cmd">
 
-        <!-- C2 -> WAN Commands -->
+        <!-- Internal LAN Partition to match with ALL Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- External WAN Partition to match ONLY with C2 Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>C2</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
+        <!-- C2 -> WAN Commands Filtered by Destination GUID-->
         <auto_topic_route name="c2_command_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datareader_qos base_name="$(C2_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(C2_EVENT_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
+          </output>
+        </auto_topic_route>
+
+        <auto_topic_route name="c2_events">
+          <publish_with_original_info>true</publish_with_original_info>
+          <input participant="c2_participant">
+            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(C2_EVENT_QOS)" />
+          </input>
+          <output participant="wan_participant">
+            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
           </output>
         </auto_topic_route>
       </session>
 
       <session name="wan_to_c2_status">
 
+        <!-- External WAN Partition to match ONLY with PLATFORM Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>PLATFORM</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- Internal LAN Partition to match with ALL Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
         <!-- WAN -> C2 Status -->
         <auto_topic_route name="platform_status_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -352,6 +414,18 @@
           </output>
         </auto_topic_route>
 
+        <auto_topic_route name="platform_status_30sec_filter">
+          <publish_with_original_info>true</publish_with_original_info>
+          <input participant="wan_participant">
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(WAN_STATUS_QOS)" />
+          </input>
+          <output participant="c2_participant">
+            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
+          </output>
+        </auto_topic_route>
+
         <auto_topic_route name="platform_status_60sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
@@ -366,18 +440,40 @@
 
       </session>
 
-      <session name="wan_to_c2_command_ack">
+      <!-- 
+        Separate Session from PlatformStatus to allow for CommandAck Prioritization 
+        or Resource assignment as necessary 
+      -->
+      <session name="wan_to_c2_event">
 
-        <!-- WAN -> C2 Platform Command ACK -->
-        <auto_topic_route name="platform_command_ack_filter">
+        <!-- External WAN Partition to match ONLY with PLATFORM Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>PLATFORM</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- Internal LAN Partition to match with ALL Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
+        <!-- WAN -> C2 Platform Events (Command Ack/ContactReports etc) -->
+        <auto_topic_route name="platform_event_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(WAN_EVENT_QOS)" />
           </input>
           <output participant="c2_participant">
-            <allow_topic_name_filter>$(PLATFORM_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(PLATFORM_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
       </session>
@@ -468,15 +564,33 @@
 
       <session name="platform_to_wan_status">
 
+        <!-- Internal LAN Partition to match with ALL Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- External WAN Partition to match ONLY with PLATFORM Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>PLATFORM</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
         <!-- PLATFORM -> WAN Status messages -->
         <auto_topic_route name="platform_status_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_TOPICS)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_TOPICS)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -537,41 +651,93 @@
 
       </session>
 
+      <!-- 
+        Separate Session from PlatformStatus to allow for CommandAck Prioritization 
+        or Resource assignment as necessary 
+      -->      
+      <session name="platform_to_wan_event">
 
-      <session name="platform_to_wan_command_ack">
+        <!-- Internal LAN Partition to match with ALL Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </subscriber_qos>
 
-        <!-- PLATFORM -> WAN Command Ack messages -->
-        <auto_topic_route name="platform_command_ack_route">
+        <!-- External WAN Partition to match ONLY with PLATFORM Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>PLATFORM</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
+        <!-- PLATFORM -> WAN Event messages (CommandAck/ContactReport etc) -->
+        <auto_topic_route name="platform_event_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_participant">
-            <allow_topic_name_filter>$(PLATFORM_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datareader_qos base_name="$(PLATFORM_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </input>
           <output participant="wan_participant">
-            <allow_topic_name_filter>$(PLATFORM_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(PLATFORM_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(PLATFORM_EVENT_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
 
       </session>
 
-      <session name="wan_to_platform_guid">
+      <session name="wan_to_platform">
+
+        <!-- External WAN Partition to match ONLY with C2 Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>C2</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- Internal LAN Partition to match with ALL Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </publisher_qos>
 
         <!-- WAN -> PLATFORM Commands if MATCH filter expression -->
         <auto_topic_route name="c2_command_guid_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(WAN_EVENT_QOS)" />
 
             <!-- Use a SQL style syntax to filter on message content -->
             <content_filter>
-              <expression>msg.destination = &amp;hex($(PLATFORM_GUID))</expression>
+              <expression>msg.destination_id = &amp;hex($(GUID))</expression>
             </content_filter>
           </input>
           <output participant="platform_participant">
-            <allow_topic_name_filter>$(C2_COMMAND_TOPICS)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(PLATFORM_COMMAND_QOS)" />
+            <allow_topic_name_filter>$(C2_COMMAND_GUID_FILTER_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
+          </output>
+        </auto_topic_route>
+
+        <!-- WAN -> PLATFORM Events (ContactReports etc) -->
+        <auto_topic_route name="c2_event">
+          <publish_with_original_info>true</publish_with_original_info>
+          <input participant="wan_participant">
+            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <datareader_qos base_name="$(WAN_EVENT_QOS)" />
+          </input>
+          <output participant="platform_participant">
+            <allow_topic_name_filter>$(C2_EVENT_TOPICS)</allow_topic_name_filter>
+            <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
 
@@ -589,7 +755,7 @@
           </input>
           <output participant="wan_participant">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
+            <datawriter_qos base_name="$(WAN_P2P_QOS)" />
           </output>
         </auto_topic_route>
 
@@ -598,7 +764,7 @@
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="wan_participant">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_STATUS_QOS)" />
+            <datareader_qos base_name="$(WAN_P2P_QOS)" />
           </input>
           <output participant="platform_participant">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_TOPICS)</allow_topic_name_filter>
