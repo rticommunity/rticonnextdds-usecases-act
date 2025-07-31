@@ -88,40 +88,33 @@ class C2Sim:
     async def read_status_data(self):
       print("Waiting for Status data")
       async for data in self.platform_status_reader.take_data_async():
-        print(f'- Received Status data with Session ID: {data["msg.session_id[1]"]}')
+        print(f'- Received Status data with Session ID: {data["msg.session[1]"]}')
        
 
     async def read_cmd_ack_data(self):
       print("Waiting for CommandAck data")
       async for data in self.platform_cmd_ack_reader.take_data_async():
-        print(f'- Received CommandAck data with Session ID: {data["msg.session_id[1]"]}')
+        print(f'- Received CommandAck data with Session ID: {data["msg.session[1]"]}')
 
     async def read_contact_report_data(self):
       print("Waiting for ContactReport data")
       async for data in self.contact_report_reader.take_data_async():
         print(
-            f'- Received ContactReport Data: {data["msg.session_id[1]"]} from source type: {data["msg.source_type"]}')
+            f'- Received ContactReport Data: {data["msg.session[1]"]} from source type: {data["msg.source_type"]}')
 
     async def write_cmd(self):
-      # Create GUID's
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-
       # Create Command sample
       cmd_sample = dds.DynamicData(self.c2_cmd_type)
 
-      # Set Source GUID
-      cmd_sample["msg.source_id"] = source_guid_list
+      # Set Source
+      cmd_sample["msg.source"] = args.source
 
-      # Set Destination GUID
-      cmd_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination
+      cmd_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      cmd_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      cmd_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -131,18 +124,18 @@ class C2Sim:
       # Create Contact Report sample
       contact_report_sample = dds.DynamicData(self.c2_cmd_type)
 
-      # Set Source GUID
-      contact_report_sample["msg.source_id"] = source_guid_list
-
       # Set Source Name
+      contact_report_sample["msg.source"] = args.source
+
+      # Set Source Type
       contact_report_sample["msg.source_type"] = "C2"
 
-      # Set Destination GUID
-      contact_report_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination Name
+      contact_report_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      contact_report_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      contact_report_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -181,16 +174,16 @@ if __name__ == "__main__":
         "-f", "--files", type=str, default="", help="XML Config files"
     )
     parser.add_argument(
-        "--src_guid", type=str, default=0, help="Source GUID"
+        "--source", type=str, default=0, help="Source Name"
     )
     parser.add_argument(
-        "--dest_guid", type=str, default=1, help="Destination GUID"
+        "--destination", type=str, default=1, help="Destination Name"
     )
     parser.add_argument(
         "--qos_profile", type=str, default=0, help="QOS Profile"
     )
     parser.add_argument(
-        "--session_id", type=int, default=0, help="Session ID"
+        "--session", type=int, default=0, help="Session ID"
     )
     parser.add_argument(
         "-d", "--domain_id", type=int, default=0, help="Domain ID"

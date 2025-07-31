@@ -109,37 +109,33 @@ class PlatformSim:
     async def read_c2_command(self):
       print("Waiting for C2 Commands")
       async for data in self.c2_cmd_reader.take_data_async():
-        print(f'- Received Command with Session ID: {data["msg.session_id[1]"]}')
+        print(f'- Received Command with Session ID: {data["msg.session[1]"]}')
 
     async def read_platform_data(self):
       print("Waiting for Platform Data ")
       async for data in self.platform_data_reader.take_data_async():
-        print(f'- Received Platform Data with Session ID: {data["msg.session_id[1]"]}')
+        print(f'- Received Platform Data with Session ID: {data["msg.session[1]"]}')
 
     async def read_contact_report(self):
       print("Waiting for Contact Report")
       async for data in self.contact_report_reader.take_data_async():
         print(
-            f'- Received Contact Report with Session ID: {data["msg.session_id[1]"]} from source type: {data["msg.source_type"]}')
+            f'- Received Contact Report with Session ID: {data["msg.session[1]"]} from source type: {data["msg.source_type"]}')
 
 
     async def write_cmd_ack(self):
       # Create sample
       cmd_ack_sample = dds.DynamicData(self.c2_cmd_ack_type)
 
-      # Set Source GUID
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-      cmd_ack_sample["msg.source_id"] = source_guid_list
+      # Set Source
+      cmd_ack_sample["msg.source"] = args.source
 
-      # Set Destination GUID
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-      cmd_ack_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination
+      cmd_ack_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      cmd_ack_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      cmd_ack_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -154,19 +150,15 @@ class PlatformSim:
       # Create sample
       status_sample = dds.DynamicData(self.platform_status_type)
 
-      # Set Source GUID
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-      status_sample["msg.source_id"] = source_guid_list
+      # Set Source
+      status_sample["msg.source"] = args.source
 
-      # Set Destination GUID
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-      status_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination
+      status_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      status_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      status_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -181,19 +173,15 @@ class PlatformSim:
       # Create sample
       data_sample = dds.DynamicData(self.platform_data_type)
 
-      # Set Source GUID
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-      data_sample["msg.source_id"] = source_guid_list
+      # Set Source
+      data_sample["msg.source"] = args.source
 
-      # Set Destination GUID
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-      data_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination
+      data_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      data_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      data_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -208,22 +196,18 @@ class PlatformSim:
       # Create sample
       contact_report_sample = dds.DynamicData(self.contact_report_type)
 
-      # Set Source GUID
-      source_guid = uuid.UUID(str(args.src_guid))
-      source_guid_list = list(source_guid.bytes)
-      contact_report_sample["msg.source_id"] = source_guid_list
-
       # Set Source Name
+      contact_report_sample["msg.source"] = args.source
+
+      # Set Source Type
       contact_report_sample["msg.source_type"] = "Platform"
 
-      # Set Destination GUID
-      dest_guid = uuid.UUID(str(args.dest_guid))
-      dest_guid_list = list(dest_guid.bytes)
-      contact_report_sample["msg.destination_id"] = dest_guid_list
+      # Set Destination Name
+      contact_report_sample["msg.destination"] = args.destination
 
       # Set Session "GUID"
-      session_guid = [args.session_id for d in range(16)]
-      contact_report_sample["msg.session_id"] = session_guid
+      session_guid = [args.session for d in range(16)]
+      contact_report_sample["msg.session"] = session_guid
 
       # Create sim "Payload"
       payload = [random.randrange(0, 10, 2) for d in range(16)]
@@ -257,16 +241,16 @@ if __name__ == "__main__":
         "-f", "--files", type=str, default="", help="XML Config files"
     )
     parser.add_argument(
-        "--src_guid", type=str, default=0, help="Source GUID"
+        "--source", type=str, default=0, help="Source"
     )
     parser.add_argument(
-        "--dest_guid", type=str, default="", help="Destination GUID"
+        "--destination", type=str, default="", help="Destination"
     )
     parser.add_argument(
         "--qos_profile", type=str, default=0, help="QOS Profile"
     )
     parser.add_argument(
-        "--session_id", type=int, default=0, help="Session ID"
+        "--session", type=int, default=0, help="Session ID"
     )
     parser.add_argument(
         "-d", "--domain_id", type=int, default=0, help="Domain ID"

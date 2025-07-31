@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Used for Routing Service
-export GUID="21192b12469b48d0b8bcdbde51c3ab81"
 export C2_DOMAIN=20
 export TYPE="c2"
-export ROUTER_NAME="C2-20"
+export ROUTER_NAME="C2_20"
 
 # Used for Platform Sim
 export LAN_QOS_PROFILE="LAN::default_participant_qos"
@@ -12,16 +11,14 @@ export SESSION_ID=20
 export DOMAIN_ID=$C2_DOMAIN
 
 # Matches Platform10
-export DEST_GUID="ef32b88e6e0c49e99886ae20c28d7f3c"
+export DESTINATION="USV_10"
 
 echo "
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------
-GUID: $GUID
-C2_DOMAIN: $C2_DOMAIN
 TYPE: $TYPE
 ROUTER_NAME: $ROUTER_NAME
 LAN_QOS_PROFILE: $LAN_QOS_PROFILE
-SESSION: $SESSION
+SESSION_ID: $SESSION_ID
 DOMAIN_ID: $DOMAIN_ID
-DEST_GUID: $DEST_GUID
+DESTINATION: $DESTINATION
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------"
