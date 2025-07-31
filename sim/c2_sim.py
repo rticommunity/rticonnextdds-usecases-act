@@ -100,7 +100,7 @@ class C2Sim:
       print("Waiting for ContactReport data")
       async for data in self.contact_report_reader.take_data_async():
         print(
-            f'- Received ContactReport Data: {data["msg.session[1]"]} from source type: {data["msg.source_type"]}')
+            f'- Received ContactReport Data: {data["msg.session[1]"]} from source: {data["msg.source"]} type: {data["msg.source_type"]}')
 
     async def write_cmd(self):
       # Create Command sample

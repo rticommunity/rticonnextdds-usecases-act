@@ -43,7 +43,7 @@ NDDS_QOS_PROFILES+="./router_config/routing_service_config.xml"
 # Format:  <service_level>[:<dds_level>]
 # Default: ERROR:ERROR
 
-verbosity=WARN:WARN
+verbosity=ERROR:ERROR
 
 
 ################################################################################

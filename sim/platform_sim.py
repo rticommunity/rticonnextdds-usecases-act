@@ -120,7 +120,7 @@ class PlatformSim:
       print("Waiting for Contact Report")
       async for data in self.contact_report_reader.take_data_async():
         print(
-            f'- Received Contact Report with Session ID: {data["msg.session[1]"]} from source type: {data["msg.source_type"]}')
+            f'- Received Contact Report with Session ID: {data["msg.session[1]"]} from source: {data["msg.source"]} type: {data["msg.source_type"]}')
 
 
     async def write_cmd_ack(self):
