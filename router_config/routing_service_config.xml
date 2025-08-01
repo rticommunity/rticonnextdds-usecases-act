@@ -142,12 +142,12 @@
       </element>
 
       <!-- 
-        ___________________________DATA "LANES"_________________________________
+        ___________________________DATA "CHANNELS"______________________________
 
         Add Topics with REGEX match to move between C2/PLATFORM 
         NOTE: No spaces in the lists or they break silently
 
-        ___________________________DATA "LANES"_________________________________
+        ___________________________DATA "CHANNELS"______________________________
 
         -->
 

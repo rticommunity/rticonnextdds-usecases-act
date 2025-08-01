@@ -77,7 +77,7 @@ export WAN_HB_RETRIES=$(echo "$WAN_TIMEOUT_SEC/$WAN_HB_PERIOD_SEC" | bc | awk '{
 export WAN_MAX_BLOCKING_SEC=$(echo "$WAN_RTT_SEC*10" | bc | awk '{print int($1)}')
 
 ################################################################################
-#                                  CHANNELS                                    #
+#                                 DATA CHANNELS                                #
 ################################################################################
 # CHANNELS are a combination of Topic Routes, QOS, and Partitions
 # - Topic Routes automatically generate Readers and Writers per list of Topics
