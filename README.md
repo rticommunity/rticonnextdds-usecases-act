@@ -2,22 +2,35 @@
 Routing Service architecture for Autonomous Collaborative Teaming use case to  
 manage message flow between Platforms and C2(Command and Control) stations.
 
+This use case is centered around a Maritime ISR scenario but can be adopted for  
+other similar needs.
+
+## Use Case Requirements:
+- Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
+- Platforms must be able to receive *only* commands addressed to a destination GUID with delivery [C2 GUID Commands](#guid-commands)
+- *Only* any C2 must be able to receive select topics from Platforms with delivery [Platform Events](#platform-events)
+- C2 must be able to receive select downsampled topics from Platforms with delivery [Platform Status](#platform-status) 
+- Platforms must be able to receive select topics from other Platforms with delivery [Platform to Platform](#platform-to-platform)  
+- All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
+
+## Network Architecture
 The system has been separated into 3 domains:
 - Platform (Vehicle or Platform network)
-- WAN Domain (Communications network i.e. Sat, Mesh Radio)
-- C2 Domain (C2 Network- Groundstations etc.)
+- WAN DDS Domain (Communications network i.e. Sat, Mesh Radio)
+- C2 DDS Domain (C2 Network- Groundstations etc.)
 
 Routing Service acts as a relay mechanism between the *internal* LAN messaging and  
 the *external* WAN Domain.
 
-Performs the following roles:
+## Features
+This infrastructure performs the following roles:
 - Dynamic instantiation of readers/writers based on a regex match filter
 - Dynamic application of QoS per *Channel*
-- Segmentation of traffic at the logical layer between LAN and WAN environments
+- Segmentation of traffic at the network layer(using DDS Domains) between LAN and WAN environments
 - Routing of selected topics between *only*:
-  - Platform - C2
-  - C2 - Platform
-  - Platform - Platform
+  - Platform -> C2
+  - C2 -> Platform
+  - Platform <-> Platform
 - Dynamic discovery of Platforms/C2 systems
 - Dynamic pub/sub architecture of one-to-many/many-to-one between C2 and Platforms
 
@@ -38,15 +51,6 @@ The QoS has been setup in `./act_qos_lib.xml` for 2 common patterns of
 - Events (Aperiodic data i.e. Commands/ContactReports- ensure delivery)
 
 See Included System Block Diagram for more info.
-
-
-## Use Case:
-- Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
-- Platforms must be able to receive *only* commands addressed to a destination GUID with delivery [C2 GUID Commands](#guid-commands)
-- *Only* any C2 must be able to receive select topics from Platforms with delivery [Platform Events](#platform-events)
-- C2 must be able to receive select downsampled topics from Platforms with delivery [Platform Status](#platform-status) 
-- Platforms must be able to receive select topics from other Platforms with delivery [Platform to Platform](#platform-to-platform)  
-- All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
 
 
 ## RELIABLE delivery
