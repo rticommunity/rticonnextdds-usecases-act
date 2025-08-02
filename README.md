@@ -7,7 +7,7 @@ other similar needs.
 
 ## Use Case Requirements:
 - Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
-- Platforms must be able to receive *only* commands addressed to a destination GUID with delivery [C2 GUID Commands](#guid-commands)
+- Platforms must be able to receive *only* commands addressed to a destination with delivery [C2 Filtered Commands](#filtered-commands)
 - *Only* any C2 must be able to receive select topics from Platforms with delivery [Platform Events](#platform-events)
 - C2 must be able to receive select downsampled topics from Platforms with delivery [Platform Status](#platform-status) 
 - Platforms must be able to receive select topics from other Platforms with delivery [Platform to Platform](#platform-to-platform)  
@@ -137,36 +137,36 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 5. Start C2-20 sim
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 -  `./start_sim.sh`  
 
 6. Start a C2-20 Routing Service
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:
 - Ensure the `C2_EVENT_CHANNEL` topics are *only* received on Platforms from C2 source type
 
 
-## GUID Commands
-In `start_router.sh`, the `C2_COMMAND_GUID_FILTER` [Channels](#data-channels) is used to move  
+## Filtered Commands
+In `start_router.sh`, the `C2_COMMAND_FILTER_CHANNEL` [Channels](#data-channels) is used to move  
 the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
 the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
 
-A Content Filter has been applied on the `destination_id` field in  
+A Content Filter has been applied on the `destination` field in  
 `routing_service_config.xml` `wan_to_platform` route.
 
 This filters at the *writer* side i.e. only the message to the destined PLATFORM is  
 sent and the other PLATFORM's are ignored.
 
-This example is set up so the GUID in `platform_10.sh` match the destination GUID  
+This example is set up so the `ROUTER_NAME` in `platform_10.sh` matches the destination  
 of `c2_20.sh`
 
 ### Test:
 In `start_router.sh`, ensure the `C2Command` topic is assigned to the 
-`C2_COMMAND_GUID_FILTER` [Channel](#data-channels) .
+`C2_COMMAND_FILTER_CHANNEL` [Channel](#data-channels) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`
@@ -187,11 +187,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 5. Start C2-20 sim
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 -  `./start_sim.sh`  
 
 6. Start a C2-20 Routing Service
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -237,11 +237,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 5. Start C2-20 sim  
-- `source ./c2.20.sh`  
+- `source ./c2_20.sh`  
 -  `./start_sim.sh`  
 
 6. Start a C2-20 Routing Service  
-- `source ./c2.20.sh`  
+- `source ./c2_20.sh`  
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -270,11 +270,11 @@ In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired
 - `./start_router.sh`  
 
 3. Start C2-20 sim  
-- `source ./c2.20.sh`  
+- `source ./c2_20.sh`  
 -  `./start_sim.sh`  
 
 4. Start a C2-20 Routing Service  
-- `source ./c2.20.sh`  
+- `source ./c2_20.sh`  
 - `./start_router.sh`  
 
 #### Pass criteria:
@@ -315,11 +315,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 5. Start C2-20 sim
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 -  `./start_sim.sh`  
 
 6. Start a C2-20 Routing Service
-- `source ./c2.20.sh`
+- `source ./c2_20.sh`
 - `./start_router.sh`  
 
 #### Pass criteria:
