@@ -14,13 +14,16 @@ other similar needs.
 - All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
 
 ## Network Architecture
-The system has been separated into 3 domains:
+The system has been separated into 3 DDS domains:
 - Platform (Vehicle or Platform network)
-- WAN DDS Domain (Communications network i.e. Sat, Mesh Radio)
-- C2 DDS Domain (C2 Network- Groundstations etc.)
+- WAN (Communications network i.e. Sat, Mesh Radio)
+- C2 (C2 Network- Groundstations etc.)
 
 Routing Service acts as a relay mechanism between the *internal* LAN messaging and  
-the *external* WAN Domain.
+the *external* WAN DDS Domain.
+
+This allows For Network level isolation of messaging as DDS Domains isolate  
+through unique port range allocation.
 
 ## Features
 This infrastructure performs the following roles:
@@ -55,7 +58,7 @@ See Included System Block Diagram for more info.
 
 ## RELIABLE delivery
 For data that is sent Aperiodically such as Commands and Events, we want to ensure  
-delivery of the message. We do this by applying a resend mechanism that we can adjust  
+delivery of the message. We do this by applying a resend mechanism (RELIABILTY QoS: RELIABLE) that we can adjust  
 at the user space level.
 
 After sending a *RELIABLE* message, Connext will send out "heartbeats" either piggybacked  
@@ -97,7 +100,7 @@ REGEX matching is used including wildcards so `*Status` will match with any pref
 *NOTE: Comma separated list, no spaces*
 
 ### Data Channels Logical View
-![ACT Data Channels Logical View](/images/ACT%20Channels.jpeg)
+![ACT Data Channels Logical View](/images/act_channelsjpeg)
 
 
 ## C2 Events
