@@ -53,7 +53,10 @@ The QoS has been setup in `./act_qos_lib.xml` for 2 common patterns of
 - Status (Periodic data without reliability mechanism)
 - Events (Aperiodic data i.e. Commands/ContactReports- ensure delivery)
 
-See Included System Block Diagram for more info.
+See Block Diagram below:
+![ACT Routing Architecture](/images/act_routing_arch.jpeg)
+
+
 
 
 ## RELIABLE delivery
@@ -100,7 +103,7 @@ REGEX matching is used including wildcards so `*Status` will match with any pref
 *NOTE: Comma separated list, no spaces*
 
 ### Data Channels Logical View
-![ACT Data Channels Logical View](/images/act_channelsjpeg)
+![ACT Data Channels Logical View](/images/act_channels.jpeg)
 
 
 ## C2 Events
