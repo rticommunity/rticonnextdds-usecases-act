@@ -17,7 +17,7 @@ export TYPE="c2"
 export ROUTER_NAME="C2_20"
 
 # Used for Platform Sim
-export LAN_QOS_PROFILE="LAN::default_participant_qos"
+export LAN_QOS_PROFILE="LAN::dp_qos"
 export SESSION_ID=20
 export DOMAIN_ID=$C2_DOMAIN
 

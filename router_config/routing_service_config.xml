@@ -60,7 +60,7 @@ to use the software.
       <!-- LAN QOS -->
       <element>
         <name>PLATFORM_PARTICIPANT_QOS</name>
-        <value>LAN::default_participant_qos</value>
+        <value>LAN::dp_qos</value>
       </element>
 
       <element>
@@ -95,7 +95,7 @@ to use the software.
 
       <element>
         <name>C2_PARTICIPANT_QOS</name>
-        <value>LAN::default_participant_qos</value>
+        <value>LAN::dp_qos</value>
       </element>
 
       <element>
@@ -107,7 +107,7 @@ to use the software.
       <!-- WAN QOS -->
       <element>
         <name>WAN_PARTICIPANT_QOS</name>
-        <value>WAN::default_participant_qos</value>
+        <value>WAN::dp_qos</value>
       </element>
 
       <element>

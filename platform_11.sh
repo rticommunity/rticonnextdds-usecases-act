@@ -17,7 +17,7 @@ export TYPE="platform"
 export ROUTER_NAME="USV_11"
 
 # Used for Platform Sim
-export LAN_QOS_PROFILE="LAN::default_participant_qos"
+export LAN_QOS_PROFILE="LAN::dp_qos"
 export SESSION_ID=11
 export DOMAIN_ID=$PLATFORM_DOMAIN
 export DESTINATION="C2_20"

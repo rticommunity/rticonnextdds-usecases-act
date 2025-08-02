@@ -58,7 +58,7 @@ to use the software.
     -->
 
 
-    <qos_profile name="default_participant_qos">
+    <qos_profile name="dp_qos">
 
       <!-- 
         This profile is intended for use across a network comms link. 
