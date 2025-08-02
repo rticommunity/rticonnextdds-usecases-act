@@ -756,7 +756,25 @@ to use the software.
       </session>
 
       <!-- This session moves messages between platforms -->
-      <session name="platform_to_platform" enabled="$(P2P_ENABLE)">
+      <session name="platform_to_wan_p2p" enabled="$(P2P_ENABLE)">
+
+        <!-- Internal LAN Partition to match with ALL Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- External WAN Partition to match with SQUAD Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>SQUAD</element>
+            </name>
+          </partition>
+        </publisher_qos>
 
         <!-- PLATFORM -> WAN P2P messages -->
         <auto_topic_route name="platform_to_wan">
@@ -770,6 +788,28 @@ to use the software.
             <datawriter_qos base_name="$(WAN_P2P_QOS)" />
           </output>
         </auto_topic_route>
+      </session>
+
+      <!-- This session moves messages between platforms -->
+      <session name="wan_to_platform_p2p" enabled="$(P2P_ENABLE)">
+
+        <!-- External WAN Partition to match with SQUAD Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>SQUAD</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- Internal LAN Partition to match with ALL Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </publisher_qos>
 
         <!-- WAN -> PLATFORM P2P messages -->
         <auto_topic_route name="wan_to_platform">
