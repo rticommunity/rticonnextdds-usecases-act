@@ -104,7 +104,7 @@ REGEX matching is used including wildcards so `*Status` will match with any pref
 
 
 ## C2 Events
-In `start_router.sh`, the `C2_EVENT` [Channel](#data-channels) is used to move topic   
+In `start_router.sh`, the `C2_EVENT_CHANNEL` [Channel](#data-channels) is used to move topic   
 messages(i.e."ContactReport") to *only* Platforms.
 
 QoS applied to this [Channel](#data-channels) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
@@ -113,7 +113,7 @@ reliability with the assumption the data is being sent aperiodically.
 
 ### Test:
 In `start_router.sh`, ensure the `ContactReport` topic is assigned to the  
-`C2_EVENT` [Channel](#data-channels) .
+`C2_EVENT_CHANNEL` [Channel](#data-channels) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`
@@ -142,7 +142,7 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 #### Pass criteria:
-- Ensure the `C2_EVENT` topics are *only* received on Platforms from C2 source type
+- Ensure the `C2_EVENT_CHANNEL` topics are *only* received on Platforms from C2 source type
 
 
 ## GUID Commands
@@ -196,14 +196,14 @@ simulate physical isolation*
 
 
 ## Platform Events
-In `start_router.sh`, the `PLATFORM_EVENT` [Channel](#data-channels) is used to move the  
+In `start_router.sh`, the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) is used to move the  
 desired "Event"(`CommandAck`,`ContactReport` etc.) topics from the Platform to *any* C2 station. 
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
 the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
 
 As the `ContactReport` Topic is published and subscribed to by both C2 and PLATFORM,  
-(see `C2_EVENT`) Partitions have been applied to isolate the data planes.  
+(see `C2_EVENT_CHANNEL`) Partitions have been applied to isolate the data planes.  
 
 This constrains the data flow so Platforms will *only* receive ContactReports  
 from other C2 stations and C2 stations will only receive ContactReports from Platforms. 
@@ -213,7 +213,7 @@ Partitions can be adjusted with XML as needed.
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformCommandAck` and `ContactReport` topics  
-are assigned to the `PLATFORM_EVENT` [Channel](#data-channels) .
+are assigned to the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) .
 
 1. Start Platform-10 sim  
 - `source ./platform_10.sh`  
@@ -242,11 +242,11 @@ simulate physical isolation*
 - `./start_router.sh`  
 
 #### Pass criteria:
-- Ensure `PLATFORM_EVENT` topics are *only* received on C2 from PLATFORM source type
+- Ensure `PLATFORM_EVENT_CHANNEL` topics are *only* received on C2 from PLATFORM source type
 
 
 ## Platform Status
-In `start_router.sh`, the `PLATFORM_<RATE>_STATUS` [Channel](#data-channels) is used to move  
+In `start_router.sh`, the `PLATFORM_STATUS_<RATE>_CHANNEL` [Channel](#data-channels) is used to move  
 the desired status topics from the Platform to *any* C2 station.  
 
 Topics can be downsampled to different rates by using the desired filter.
@@ -256,7 +256,7 @@ the Reliability QoS to [[BEST_EFFORT]](#best_effort-delivery)
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired   
-`PLATFORM_<RATE>_STATUS` [Channel](#data-channels) .
+`PLATFORM_STATUS_<RATE>_CHANNEL` [Channel](#data-channels) .
 
 1. Start Platform-10 sim  
 - `source ./platform_10.sh`  
@@ -275,13 +275,13 @@ In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired
 - `./start_router.sh`  
 
 #### Pass criteria:
-- C2 will be receiving selected `PLATFORM_<RATE>_STATUS` messages at the  
+- C2 will be receiving selected `PLATFORM_STATUS_<RATE>_CHANNEL` messages at the  
 desired downsampled rate
 
 
 
 ## Platform to Platform
-In `start_router.sh`, the `PLATFORM_TO_PLATFORM` [Channel](#data-channels) is used to move topic  
+In `start_router.sh`, the `PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channels) is used to move topic  
 messages(i.e.`PlatformData`) between *only* Platforms.
 
 QoS applied for this [Channel](#data-channels)  is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
@@ -291,7 +291,7 @@ This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` va
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the  
-`PLATFORM_TO_PLATFORM` [Channel](#data-channels) .
+`PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channels) .
 
 1. Start Platform-10 sim
 - `source ./platform_10.sh`

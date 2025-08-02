@@ -99,33 +99,33 @@ export WAN_MAX_BLOCKING_SEC=$(echo "$WAN_RTT_SEC*10" | bc | awk '{print int($1)}
 # Comma separated, no spaces, NULL if empty 
 # Can use wildcards such as *Status
 
-export PLATFORM_EVENT=PlatformCommandAck,ContactReport #PLATFORM -> C2 (Aperiodic- Ensured Delivery CommandAck etc.)
+export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport #PLATFORM -> C2 (Aperiodic- Ensured Delivery CommandAck etc.)
 
-export PLATFORM_STATUS_FULL=NULL #PLATFORM -> C2 (Periodic- Full Rate)
-export PLATFORM_STATUS_1SEC=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec)
-export PLATFORM_STATUS_10SEC=PlatformStatus #PLATFORM -> C2 (Periodic- Downsampled to every 10 Secs)
-export PLATFORM_STATUS_30SEC=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 30 Secs)
-export PLATFORM_STATUS_60SEC=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 60 Secs)
+export PLATFORM_STATUS_FULL_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Full Rate)
+export PLATFORM_STATUS_1SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec)
+export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus #PLATFORM -> C2 (Periodic- Downsampled to every 10 Secs)
+export PLATFORM_STATUS_30SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 30 Secs)
+export PLATFORM_STATUS_60SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 60 Secs)
 
-export PLATFORM_TO_PLATFORM=PlatformData #Platform -> Platform (Periodic- Full Rate)
+export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData #Platform -> Platform (Periodic- Full Rate)
 
-export C2_COMMAND_FILTER=C2Command #C2 -> Platform Aperiodic- (Targeted delivery by GUID address)
-export C2_EVENT=ContactReport
+export C2_COMMAND_FILTER_CHANNEL=C2Command #C2 -> Platform Aperiodic- (Targeted delivery by GUID address)
+export C2_EVENT_CHANNEL=ContactReport
 
 ################################################################################
 
 echo "
 -------------------------------- ROUTER CONFIGS: --------------------------------
 XML FILES used:  $NDDS_QOS_PROFILES
-PLATFORM_EVENT:  $PLATFORM_EVENT
-PLATFORM_STATUS_FULL: $PLATFORM_STATUS_FULL
-PLATFORM_STATUS_1SEC:  $PLATFORM_STATUS_1SEC
-PLATFORM_STATUS_10SEC:  $PLATFORM_STATUS_10SEC
-PLATFORM_STATUS_30SEC:  $PLATFORM_STATUS_30SEC
-PLATFORM_STATUS_60SEC:  $PLATFORM_STATUS_60SEC
-C2_COMMAND_FILTER:  $C2_COMMAND_FILTER
-C2_EVENT:  $C2_EVENT
-PLATFORM_TO_PLATFORM:  $PLATFORM_TO_PLATFORM
+PLATFORM_EVENT_CHANNEL:  $PLATFORM_EVENT_CHANNEL
+PLATFORM_STATUS_FULL_CHANNEL: $PLATFORM_STATUS_FULL_CHANNEL
+PLATFORM_STATUS_1SEC_CHANNEL:  $PLATFORM_STATUS_1SEC_CHANNEL
+PLATFORM_STATUS_10SEC_CHANNEL:  $PLATFORM_STATUS_10SEC_CHANNEL
+PLATFORM_STATUS_30SEC_CHANNEL:  $PLATFORM_STATUS_30SEC_CHANNEL
+PLATFORM_STATUS_60SEC_CHANNEL:  $PLATFORM_STATUS_60SEC_CHANNEL
+C2_COMMAND_FILTER_CHANNEL:  $C2_COMMAND_FILTER_CHANNEL
+C2_EVENT_CHANNEL:  $C2_EVENT_CHANNEL
+PLATFORM_TO_PLATFORM_CHANNEL:  $PLATFORM_TO_PLATFORM_CHANNEL
 
 ROUTER_NAME = $ROUTER_NAME
 
