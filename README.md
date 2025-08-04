@@ -37,6 +37,14 @@ This infrastructure performs the following roles:
 - Dynamic discovery of Platforms/C2 systems
 - Dynamic pub/sub architecture of one-to-many/many-to-one between C2 and Platforms
 
+## Transports
+Currently the transport over the WAN is configured to use Multicast UDPv4 for discovery and unicast UDPv4  
+for data flow. This can be changed with XML configuration only to use other options such as:
+- Unicast UDPv4 for Discovery (IP addresses, DNS Domain names or a [Discovery Service](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/addon_products/cloud_discovery_service/index.html))  
+- TCP for Data flow
+- UDPv6
+- Real Time WAN transport for NAT traversal etc. [RT-WAN](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PartRealtimeWAN.htm)  
+
 ## Directions
 Default configurations are set at the top of `router_config/routing_service_config.xml`  
 within the `<configuration_variables>` tag section.
