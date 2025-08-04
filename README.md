@@ -6,11 +6,11 @@ This use case is centered around a Maritime ISR scenario but can be adopted for
 other similar needs.
 
 ## Use Case Requirements:
-- Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
-- Platforms must be able to receive *only* commands addressed to a destination with delivery [C2 Filtered Commands](#filtered-commands)
-- *Only* any C2 must be able to receive select topics from Platforms with delivery [Platform Events](#platform-events)
-- C2 must be able to receive select downsampled topics from Platforms with delivery [Platform Status](#platform-status) 
-- Platforms must be able to receive select topics from other Platforms with delivery [Platform to Platform](#platform-to-platform)  
+- Platforms must be able to receive select topics from C2 [C2 Events](#c2-events)
+- Platforms must be able to receive *only* commands addressed to a destination [C2 Filtered Commands](#filtered-commands)
+- *Only* any C2 must be able to receive select topics from Platforms [Platform Events](#platform-events)
+- C2 must be able to receive select downsampled topics from Platforms [Platform Status](#platform-status) 
+- Platforms must be able to receive select topics from other Platforms [Platform to Platform](#platform-to-platform)  
 - All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
 
 ## Network Architecture
