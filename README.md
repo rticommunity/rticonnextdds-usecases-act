@@ -71,8 +71,7 @@ message sequence has been received. If not, another copy will be sent out again.
 
 For example, in `start_router.sh`, the `*EVENT*` Topic [Channel](#data-channels) assigns the `WAN_EVENT_QOS` QoS  
 to be used across the WAN.  
-Looking at `./router_config/routing_service_config.xml` this is defined in `./qos/act_qos_lib.xml`  
-in profile `WAN::event_qos`.
+Looking at `./router_config/routing_service_config.xml`, this is defined in `./qos/act_qos_lib.xml` (profile `WAN::event_qos`).
 
 The `event_qos` sets the Reliability QoS to `RELIABLE`. This enables the resend mechanism.  
 
