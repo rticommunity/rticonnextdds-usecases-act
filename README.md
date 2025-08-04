@@ -49,7 +49,7 @@ An end user would only need to modify the high level variables in the start scri
 and not even touch the xml file.
 
 
-The QoS has been setup in `./act_qos_lib.xml` for 2 common patterns of   
+The QoS has been setup in `./qos/act_qos_lib.xml` for 2 common patterns of   
 - Status (Periodic data without reliability mechanism)
 - Events (Aperiodic data i.e. Commands/ContactReports- ensure delivery)
 
