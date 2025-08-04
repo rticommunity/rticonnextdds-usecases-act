@@ -50,8 +50,8 @@ and not even touch the xml file.
 
 
 The QoS has been setup in `./qos/act_qos_lib.xml` for 2 common patterns of   
-- Status (Periodic data without reliability mechanism)
-- Events (Aperiodic data i.e. Commands/ContactReports- ensure delivery)
+- Status (Periodic data)
+- Events (Aperiodic data i.e. Commands/ContactReports- "ensure delivery" [RELIABLE](#reliable-delivery))
 
 See Block Diagram below:
 ![ACT Routing Architecture](/images/act_routing_arch.jpeg)
@@ -97,8 +97,8 @@ Topic to be added into.
 In `start_router.sh`, the `C2_EVENT_CHANNEL` [Channel](#data-channels) is used to move topic   
 messages(i.e."ContactReport") to *only* Platforms.
 
-QoS applied to this [Channel](#data-channels) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
-reliability with the assumption the data is being sent aperiodically.
+QoS applied to this [Channel](#data-channels) is `event_qos` configured for Reliability QoS kind:[RELIABLE](#reliable-delivery)  
+with the assumption the data is being sent aperiodically.
 
 
 ### Test:
@@ -140,7 +140,7 @@ In `start_router.sh`, the `C2_COMMAND_FILTER_CHANNEL` [Channels](#data-channels)
 the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
+the Reliability QoS to kind:[[RELIABILITY]](#reliable-delivery)
 
 A Content Filter has been applied on the `destination` field in  
 `routing_service_config.xml` `wan_to_platform` route.
@@ -163,7 +163,7 @@ In `start_router.sh`, ensure the `C2Command` topic is assigned to the
 - `source ./platform_10.sh`
 - `./start_router.sh`  
 
-3. Start a second Platform sim (Platform-11)  
+3. Start a second Platform sim (Platform-11) in a different DDS Domain  
 *NOTE: This isolates this Platform from the other one similar to a VLAN to  
 simulate physical isolation*
 - `source ./platform_11.sh`
@@ -190,7 +190,7 @@ In `start_router.sh`, the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) is 
 desired "Event"(`CommandAck`,`ContactReport` etc.) topics from the Platform to *any* C2 station. 
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
+the Reliability QoS to kind:[[RELIABILITY]](#reliable-delivery)
 
 As the `ContactReport` Topic is published and subscribed to by both C2 and PLATFORM,  
 (see `C2_EVENT_CHANNEL`) Partitions have been applied to isolate the data planes.  
@@ -242,7 +242,7 @@ the desired status topics from the Platform to *any* C2 station.
 Topics can be downsampled to different rates by using the desired filter.
 
 The QoS applied for this "Channel" across the WAN is the `WAN_STATUS_QOS` which sets  
-the Reliability QoS to [[BEST_EFFORT]](#best_effort-delivery)
+the Reliability QoS kind to [[BEST_EFFORT]](#best_effort-delivery)
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired   
@@ -274,8 +274,8 @@ desired downsampled rate
 In `start_router.sh`, the `PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channels) is used to move topic  
 messages(i.e.`PlatformData`) between *only* Platforms.
 
-QoS applied for this [Channel](#data-channels)  is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
-reliability with the assumption the data is being sent periodically.
+QoS applied for this [Channel](#data-channels)  is `status_qos` i.e. Reliability QoS kind:[BEST_EFFORT](#best_effort-delivery)  
+with the assumption the data is being sent periodically.
 
 This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` variable.  
 
