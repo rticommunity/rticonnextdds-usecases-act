@@ -244,6 +244,11 @@ Topics can be downsampled to different rates by using the desired filter.
 The QoS applied for this "Channel" across the WAN is the `WAN_STATUS_QOS` which sets  
 the Reliability QoS kind to [[BEST_EFFORT]](#best_effort-delivery)
 
+The Routing Service input reader QoS has a different time-based filter QoS applied per chosen channel  
+to downsample the data before it is processed by the Routing Service.
+
+This minimizes resource usage and optimizes overhead/bandwidth usage across the entire message path.
+
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired   
 `PLATFORM_STATUS_<RATE>_CHANNEL` [Channel](#data-channels) .
