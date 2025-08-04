@@ -213,7 +213,7 @@ are assigned to the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) .
 - `source ./platform_10.sh`  
 - `./start_router.sh`  
 
-3. Start a second Platform sim (Platform-11)  
+3. Start a second Platform sim (Platform-11) in a different DDS Domain  
 *NOTE: This isolates this Platform from the other one similar to a VLAN to  
 simulate physical isolation*  
 - `source ./platform_11.sh`  
@@ -291,7 +291,7 @@ In `start_router.sh`, ensure the `PlatformData` topic is assigned to the
 - `source ./platform_10.sh`
 - `./start_router.sh`  
 
-3. Start a second Platform sim (Platform-11)  
+3. Start a second Platform sim (Platform-11) in a different DDS Domain  
 *NOTE: This isolates this Platform from the other one similar to a VLAN to  
 simulate physical isolation*
 - `source ./platform_11.sh`
