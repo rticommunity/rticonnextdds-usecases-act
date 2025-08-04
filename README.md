@@ -84,11 +84,10 @@ These variables are used to move selected topics from the Platform to C2
 and apply the appropriate QoS per Data Pattern such a Status(Periodic, [BEST_EFFORT](#best_effort-delivery))  
 and Event(Aperiodic, [RELIABLE](#reliable-delivery)).  
 
-By using these "*Channels*" in the Start Routing script you can abstract away lower  
+By using these "*Channels*" in the Start Routing script, you can abstract away lower  
 level configuration/management and just focus on selecting the right "*Channel*" for your  
 Topic to be added into.  
-REGEX matching is used including wildcards so `*Status` will match with any prefix.    
-*NOTE: Comma separated list, no spaces*
+(REGEX matching is used including wildcards so `*Status` will match with any prefix.)    
 
 ### Data Channels Logical View
 ![ACT Data Channels Logical View](/images/act_channels.jpeg)
