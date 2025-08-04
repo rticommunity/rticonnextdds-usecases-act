@@ -61,7 +61,8 @@ See Block Diagram below:
 
 ## RELIABLE delivery
 For data that is sent Aperiodically such as Commands and Events, we want to ensure  
-delivery of the message. We do this by applying a resend mechanism (RELIABILTY QoS: RELIABLE) that we can adjust  
+delivery of the message.  
+We do this by applying a resend mechanism (RELIABILTY QoS: RELIABLE) that we can adjust  
 at the user space level.
 
 After sending a *RELIABLE* message, Connext will send out "heartbeats" either piggybacked  
