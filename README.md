@@ -65,10 +65,6 @@ delivery of the message.
 We do this by applying a resend mechanism (RELIABILTY QoS: RELIABLE) that we can adjust  
 at the user space level.
 
-After sending a *RELIABLE* message, Connext will send out "heartbeats" either piggybacked  
-with another message or separately. A response will be sent back if the expected  
-message sequence has been received. If not, another copy will be sent out again.  
-
 This allows us to control different data "channels" behaviour separately as needed.
 
 More info see [manual](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/RELIABILITY_QosPolicy.htm#sending_2410472787_2023245).  
