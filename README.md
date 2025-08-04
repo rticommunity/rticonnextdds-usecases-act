@@ -44,7 +44,7 @@ for data flow. This can be changed with XML configuration only to use other opti
 - Unicast UDPv4 for Discovery (IP addresses, DNS Domain names or a [Discovery Service](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/addon_products/cloud_discovery_service/index.html))  
 - [TCP](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PartTCP.htm)  
 - [UDPv6](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/Setting_Builtin_Transport_Properties_wit.htm#Table_PropertiesForBuiltinUDPv6Transport)  
-- Real Time WAN transport for NAT traversal etc. [RT-WAN](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PartRealtimeWAN.htm)  
+- [Real Time WAN transport for NAT traversal etc.](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PartRealtimeWAN.htm)  
 
 
 ## Directions
