@@ -19,7 +19,7 @@ The system has been separated into 3 DDS domains:
 - WAN (Communications network i.e. Sat, Mesh Radio)
 - C2 (C2 Network- Groundstations etc.)
 
-Routing Service acts as a relay mechanism between the *internal* LAN messaging and  
+Routing Service acts as a relay mechanism between the *internal* LAN and  
 the *external* WAN DDS Domain.
 
 This allows For Network level isolation of messaging as DDS Domains isolate  
