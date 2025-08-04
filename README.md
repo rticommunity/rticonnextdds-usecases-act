@@ -69,25 +69,17 @@ After sending a *RELIABLE* message, Connext will send out "heartbeats" either pi
 with another message or separately. A response will be sent back if the expected  
 message sequence has been received. If not, another copy will be sent out again.  
 
-For example, in `start_router.sh`, the `*EVENT*` Topic [Channel](#data-channels) assigns the `WAN_EVENT_QOS` QoS  
-to be used across the WAN.  
-Looking at `./router_config/routing_service_config.xml`, this is defined in `./qos/act_qos_lib.xml` (profile `WAN::event_qos`).
-
-The `event_qos` sets the Reliability QoS to `RELIABLE`. This enables the resend mechanism.  
-
 This allows us to control different data "channels" behaviour separately as needed.
+
+More info see [manual](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/RELIABILITY_QosPolicy.htm#sending_2410472787_2023245).  
 
 ## BEST_EFFORT delivery
 For data that is sent Periodically such as Status updates, we generally aren't  
 too concerned if we miss a sample as there will be another one coming along shortly.  
 
-In `start_router.sh`, the `*STATUS*` [Channel](#data-channels) assigns an appropriate QoS as  
-defined in `./qos/act_qos_lib.xml` in profile `WAN::status_qos`.
-
-The `status_qos` sets the Reliability QoS to BEST_EFFORT. This just sends the  
-message once and does *NOT* apply any resend mechanism.
-
 This allows us to control different data "channels" behaviour separately as needed.
+
+More info see [manual](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/RELIABILITY_QosPolicy.htm#sending_2410472787_2023245).  
 
 
 ## Data "Channels"
