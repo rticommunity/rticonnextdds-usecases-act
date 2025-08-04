@@ -79,7 +79,7 @@ More info see [manual](https://community.rti.com/static/documentation/connext-dd
 
 
 ## Data "Channels"
-In `./start_router.sh` you will see a section titled "Data Channels".
+In `./start_router.sh` you will see a section titled "Data Channels".  
 These variables are used to move selected topics from the Platform to C2  
 and apply the appropriate QoS per Data Pattern such a Status(Periodic, [BEST_EFFORT](#best_effort-delivery))  
 and Event(Aperiodic, [RELIABLE](#reliable-delivery)).  
