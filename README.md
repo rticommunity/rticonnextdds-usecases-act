@@ -280,9 +280,9 @@ In `start_router.sh`, the `PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channel
 messages(i.e.`PlatformData`) between *only* Platforms.
 
 QoS applied for this [Channel](#data-channels)  is `status_qos` i.e. Reliability QoS kind:[BEST_EFFORT](#best_effort-delivery)  
-with the assumption the data is being sent periodically.
+with the assumption that the data is being sent periodically.
 
-This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` variable.  
+This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` variable to select an event based behavior pattern if desired.    
 
 ### Test:
 In `start_router.sh`, ensure the `PlatformData` topic is assigned to the  
