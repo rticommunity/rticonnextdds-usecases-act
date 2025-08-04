@@ -50,7 +50,8 @@ for data flow. This can be changed with XML configuration only to use other opti
 ## Network Settings
 Connext by default will attempt to use all Network Interfaces provided by the OS.  
 However as required, interfaces can be constrained with [allow/deny lists](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/Setting_Builtin_Transport_Properties_wit.htm#Table_PropertiesBuiltinUDPv4Transport) and [prioritized](https://community.rti.com/kb/how-do-i-restrict-and-prioritize-interfaces-rti-connext-use) using max_interfaces_list.  
-Connext also has the ability to [move message fragmentation to the DDS layer](https://community.rti.com/static/documentation/connext-dds/7.5.0/doc/manuals/connext_dds_professional/users_manual/users_manual/LargeData_Fragmentation.htm) in situations where a low MTU size is causing excessive IP fragment re-assembly errors.
+Connext also has the ability to [move message fragmentation to the DDS layer](https://community.rti.com/static/documentation/connext-dds/7.5.0/doc/manuals/connext_dds_professional/users_manual/users_manual/LargeData_Fragmentation.htm) in situations where a low MTU size is causing   
+excessive IP fragment re-assembly errors.
 
 ## Directions
 Default configurations are set at the top of `router_config/routing_service_config.xml`  
