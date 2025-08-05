@@ -89,6 +89,8 @@ More info see [manual](https://community.rti.com/static/documentation/connext-dd
 For data that is sent Periodically such as Status updates, we generally aren't  
 too concerned if we miss a sample as there will be another one coming along shortly.  
 
+For this data pattern we set the Reliability QoS to BEST_EFFORT.  
+
 This allows us to control different data "channels" behaviour separately as needed.
 
 More info see [manual](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/RELIABILITY_QosPolicy.htm#sending_2410472787_2023245).  
@@ -156,7 +158,7 @@ In `start_router.sh`, the `C2_COMMAND_FILTER_CHANNEL` [Channels](#data-channels)
 the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to kind:[[RELIABILITY]](#reliable-delivery)
+the Reliability QoS to kind: [RELIABLE](#reliable-delivery)
 
 A Content Filter has been applied on the `destination` field in  
 `routing_service_config.xml` `wan_to_platform` route.
@@ -206,7 +208,7 @@ In `start_router.sh`, the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) is 
 desired "Event"(`CommandAck`,`ContactReport` etc.) topics from the Platform to *any* C2 station. 
 
 The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to kind:[[RELIABILITY]](#reliable-delivery)
+the Reliability QoS to kind: [RELIABLE](#reliable-delivery)
 
 As the `ContactReport` Topic is published and subscribed to by both C2 and PLATFORM,  
 (see `C2_EVENT_CHANNEL`) Partitions have been applied to isolate the data planes.  
@@ -258,7 +260,7 @@ the desired status topics from the Platform to *any* C2 station.
 Topics can be downsampled to different rates by using the desired filter.
 
 The QoS applied for this "Channel" across the WAN is the `WAN_STATUS_QOS` which sets  
-the Reliability QoS kind to [[BEST_EFFORT]](#best_effort-delivery)
+the Reliability QoS kind to [BEST_EFFORT](#best_effort-delivery)
 
 The Routing Service input reader QoS has a different time-based filter QoS applied per chosen channel  
 to downsample the data before it is processed by the Routing Service.
