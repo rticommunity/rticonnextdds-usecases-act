@@ -9,7 +9,7 @@ other similar needs.
 - Platforms must be able to receive select topics from C2 [C2 Events](#c2-events)
 - Platforms must be able to receive *only* commands addressed to a destination [C2 Filtered Commands](#filtered-commands)
 - *Only* any C2 must be able to receive select topics from Platforms [Platform Events](#platform-events)
-- C2 must be able to receive select downsampled topics from Platforms [Platform Status](#platform-status) 
+- C2 must be able to receive select *downsampled* topics from Platforms [Platform Status](#platform-status) 
 - Platforms must be able to receive select topics from other Platforms [Platform to Platform](#platform-to-platform)  
 - All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
 
@@ -40,7 +40,7 @@ This infrastructure performs the following roles:
 
 ## Transports
 Currently the transport over the WAN is configured to use Multicast UDPv4 for discovery and unicast UDPv4  
-for data flow. This can be changed with XML configuration only to use other options such as:
+for data flow. This can be changed with XML configuration to use other options such as:
 - Unicast UDPv4 for Discovery (IP addresses, DNS Domain names or a [Discovery Service](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/addon_products/cloud_discovery_service/index.html))  
 - [TCP](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PartTCP.htm)  
 - [UDPv6](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/Setting_Builtin_Transport_Properties_wit.htm#Table_PropertiesForBuiltinUDPv6Transport)  
