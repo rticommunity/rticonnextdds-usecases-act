@@ -27,10 +27,10 @@ through unique port range allocation.
 
 ## Features
 This infrastructure performs the following roles:
-- Dynamic instantiation of readers/writers based on a regex match filter
+- Dynamic instantiation of readers/writers based on a regex match filter per *Channel*.
 - Dynamic application of QoS per *Channel*
 - Segmentation of traffic at the network layer(using DDS Domains) between LAN and WAN environments
-- Routing of selected topics between *only*:
+- Routing of selected topics between the following per *Channel*:
   - Platform -> C2
   - C2 -> Platform
   - Platform <-> Platform
