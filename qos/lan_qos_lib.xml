@@ -23,7 +23,7 @@ to use the software.
     ____________________________________________________________________________
     -->
 
-    <qos_profile name="dp_qos">
+    <qos_profile name="domain_participant_qos">
 
       <domain_participant_qos>
 
