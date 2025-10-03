@@ -218,7 +218,7 @@ to use the software.
       </domain_participant_qos>
     </qos_profile>
 
-    <qos_profile name="domain_participant_udpv4_qos" base_name="WAN::domain_participant_base_qos">
+    <qos_profile name="platform_participant_udpv4_qos" base_name="WAN::domain_participant_base_qos">
 
       <domain_participant_qos>
         <transport_builtin>
@@ -248,7 +248,69 @@ to use the software.
 
     </qos_profile>
 
-    <qos_profile name="domain_participant_udpv6_qos" base_name="WAN::domain_participant_base_qos">
+    <qos_profile name="c2_participant_udpv4_qos" base_name="WAN::domain_participant_base_qos">
+
+      <domain_participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+
+          <udpv6>
+
+            <!-- Adjust Multicast TTL as required using ENV variable -->
+            <multicast_ttl>$(WAN_TTL)</multicast_ttl>
+
+            <!-- Increase the receive socket buffer size to improve performance. -->
+            <recv_socket_buffer_size>2097152</recv_socket_buffer_size>
+          </udpv6>
+        </transport_builtin>
+        <discovery>
+          <initial_peers>
+            <!-- 
+              Use either unicast or multicast addresses as required.
+              Can use host name as well, Connext will attempt to resolve on creation 
+              -->
+            <!-- <element>192.168.1.5</element> Example IPv4 unicast address -->
+            <element>239.255.0.1</element> <!-- Default multicast address -->
+
+          </initial_peers>
+        </discovery>
+      </domain_participant_qos>
+
+    </qos_profile>
+
+    <qos_profile name="platform_participant_udpv6_qos" base_name="WAN::domain_participant_base_qos">
+
+      <domain_participant_qos>
+        <transport_builtin>
+          <mask>UDPv6</mask>
+
+          <udpv6>
+
+            <!-- Adjust Multicast TTL as required using ENV variable -->
+            <multicast_ttl>$(WAN_TTL)</multicast_ttl>
+
+            <!-- Increase the receive socket buffer size to improve performance. -->
+            <recv_socket_buffer_size>2097152</recv_socket_buffer_size>
+          </udpv6>
+        </transport_builtin>
+        <discovery>
+
+          <!-- 
+              Use either unicast or multicast addresses as required.
+              Can use host name as well, Connext will attempt to resolve on creation 
+              -->
+          <initial_peers>
+            <!-- <element>FAA0::1</element> Example IPv6 unicast address -->
+            <element>FF15::1</element> <!-- Example IPv6 multicast address -->
+
+          </initial_peers>
+        </discovery>
+
+      </domain_participant_qos>
+
+    </qos_profile>
+
+    <qos_profile name="c2_participant_udpv6_qos" base_name="WAN::domain_participant_base_qos">
 
       <domain_participant_qos>
         <transport_builtin>
