@@ -66,8 +66,8 @@ verbosity=ERROR:ERROR
 # Multicast TTL for the WAN network
 export WAN_TTL=6
 
-# Roundtrip Time of the system
-export WAN_RTT_SEC=1.5 # Seconds
+# Max latency of the WAN link
+export WAN_LATENCY_SEC=1.5 # Seconds
 
 # Timeout for WAN > intermittent loss of comms
 export WAN_TIMEOUT_SEC=300 # Seconds
@@ -77,15 +77,15 @@ export WAN_TIMEOUT_SEC=300 # Seconds
 
 #### Calculated from above
 
-# Set Heartbeat Period to 2X RTT for Reliability Mechanism
-export WAN_HB_PERIOD_SEC=$(echo "$WAN_RTT_SEC*2" | bc | awk '{print int($1)}')
+# Set Heartbeat Period to 2X WAN Latency for Reliability Mechanism
+export WAN_HB_PERIOD_SEC=$(echo "$WAN_LATENCY_SEC*2" | bc | awk '{print int($1)}')
 
 # Set HB Retries to WAN TIMEOUT/HB PERIOD
 # This defines how many unresponsive HB's will be sent out before the Reader is removed
 export WAN_HB_RETRIES=$(echo "$WAN_TIMEOUT_SEC/$WAN_HB_PERIOD_SEC" | bc | awk '{print int($1)}')
 
 # Set Max Blocking Time to 10X RTT Time to give enough time for Samples to be received/acknowledged
-export WAN_MAX_BLOCKING_SEC=$(echo "$WAN_RTT_SEC*10" | bc | awk '{print int($1)}')
+export WAN_MAX_BLOCKING_SEC=$(echo "$WAN_LATENCY_SEC*10" | bc | awk '{print int($1)}')
 
 ################################################################################
 #                                 DATA CHANNELS                                #
@@ -130,7 +130,7 @@ PLATFORM_TO_PLATFORM_CHANNEL:  $PLATFORM_TO_PLATFORM_CHANNEL
 ROUTER_NAME = $ROUTER_NAME
 
 WAN_TTL = $WAN_TTL
-WAN_RTT_SEC = $WAN_RTT_SEC Seconds
+WAN_LATENCY_SEC = $WAN_LATENCY_SEC Seconds
 WAN_TIMEOUT_SEC = $WAN_TIMEOUT_SEC Seconds
 WAN_HB_PERIOD_SEC = $WAN_HB_PERIOD_SEC Seconds
 WAN_HB_RETRIES = $WAN_HB_RETRIES

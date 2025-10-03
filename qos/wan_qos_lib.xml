@@ -300,7 +300,11 @@ to use the software.
               Can use host name as well, Connext will attempt to resolve on creation 
               -->
           <initial_peers>
-            <!-- <element>FAA0::1</element> Example IPv6 unicast address -->
+            <!-- Example IPv6 unicast address: -->
+            <!-- <element>FAA0::1</element> -->
+
+            <!-- Example IPv6 loopback address: -->
+            <element>::1</element>             
             <element>FF15::1</element> <!-- Example IPv6 multicast address -->
 
           </initial_peers>
@@ -332,7 +336,12 @@ to use the software.
               Can use host name as well, Connext will attempt to resolve on creation 
               -->
           <initial_peers>
-            <!-- <element>FAA0::1</element> Example IPv6 unicast address -->
+            <!-- Example IPv6 unicast address: -->
+            <!-- <element>FAA0::1</element> -->
+
+            <!-- Example IPv6 loopback address: -->
+            <element>::1</element> 
+
             <element>FF15::1</element> <!-- Example IPv6 multicast address -->
 
           </initial_peers>
