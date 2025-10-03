@@ -112,12 +112,12 @@ to use the software.
       <!-- WAN QOS -->
       <element>
         <name>WAN_PLATFORM_PARTICIPANT_QOS</name>
-        <value>WAN::platform_participant_udpv4_qos</value>
+        <value>WAN::platform_participant_udpv6_qos</value>
       </element>
 
       <element>
         <name>WAN_C2_PARTICIPANT_QOS</name>
-        <value>WAN::c2_participant_udpv4_qos</value>
+        <value>WAN::c2_participant_udpv6_qos</value>
       </element>
 
       <element>
@@ -152,7 +152,7 @@ to use the software.
       -->
       <element>
         <name>DEBUG_MODE</name>
-        <value>false</value>
+        <value>true</value>
       </element>
 
       <!-- 
@@ -161,7 +161,7 @@ to use the software.
       -->
       <element>
         <name>CONTROL_MODE</name>
-        <value>false</value>
+        <value>true</value>
       </element>
 
       <!-- 
