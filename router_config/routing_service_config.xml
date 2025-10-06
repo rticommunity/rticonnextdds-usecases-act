@@ -228,6 +228,16 @@ to use the software.
       </element>
 
       <element>
+        <name>C2_COMMAND_FILTER_FIELD</name>
+        <value>msg.destination</value>
+      </element>
+
+      <element>
+        <name>C2_COMMAND_FILTER_MATCH</name>
+        <value>NULL</value>
+      </element>
+
+      <element>
         <name>C2_EVENT_CHANNEL</name>
         <value>ContactReport</value>
       </element>
@@ -741,7 +751,7 @@ to use the software.
 
             <!-- Use a SQL style syntax to filter on message content -->
             <content_filter>
-              <expression>msg.destination = '$(ROUTER_NAME)'</expression>
+              <expression>$(C2_COMMAND_FILTER_FIELD) = '$(C2_COMMAND_FILTER_MATCH)'</expression>
             </content_filter>
           </input>
           <output participant="lan_platform_participant">
