@@ -99,36 +99,55 @@ export WAN_MAX_BLOCKING_SEC=$(echo "$WAN_LATENCY_SEC*10" | bc | awk '{print int(
 # Comma separated, no spaces, NULL if empty 
 # Can use wildcards such as *Status
 
-export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport #PLATFORM -> C2 (Aperiodic- Ensured Delivery CommandAck etc.)
+export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport # PLATFORM -> C2 (Aperiodic- RELIABLE.)
 
-export PLATFORM_STATUS_FULL_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Full Rate)
-export PLATFORM_STATUS_1SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec)
-export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus #PLATFORM -> C2 (Periodic- Downsampled to every 10 Secs)
-export PLATFORM_STATUS_30SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 30 Secs)
-export PLATFORM_STATUS_60SEC_CHANNEL=NULL #PLATFORM -> C2 (Periodic- Downsampled to every 60 Secs)
+export PLATFORM_STATUS_FULL_CHANNEL=NULL # PLATFORM -> C2 (Periodic- Full Rate- BEST_EFFORT)
+export PLATFORM_STATUS_1SEC_CHANNEL=NULL # PLATFORM -> C2 (Periodic- Downsampled to every 1 Sec - BEST_EFFORT)
+export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus # PLATFORM -> C2 (Periodic- Downsampled to every 10 Secs - BEST_EFFORT)
+export PLATFORM_STATUS_30SEC_CHANNEL=NULL # PLATFORM -> C2 (Periodic- Downsampled to every 30 Secs - BEST_EFFORT)
+export PLATFORM_STATUS_60SEC_CHANNEL=NULL # PLATFORM -> C2 (Periodic- Downsampled to every 60 Secs - BEST_EFFORT)
 
-export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData #Platform -> Platform (Periodic- Full Rate)
+export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData # Platform -> Platform (Periodic- Full Rate - BEST_EFFORT)
+export C2_EVENT_CHANNEL=NULL # C2 -> Platform (Aperiodic, RELIABLE)
 
-export C2_COMMAND_FILTER_CHANNEL=C2Command #C2 -> Platform Aperiodic- (Targeted delivery by GUID address)
-export C2_EVENT_CHANNEL=ContactReport
+
+# Use this channel to send commands to ONLY the specific platform based on a field match (GUID etc.) 
+# Only use if Command Message Field and Match are set correctly
+export C2_COMMAND_FILTER_CHANNEL=C2Command # C2 -> Platform Filtered by field match (Aperiodic, RELIABLE)
+export C2_COMMAND_FILTER_FIELD=msg.destination # Specific field within message used for filtering
+export C2_COMMAND_FILTER_MATCH=$ROUTER_NAME # Use the Routers Name to only receive messages addressed to it
+
+
 
 ################################################################################
 
 echo "
--------------------------------- ROUTER CONFIGS: --------------------------------
+------------------------------ROUTER CONFIGS------------------------------------
 XML FILES used:  $NDDS_QOS_PROFILES
+TYPE: $TYPE
+ROUTER_NAME: $ROUTER_NAME
+LAN_QOS_PROFILE: $LAN_QOS_PROFILE
+SESSION_ID: $SESSION_ID
+DOMAIN_ID: $DOMAIN_ID
+DESTINATION: $DESTINATION
+Logging Verbosity: $verbosity
+
+
+-------------------------------CHANNELS-----------------------------------------
 PLATFORM_EVENT_CHANNEL:  $PLATFORM_EVENT_CHANNEL
 PLATFORM_STATUS_FULL_CHANNEL: $PLATFORM_STATUS_FULL_CHANNEL
 PLATFORM_STATUS_1SEC_CHANNEL:  $PLATFORM_STATUS_1SEC_CHANNEL
 PLATFORM_STATUS_10SEC_CHANNEL:  $PLATFORM_STATUS_10SEC_CHANNEL
 PLATFORM_STATUS_30SEC_CHANNEL:  $PLATFORM_STATUS_30SEC_CHANNEL
 PLATFORM_STATUS_60SEC_CHANNEL:  $PLATFORM_STATUS_60SEC_CHANNEL
-C2_COMMAND_FILTER_CHANNEL:  $C2_COMMAND_FILTER_CHANNEL
-C2_EVENT_CHANNEL:  $C2_EVENT_CHANNEL
 PLATFORM_TO_PLATFORM_CHANNEL:  $PLATFORM_TO_PLATFORM_CHANNEL
+C2_EVENT_CHANNEL:  $C2_EVENT_CHANNEL
 
-ROUTER_NAME = $ROUTER_NAME
+C2_COMMAND_FILTER_CHANNEL:  $C2_COMMAND_FILTER_CHANNEL
+C2_COMMAND_FILTER_FIELD: $C2_COMMAND_FILTER_FIELD
+C2_COMMAND_FILTER_MATCH: $C2_COMMAND_FILTER_MATCH
 
+-----------------------------WAN CONFIGS----------------------------------------
 WAN_TTL = $WAN_TTL
 WAN_LATENCY_SEC = $WAN_LATENCY_SEC Seconds
 WAN_TIMEOUT_SEC = $WAN_TIMEOUT_SEC Seconds
@@ -136,7 +155,6 @@ WAN_HB_PERIOD_SEC = $WAN_HB_PERIOD_SEC Seconds
 WAN_HB_RETRIES = $WAN_HB_RETRIES
 WAN_MAX_BLOCKING_SEC = $WAN_MAX_BLOCKING_SEC Seconds
 
-Logging Verbosity: $verbosity
 -------------------------------- ROUTER CONFIGS: --------------------------------"
 
 
