@@ -1,9 +1,45 @@
-# Overview 
-Routing Service architecture for Autonomous Collaborative Teaming use case to  
-manage message flow between Platforms and C2(Command and Control) stations.
+# Autonomous Collaborative Teaming (ACT) - Routing Service Architecture
 
-This use case is centered around a Maritime ISR scenario but can be adopted for  
-other similar needs.
+RTI Routing Service architecture for Autonomous Collaborative Teaming use cases to manage message flow between Platforms (vehicles/UAVs/USVs) and C2 (Command and Control) stations.
+
+This use case is centered around a Maritime ISR scenario but can be adapted for other collaborative teaming applications.
+
+## Repository Structure
+
+```
+rticonnextdds-usecases-act/
+├── config/                      # System-wide configuration
+│   ├── qos/                    # QoS profiles (LAN, WAN, Remote Admin)
+│   └── routing/                # Routing Service configuration
+├── examples/                    # Demo implementations for learning
+│   ├── QUICKSTART.md           # 1 Platform + 1 C2 walkthrough
+│   ├── MULTI_PLATFORM.md       # 2 Platforms + 1 C2 walkthrough
+│   └── node_sim/               # Python simulators and demo scripts
+├── templates/                   # Starting points for deployment
+│   ├── README.md               # Detailed deployment instructions
+│   ├── params/                 # Parameter file templates
+│   └── scripts/                # Start script templates
+├── tools/                       # Utilities
+│   └── remote_admin/           # Remote administration tool
+└── docs/                        # Documentation and diagrams
+```
+
+## Quick Start
+
+### For Learning (Examples)
+See the `examples/` folder for demo implementations:
+- **QUICKSTART.md**: Simple 1 Platform + 1 C2 setup
+- **MULTI_PLATFORM.md**: Advanced 2 Platforms + 1 C2 with P2P communication
+- **REMOTE_ENABLE_P2P.md**: Dynamically enable platform-to-platform communication
+- **REMOTE_CONTROL_GROUP.md**: Dynamically assign nodes to groups for isolation
+
+### For Deployment (Production)
+See the `templates/` folder for deployment templates:
+1. Copy `config/` folder to your deployment directory
+2. Use templates to create your node configurations
+3. Customize for your specific use case
+
+**Important**: Examples are for learning only. For production deployment, use templates to create a separate deployment structure.
 
 ## Use Case Requirements:
 - Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
@@ -27,301 +63,165 @@ through unique port range allocation.
 
 ## Features
 This infrastructure performs the following roles:
-- Dynamic instantiation of readers/writers based on a regex match filter
-- Dynamic application of QoS per *Channel*
-- Segmentation of traffic at the network layer(using DDS Domains) between LAN and WAN environments
-- Routing of selected topics between *only*:
-  - Platform -> C2
-  - C2 -> Platform
-  - Platform <-> Platform
-- Dynamic discovery of Platforms/C2 systems
-- Dynamic pub/sub architecture of one-to-many/many-to-one between C2 and Platforms
+- Dynamic instantiation of readers/writers based on regex match filters
+- Dynamic application of QoS per data "Channel"
+- Network-level segmentation using DDS Domains (LAN vs WAN isolation)
+- Content-filtered routing for targeted command delivery
+- Routing of selected topics between:
+  - Platform → C2
+  - C2 → Platform
+  - Platform ↔ Platform
+- Dynamic discovery of Platforms and C2 systems
+- Scalable pub/sub architecture supporting one-to-many/many-to-one communication
+- **Runtime reconfiguration** via RemoteAdmin tool for:
+  - Enabling/disabling platform-to-platform communication routes
+  - Assigning nodes to groups (partitions) for logical isolation
+  - Dynamic control without service restarts
 
-## Directions
-Default configurations are set at the top of `router_config/routing_service_config.xml`  
-within the `<configuration_variables>` tag section.
+## Architecture Overview
 
-A reference start script `./start_router.sh` has been included to highlight example usage.
+### Network Segmentation
+The system uses 3 DDS domains for network-level isolation:
+- **Platform Domain** (10-19): Vehicle/Platform local network
+- **WAN Domain** (0): Wide Area Network (Satellite, Mesh Radio, etc.)
+- **C2 Domain** (20-29): Command & Control network
 
-All configurations in the Routing Service config file can be overridden using ENV variables.
+RTI Routing Service acts as a bridge between domains, enabling secure and controlled message flow while maintaining network isolation through unique port ranges.
 
-An end user would only need to modify the high level variables in the start script  
-and not even touch the xml file.
+### QoS Profiles
+Two primary QoS patterns are configured in `config/qos/`:
+- **Status QoS** (BEST_EFFORT): For periodic data (e.g., status updates)
+- **Event QoS** (RELIABLE): For aperiodic critical data (e.g., commands, events)
+
+### Data Channels
+Configurable "channels" in `system_params.sh` allow you to:
+- Group topics by data pattern (periodic vs aperiodic)
+- Apply appropriate QoS policies per channel
+- Use regex matching for topic selection
+- Control routing behavior without modifying XML files
+
+See the [Data Channels](#data-channels) section below for details.
+
+![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
 
 
-The QoS has been setup in `./act_qos_lib.xml` for 2 common patterns of   
-- Status (Periodic data without reliability mechanism)
-- Events (Aperiodic data i.e. Commands/ContactReports- ensure delivery)
-
-See Block Diagram below:
-![ACT Routing Architecture](/images/act_routing_arch.jpeg)
 
 
+## Examples
 
+The `examples/` folder contains hands-on walkthroughs with Python simulators to demonstrate the ACT routing architecture. These are for **learning and testing only** - not for production deployment.
+
+### [QUICKSTART.md](examples/QUICKSTART.md)
+**What it demonstrates**: Basic setup with 1 Platform and 1 C2 station
+
+Get started quickly with a simple configuration that shows:
+- Platform sending status updates to C2 (periodic data)
+- C2 sending commands to Platform (targeted delivery)
+- Basic routing service configuration
+- Channel-based QoS application
+
+**Best for**: First-time users learning the fundamentals
+
+### [MULTI_PLATFORM.md](examples/MULTI_PLATFORM.md)
+**What it demonstrates**: Advanced setup with 2 Platforms and 1 C2 station
+
+Explores multi-platform scenarios including:
+- Multiple platforms communicating with C2
+- Platform discovery and dynamic routing
+- Content filtering for targeted commands
+- Scaling considerations
+
+**Best for**: Understanding multi-node deployments
+
+### [REMOTE_ENABLE_P2P.md](examples/REMOTE_ENABLE_P2P.md)
+**What it demonstrates**: Dynamic platform-to-platform communication control
+
+Shows runtime reconfiguration capabilities:
+- Starting platforms with P2P disabled
+- Using RemoteAdmin tool to enable direct platform-to-platform routes
+- Verifying bidirectional data flow between platforms
+- Dynamic control without service restarts
+
+**Best for**: Learning runtime route management and collaborative platform operations
+
+### [REMOTE_CONTROL_GROUP.md](examples/REMOTE_CONTROL_GROUP.md)
+**What it demonstrates**: Dynamic group assignment and isolation
+
+Explores partition-based group isolation with a practical scenario:
+- 2 Platforms + 1 C2 initially communicating
+- Using RemoteAdmin tool to assign one platform to a different group
+- Observing message flow changes in real-time (C2 stops receiving from isolated platform)
+- Restoring communication by reassigning groups
+
+**Best for**: Understanding logical isolation, partition-based security, and mission separation patterns
+
+---
 
 ## RELIABLE delivery
-For data that is sent Aperiodically such as Commands and Events, we want to ensure  
-delivery of the message. We do this by applying a resend mechanism (RELIABILTY QoS: RELIABLE) that we can adjust  
-at the user space level.
+For aperiodic, critical data (commands, events), RELIABLE QoS ensures message delivery through automatic retransmission.
 
-After sending a *RELIABLE* message, Connext will send out "heartbeats" either piggybacked  
-with another message or separately. A response will be sent back if the expected  
-message sequence has been received. If not, another copy will be sent out again.  
+After sending a RELIABLE message, Connext sends "heartbeats" (piggyback or separate) to verify reception. If acknowledgment isn't received, the message is resent.
 
-For example, in `start_router.sh`, the `*EVENT*` Topic [Channel](#data-channels) assigns the `WAN_EVENT_QOS` QoS  
-to be used across the WAN.  
-Looking at `./router_config/routing_service_config.xml` this is defined in `./qos/act_qos_lib.xml`  
-in profile `WAN::event_qos`.
+**Configuration**: Event channels use `WAN::event_qos` profile (defined in `config/qos/`)
+- Reliability: RELIABLE
+- Tunable via WAN parameters in `system_params.sh`
 
-The `event_qos` sets the Reliability QoS to `RELIABLE`. This enables the resend mechanism.  
-
-This allows us to control different data "channels" behaviour separately as needed.
+**Used by**: `*_EVENT_CHANNEL`, `C2_COMMAND_FILTER_CHANNEL`
 
 ## BEST_EFFORT delivery
-For data that is sent Periodically such as Status updates, we generally aren't  
-too concerned if we miss a sample as there will be another one coming along shortly.  
+For periodic, non-critical data (status updates), BEST_EFFORT QoS sends messages once without retransmission. This is acceptable when new data arrives frequently.
 
-In `start_router.sh`, the `*STATUS*` [Channel](#data-channels) assigns an appropriate QoS as  
-defined in `./qos/act_qos_lib.xml` in profile `WAN::status_qos`.
+**Configuration**: Status channels use `WAN::status_qos` profile (defined in `config/qos/`)
+- Reliability: BEST_EFFORT
+- Lower overhead, no acknowledgments
 
-The `status_qos` sets the Reliability QoS to BEST_EFFORT. This just sends the  
-message once and does *NOT* apply any resend mechanism.
-
-This allows us to control different data "channels" behaviour separately as needed.
+**Used by**: `*_STATUS_*_CHANNEL`, `PLATFORM_TO_PLATFORM_CHANNEL`
 
 
 ## Data "Channels"
-In `./start_router.sh` you will see a section titled "Data Channels".
-These variables are used to move selected topics from the Platform to C2  
-and apply the appropriate QoS per Data Pattern such a Status(Periodic, [BEST_EFFORT](#best_effort-delivery))  
-and Event(Aperiodic, [RELIABLE](#reliable-delivery)).  
 
-By using these "*Channels*" in the Start Routing script you can abstract away lower  
-level configuration/management and just focus on selecting the right "*Channel*" for your  
-Topic to be added into.  
-REGEX matching is used including wildcards so `*Status` will match with any prefix.    
-*NOTE: Comma separated list, no spaces*
+Data channels provide an abstraction layer for routing configuration. Instead of modifying XML files, you define channels in `system_params.sh` that group topics by their data pattern and apply appropriate QoS policies.
 
-### Data Channels Logical View
-![ACT Data Channels Logical View](/images/act_channels.jpeg)
+**Channel Configuration** (in `system_params.sh`):
+- Comma-separated topic names (no spaces)
+- Supports regex matching with wildcards (e.g., `*Status` matches any prefix)
+- Use `NULL` for unused channels
 
+**Available Channels:**
+- `PLATFORM_EVENT_CHANNEL`: Infrequent, critical platform events (RELIABLE)
+- `PLATFORM_STATUS_*_CHANNEL`: Periodic status at various rates (BEST_EFFORT, with downsampling)
+- `PLATFORM_TO_PLATFORM_CHANNEL`: Platform-to-platform communication (BEST_EFFORT)
+- `C2_EVENT_CHANNEL`: C2 events to platforms (RELIABLE)
+- `C2_COMMAND_FILTER_CHANNEL`: Content-filtered commands (RELIABLE, destination-based)
 
-## C2 Events
-In `start_router.sh`, the `C2_EVENT_CHANNEL` [Channel](#data-channels) is used to move topic   
-messages(i.e."ContactReport") to *only* Platforms.
+**Content Filtering** (C2 Commands):
+The `C2_COMMAND_FILTER_CHANNEL` uses content-based filtering to ensure each platform receives only commands addressed to it:
+- `C2_COMMAND_FILTER_FIELD`: Field path in message (e.g., `msg.destination`)
+  - **Must match your actual message data structure**
+- `C2_COMMAND_FILTER_MATCH`: Value to match (typically `$ROUTER_NAME`)
 
-QoS applied to this [Channel](#data-channels) is `event_qos` configured for [RELIABLE](#reliable-delivery)  
-reliability with the assumption the data is being sent aperiodically.
+![ACT Data Channels Logical View](docs/images/act_channels.jpeg)
 
+---
 
-### Test:
-In `start_router.sh`, ensure the `ContactReport` topic is assigned to the  
-`C2_EVENT_CHANNEL` [Channel](#data-channels) .
+## Deployment
 
-1. Start Platform-10 sim
-- `source ./platform_10.sh`
--  `./start_sim.sh`  
+For production deployment:
+1. See `templates/README.md` for complete instructions
+2. Copy `config/` folder to your deployment
+3. Use templates to create node configurations
+4. Customize paths, domain IDs, and data channels for your use case
 
-2. Start Platform-10 Routing Service
-- `source ./platform_10.sh`
-- `./start_router.sh`  
+**Do not use the `examples/` folder for production** - it contains demo code with Python simulators for learning purposes only.
 
-3. Start a second Platform sim (Platform-11)  
-*NOTE: This isolates this Platform from the other one similar to a VLAN to  
-simulate physical isolation*
-- `source ./platform_11.sh`
--  `./start_sim.sh`  
+---
 
-4. Start Platform-11 Routing Service
-- `source ./platform_11.sh`
-- `./start_router.sh`  
+## Additional Resources
 
-5. Start C2-20 sim
-- `source ./c2_20.sh`
--  `./start_sim.sh`  
+- **Remote Admin Tool**: See `tools/remote_admin/` for runtime configuration capabilities including enabling/disabling P2P routes and assigning nodes to groups
+- **Architecture Diagrams**: See `docs/images/` for system architecture visuals
+- **QoS Profiles**: See `config/qos/` for LAN, WAN, and Remote Admin QoS configurations
+- **Routing Config**: See `config/routing/routing_service_config.xml` for routing rules
 
-6. Start a C2-20 Routing Service
-- `source ./c2_20.sh`
-- `./start_router.sh`  
-
-#### Pass criteria:
-- Ensure the `C2_EVENT_CHANNEL` topics are *only* received on Platforms from C2 source type
-
-
-## Filtered Commands
-In `start_router.sh`, the `C2_COMMAND_FILTER_CHANNEL` [Channels](#data-channels) is used to move  
-the "Command" topic messages from the C2 to *only* the addressed PLATFORM.
-
-The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
-
-A Content Filter has been applied on the `destination` field in  
-`routing_service_config.xml` `wan_to_platform` route.
-
-This filters at the *writer* side i.e. only the message to the destined PLATFORM is  
-sent and the other PLATFORM's are ignored.
-
-This example is set up so the `ROUTER_NAME` in `platform_10.sh` matches the destination  
-of `c2_20.sh`
-
-### Test:
-In `start_router.sh`, ensure the `C2Command` topic is assigned to the 
-`C2_COMMAND_FILTER_CHANNEL` [Channel](#data-channels) .
-
-1. Start Platform-10 sim
-- `source ./platform_10.sh`
--  `./start_sim.sh`  
-
-2. Start Platform-10 Routing Service
-- `source ./platform_10.sh`
-- `./start_router.sh`  
-
-3. Start a second Platform sim (Platform-11)  
-*NOTE: This isolates this Platform from the other one similar to a VLAN to  
-simulate physical isolation*
-- `source ./platform_11.sh`
--  `./start_sim.sh`  
-
-4. Start Platform-11 Routing Service
-- `source ./platform_11.sh`
-- `./start_router.sh`  
-
-5. Start C2-20 sim
-- `source ./c2_20.sh`
--  `./start_sim.sh`  
-
-6. Start a C2-20 Routing Service
-- `source ./c2_20.sh`
-- `./start_router.sh`  
-
-#### Pass criteria:
-- Commands are *only* being received by Platform-10
-
-
-## Platform Events
-In `start_router.sh`, the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) is used to move the  
-desired "Event"(`CommandAck`,`ContactReport` etc.) topics from the Platform to *any* C2 station. 
-
-The QoS applied for this route across the WAN is the `WAN_EVENT_QOS` which sets  
-the Reliability QoS to [[RELIABILITY]](#reliable-delivery)
-
-As the `ContactReport` Topic is published and subscribed to by both C2 and PLATFORM,  
-(see `C2_EVENT_CHANNEL`) Partitions have been applied to isolate the data planes.  
-
-This constrains the data flow so Platforms will *only* receive ContactReports  
-from other C2 stations and C2 stations will only receive ContactReports from Platforms. 
-
-Partitions can be adjusted with XML as needed.
-
-
-### Test:
-In `start_router.sh`, ensure the `PlatformCommandAck` and `ContactReport` topics  
-are assigned to the `PLATFORM_EVENT_CHANNEL` [Channel](#data-channels) .
-
-1. Start Platform-10 sim  
-- `source ./platform_10.sh`  
--  `./start_sim.sh`  
-
-2. Start Platform-10 Routing Service  
-- `source ./platform_10.sh`  
-- `./start_router.sh`  
-
-3. Start a second Platform sim (Platform-11)  
-*NOTE: This isolates this Platform from the other one similar to a VLAN to  
-simulate physical isolation*  
-- `source ./platform_11.sh`  
--  `./start_sim.sh`  
-
-4. Start Platform-11 Routing Service  
-- `source ./platform_11.sh`  
-- `./start_router.sh`  
-
-5. Start C2-20 sim  
-- `source ./c2_20.sh`  
--  `./start_sim.sh`  
-
-6. Start a C2-20 Routing Service  
-- `source ./c2_20.sh`  
-- `./start_router.sh`  
-
-#### Pass criteria:
-- Ensure `PLATFORM_EVENT_CHANNEL` topics are *only* received on C2 from PLATFORM source type
-
-
-## Platform Status
-In `start_router.sh`, the `PLATFORM_STATUS_<RATE>_CHANNEL` [Channel](#data-channels) is used to move  
-the desired status topics from the Platform to *any* C2 station.  
-
-Topics can be downsampled to different rates by using the desired filter.
-
-The QoS applied for this "Channel" across the WAN is the `WAN_STATUS_QOS` which sets  
-the Reliability QoS to [[BEST_EFFORT]](#best_effort-delivery)
-
-### Test:
-In `start_router.sh`, ensure the `PlatformData` topic is assigned to the desired   
-`PLATFORM_STATUS_<RATE>_CHANNEL` [Channel](#data-channels) .
-
-1. Start Platform-10 sim  
-- `source ./platform_10.sh`  
--  `./start_sim.sh`  
-
-2. Start Platform-10 Routing Service  
-- `source ./platform_10.sh`  
-- `./start_router.sh`  
-
-3. Start C2-20 sim  
-- `source ./c2_20.sh`  
--  `./start_sim.sh`  
-
-4. Start a C2-20 Routing Service  
-- `source ./c2_20.sh`  
-- `./start_router.sh`  
-
-#### Pass criteria:
-- C2 will be receiving selected `PLATFORM_STATUS_<RATE>_CHANNEL` messages at the  
-desired downsampled rate
-
-
-
-## Platform to Platform
-In `start_router.sh`, the `PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channels) is used to move topic  
-messages(i.e.`PlatformData`) between *only* Platforms.
-
-QoS applied for this [Channel](#data-channels)  is `status_qos` i.e. [BEST_EFFORT](#best_effort-delivery)  
-reliability with the assumption the data is being sent periodically.
-
-This can be modified in `./routing_service_config.xml` with the `WAN_P2P_QOS` variable.  
-
-### Test:
-In `start_router.sh`, ensure the `PlatformData` topic is assigned to the  
-`PLATFORM_TO_PLATFORM_CHANNEL` [Channel](#data-channels) .
-
-1. Start Platform-10 sim
-- `source ./platform_10.sh`
--  `./start_sim.sh`  
-
-2. Start Platform-10 Routing Service
-- `source ./platform_10.sh`
-- `./start_router.sh`  
-
-3. Start a second Platform sim (Platform-11)  
-*NOTE: This isolates this Platform from the other one similar to a VLAN to  
-simulate physical isolation*
-- `source ./platform_11.sh`
--  `./start_sim.sh`  
-
-4. Start Platform-11 Routing Service
-- `source ./platform_11.sh`
-- `./start_router.sh`  
-
-5. Start C2-20 sim
-- `source ./c2_20.sh`
--  `./start_sim.sh`  
-
-6. Start a C2-20 Routing Service
-- `source ./c2_20.sh`
-- `./start_router.sh`  
-
-#### Pass criteria:
-- Ensure `PlatformData` topics are *only* received on Platforms
+For questions or issues, please refer to the RTI Connext DDS documentation or contact RTI support.
 
