@@ -1,3 +1,0 @@
-/media/sf_VM_SHARED/ACT/rticonnextdds-usecases-act/tools/remote_admin/build/CMakeFiles/rebuild_cache.dir
-/media/sf_VM_SHARED/ACT/rticonnextdds-usecases-act/tools/remote_admin/build/CMakeFiles/edit_cache.dir
-/media/sf_VM_SHARED/ACT/rticonnextdds-usecases-act/tools/remote_admin/build/CMakeFiles/RemoteAdmin.dir
