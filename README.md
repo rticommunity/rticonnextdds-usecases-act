@@ -42,11 +42,11 @@ See the `templates/` folder for deployment templates:
 **Important**: Examples are for learning only. For production deployment, use templates to create a separate deployment structure.
 
 ## Use Case Requirements:
-- Platforms must be able to receive select topics from C2 with delivery [C2 Events](#c2-events)
-- Platforms must be able to receive *only* commands addressed to a destination with delivery [C2 Filtered Commands](#filtered-commands)
-- *Only* any C2 must be able to receive select topics from Platforms with delivery [Platform Events](#platform-events)
-- C2 must be able to receive select downsampled topics from Platforms with delivery [Platform Status](#platform-status) 
-- Platforms must be able to receive select topics from other Platforms with delivery [Platform to Platform](#platform-to-platform)  
+- Platforms must be able to receive select topics from C2 [C2 Events](#c2-events)
+- Platforms must be able to receive *only* commands addressed to a destination [C2 Filtered Commands](#filtered-commands)
+- *Only* any C2 must be able to receive select topics from Platforms [Platform Events](#platform-events)
+- C2 must be able to receive select *downsampled* topics from Platforms [Platform Status](#platform-status) 
+- Platforms must be able to receive select topics from other Platforms [Platform to Platform](#platform-to-platform)  
 - All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
 
 ## Network Architecture
@@ -55,7 +55,7 @@ The system has been separated into 3 DDS domains:
 - WAN (Communications network i.e. Sat, Mesh Radio)
 - C2 (C2 Network- Groundstations etc.)
 
-Routing Service acts as a relay mechanism between the *internal* LAN messaging and  
+Routing Service acts as a relay mechanism between the *internal* LAN and  
 the *external* WAN DDS Domain.
 
 This allows For Network level isolation of messaging as DDS Domains isolate  
@@ -103,8 +103,6 @@ Configurable "channels" in `system_params.sh` allow you to:
 See the [Data Channels](#data-channels) section below for details.
 
 ![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
-
-
 
 
 ## Examples
