@@ -14,16 +14,16 @@
 # SYSTEM PARAMETERS TEMPLATE
 ################################################################################
 # Instructions:
-# 1. Copy this file to your deployment's shared params folder
-#    Example: cp templates/params/system_params.template.sh my_deployment/params/system_params.sh
-# 2. Copy the config/ folder from the repo to your deployment
-#    Example: cp -r config my_deployment/
-# 3. Update the paths below to point to your config/ folder
+# 1. This template is for creating deployment-specific system parameters
+# 2. The repository now includes a default system_params.sh in config/params/
+# 3. For deployment, copy and customize:
+#    Example: cp config/params/system_params.sh my_deployment/params/system_params.sh
+# 4. Update the paths below to point to your config/ folder
 #    Example: ../config/qos/ (if params and config are at same level)
-# 4. Adjust WAN parameters based on your network characteristics
-# 5. Modify DATA CHANNELS to match your application data topics
+# 5. Adjust WAN parameters based on your network characteristics
+# 6. Modify DATA CHANNELS to match your application data topics
 #
-# This file is shared by all nodes in your deployment.
+# This file should be shared by all nodes in your deployment.
 ################################################################################
 
 
@@ -31,8 +31,8 @@
 export NDDS_QOS_PROFILES=""
 
 # UPDATE THESE PATHS based on your deployment structure
-# With recommended structure (config/ and params/ at same level):
-#   From params/system_params.sh to config/qos/ → ../config/qos/
+# If using config/params/system_params.sh as-is:
+#   From config/params/system_params.sh to config/qos/ → ../qos/
 
 # WAN QoS - UPDATE PATH
 NDDS_QOS_PROFILES+="UPDATE_PATH_TO/config/qos/wan_qos_lib.xml;"

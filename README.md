@@ -9,6 +9,7 @@ This use case is centered around a Maritime ISR scenario but can be adapted for 
 ```
 rticonnextdds-usecases-act/
 ├── config/                      # System-wide configuration
+│   ├── params/                 # System parameters (WAN settings, channels)
 │   ├── qos/                    # QoS profiles (LAN, WAN, Remote Admin)
 │   └── routing/                # Routing Service configuration
 ├── examples/                    # Demo implementations for learning
@@ -25,6 +26,9 @@ rticonnextdds-usecases-act/
 ```
 
 ## Quick Start
+
+### Prerequisites
+- RTI Connext DDS 7.3.0 or later
 
 ### For Learning (Examples)
 See the `examples/` folder for demo implementations:
@@ -94,7 +98,7 @@ Two primary QoS patterns are configured in `config/qos/`:
 - **Event QoS** (RELIABLE): For aperiodic critical data (e.g., commands, events)
 
 ### Data Channels
-Configurable "channels" in `system_params.sh` allow you to:
+Configurable "channels" in `config/params/system_params.sh` allow you to:
 - Group topics by data pattern (periodic vs aperiodic)
 - Apply appropriate QoS policies per channel
 - Use regex matching for topic selection
@@ -162,7 +166,7 @@ After sending a RELIABLE message, Connext sends "heartbeats" (piggyback or separ
 
 **Configuration**: Event channels use `WAN::event_qos` profile (defined in `config/qos/`)
 - Reliability: RELIABLE
-- Tunable via WAN parameters in `system_params.sh`
+- Tunable via WAN parameters in `config/params/system_params.sh`
 
 **Used by**: `*_EVENT_CHANNEL`, `C2_COMMAND_FILTER_CHANNEL`
 
@@ -178,9 +182,9 @@ For periodic, non-critical data (status updates), BEST_EFFORT QoS sends messages
 
 ## Data "Channels"
 
-Data channels provide an abstraction layer for routing configuration. Instead of modifying XML files, you define channels in `system_params.sh` that group topics by their data pattern and apply appropriate QoS policies.
+Data channels provide an abstraction layer for routing configuration. Instead of modifying XML files, you define channels in `config/params/system_params.sh` that group topics by their data pattern and apply appropriate QoS policies.
 
-**Channel Configuration** (in `system_params.sh`):
+**Channel Configuration** (in `config/params/system_params.sh`):
 - Comma-separated topic names (no spaces)
 - Supports regex matching with wildcards (e.g., `*Status` matches any prefix)
 - Use `NULL` for unused channels

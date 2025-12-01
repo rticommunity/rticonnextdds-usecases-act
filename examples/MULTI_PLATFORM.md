@@ -175,7 +175,7 @@ All configurations are in `../node_sim/params/`:
 - `platform_10_params.sh`: USV_10 on domain 10
 - `platform_11_params.sh`: USV_11 on domain 11
 - `c2_20_params.sh`: C2_20 on domain 20
-- `system_params.sh`: WAN timing and network parameters
+- `config/params/system_params.sh`: WAN timing, channel setup and network parameters
 
 QoS profiles are in `../../config/qos/`:
 - `lan_qos_lib.xml`: LAN domain QoS
@@ -201,5 +201,5 @@ QoS profiles are in `../../config/qos/`:
 - **Solution**: Check domain IDs in parameter files match
 
 **Issue**: High latency or packet loss
-- **Solution**: Adjust `system_params.sh` WAN timing parameters
+- **Solution**: Adjust `config/params/system_params.sh` WAN timing parameters
 - **Solution**: Check network connectivity between nodes

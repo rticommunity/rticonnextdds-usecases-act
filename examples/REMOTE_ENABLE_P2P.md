@@ -171,11 +171,11 @@ pkill -f "rtiroutingservice"
 **RemoteAdmin can't connect:**
 - Verify routing services are running
 - Check that admin domain is 100 (default)
-- Ensure `system_params.sh` is loaded (wrapper script does this automatically)
+- Ensure `config/params/system_params.sh` is loaded (routing service scripts do this automatically)
 
 **Platform-11 not receiving data:**
 - Verify both P2P enable commands succeeded (check for "Command returned: OK")
-- Confirm PlatformData is in PLATFORM_TO_PLATFORM_CHANNEL (check system_params.sh)
+- Confirm PlatformData is in PLATFORM_TO_PLATFORM_CHANNEL (check `config/params/system_params.sh`)
 - Look at routing service output for errors
 
 **RemoteAdmin memory errors:**

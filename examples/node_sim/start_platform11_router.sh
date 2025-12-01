@@ -13,8 +13,8 @@
 # Source Platform 11 parameters
 source ./params/platform_11_params.sh
 
-# Source System parameters
-source ./params/system_params.sh
+# Source SYSTEM parameters
+source ../../config/params/system_params.sh
 
 # Check NDDSHOME variable
 if [[ -z "${NDDSHOME}" ]]; then

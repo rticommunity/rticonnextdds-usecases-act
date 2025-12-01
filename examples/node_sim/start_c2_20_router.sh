@@ -14,7 +14,7 @@
 source ./params/c2_20_params.sh
 
 # Source SYSTEM parameters
-source ./params/system_params.sh
+source ../../config/params/system_params.sh
 
 # Check NDDSHOME variable
 if [[ -z "${NDDSHOME}" ]]; then

@@ -51,18 +51,6 @@ source ./{{PARAM_FILE}}
 # 3: dds.Verbosity.STATUS_ALL
 VERBOSITY=2
 
-# Platform nodes need to set XML_FILES (C2 params already define it)
-if [ "$TYPE" = "platform" ]; then
-    # LAN QOS file - UPDATE THIS PATH based on your deployment structure
-    # Example with recommended structure: ../../config/qos/lan_qos_lib.xml
-    XML_FILES="UPDATE_PATH_TO/config/qos/lan_qos_lib.xml;"
-    
-    # Add Types file - UPDATE THIS PATH based on where your types are stored
-    # Example: ./types/act_types.xml if types folder is in node directory
-    # Example: ../../shared/types/act_types.xml if types are shared
-    XML_FILES+="UPDATE_PATH_TO/types/act_types.xml"
-fi
-
 ################################################################################
 
 echo "
