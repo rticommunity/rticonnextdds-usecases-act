@@ -116,7 +116,7 @@ The executable `RemoteAdmin` will be created in the `build` directory.
 
 **Important**: Use the `remote_admin.sh` wrapper script to run RemoteAdmin. The wrapper automatically loads system parameters including WAN latency settings required for proper operation with the routing service.
 
-For production deployment, create your own `system_params.sh` based on `templates/params/system_params.template.sh` instead of using the examples version.
+System parameters are located in `config/params/system_params.sh` at the repository root.
 
 ```bash
 cd tools/remote_admin
@@ -124,7 +124,7 @@ cd tools/remote_admin
 ```
 
 The wrapper script:
-- Sources `system_params.sh` automatically (examples or deployment location)
+- Sources `system_params.sh` automatically from `config/params/`
 - Exports `NDDS_QOS_PROFILES` environment variable for XML file loading
 - Uses the admin domain and QoS settings from system parameters
 - Passes through all command-line arguments to RemoteAdmin
