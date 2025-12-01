@@ -12,15 +12,9 @@
 cmake_minimum_required(VERSION 3.11)
 project (RemoteAdmin)
 
-# Find RTI Connext dependencies
-# list(APPEND CMAKE_MODULE_PATH
-#     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../resources/cmake/Modules"
-# )
-# include(ConnextDdsConfigureCmakeUtils)
-# connextdds_configure_cmake_utils()
-
+# Use local cmake modules
 list(APPEND CMAKE_MODULE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/resources/rticonnextdds-cmake-utils/cmake/Modules"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 )
 
 find_package(
@@ -37,9 +31,10 @@ set(CODEGEN_FLAGS UNBOUNDED)
 # Include the CodegenRTIConnextDDS cmake module
 include(ConnextDdsCodegen)
 
+# Use CONNEXTDDS_DIR which is set by find_package(RTIConnextDDS)
 connextdds_rtiddsgen_run(
     IDL_FILE
-      "${CMAKE_CURRENT_SOURCE_DIR}/resources/types/ServiceCommon.idl"
+      "${CONNEXTDDS_DIR}/resource/idl/ServiceCommon.idl"
     LANG
       "C++11"
     OUTPUT_DIRECTORY
@@ -49,7 +44,7 @@ connextdds_rtiddsgen_run(
 
 connextdds_rtiddsgen_run(
     IDL_FILE
-      "${CMAKE_CURRENT_SOURCE_DIR}/resources/types/ServiceAdmin.idl"
+      "${CONNEXTDDS_DIR}/resource/idl/ServiceAdmin.idl"
     LANG
       "C++11"
     OUTPUT_DIRECTORY
