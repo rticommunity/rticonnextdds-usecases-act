@@ -39,7 +39,6 @@ Ready for production? Follow the comprehensive deployment guide:
 - Troubleshooting and best practices
 - RemoteAdmin tool setup
 
-**Quick Template Overview:** [templates/README.md](templates/README.md)
 
 ### 3. 📚 **Read Technical Details** → [Technical Details](TECHNICAL_DETAILS.md)
 Dive deep into the architecture and design:
