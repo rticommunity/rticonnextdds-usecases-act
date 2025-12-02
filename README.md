@@ -1,4 +1,4 @@
-# Autonomous Collaborative Teaming (ACT) - Routing Service Architecture
+# RTI Routing Service Architecture for Autonomous Collaborative Teaming
 
 Manage message flow between Platforms (vehicles/UAVs/USVs) and C2 (Command and Control) stations.
 
