@@ -38,15 +38,15 @@ to use the software.
       </element>
       <element>
         <name>PLATFORM_DOMAIN</name>
-        <value>0</value>
+        <value>10</value>
       </element>
       <element>
         <name>WAN_DOMAIN</name>
-        <value>1</value>
+        <value>3</value>
       </element>
       <element>
         <name>C2_DOMAIN</name>
-        <value>2</value>
+        <value>20</value>
       </element>
 
       <!-- ________________________ QOS Profiles____________________________ -->
