@@ -36,6 +36,7 @@ This infrastructure performs the following roles:
   - Platform <-> Platform
 - Dynamic discovery of Platforms/C2 systems
 - Dynamic pub/sub architecture of one-to-many/many-to-one between C2 and Platforms
+- Dynamic Partitioning/Grouping of Platforms/C2 nodes for isolation at runtime
 
 
 ## Transports
