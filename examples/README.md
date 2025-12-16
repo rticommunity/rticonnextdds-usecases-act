@@ -1,422 +1,422 @@
-# ACT Examples and Tutorials
+# ACT Technical Details
 
-This folder contains **example implementations** for learning the ACT (Autonomous Collaborative Teaming) architecture.
+This document provides comprehensive technical information about the ACT (Autonomous Collaborative Teaming) architecture, including use case requirements, network design, QoS profiles, and data channels.
 
-⚠️ **Important**: These examples are **for learning only**. For production deployment, see the [Deployment Guide](../templates/DEPLOYMENT.md).
+For quick start information, see the main [README.md](README.md).
 
----
-
-## Quick Start
-
-All examples are self-contained and ready to run. Each provides step-by-step instructions.
-
-### Prerequisites
-- RTI Connext DDS 7.3.0 or later
-- `NDDSHOME` environment variable set
-
-### Available Examples
-
-| Example | Description | Complexity | Time | Link |
-|---------|-------------|------------|------|------|
-| Basic Data Flow | 1 Platform + 1 C2 | ⭐ Basic | 15 min | [QUICKSTART.md](QUICKSTART.md) |
-| Multi-Platform System | 2 Platforms + 1 C2 with P2P | ⭐⭐ Intermediate | 20 min | [MULTI_PLATFORM.md](MULTI_PLATFORM.md) |
-| Dynamic P2P Control | Runtime P2P enable/disable | ⭐⭐⭐ Advanced | 20 min | [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md) |
-| Group Assignment | Partition-based isolation | ⭐⭐⭐ Advanced | 20 min | [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md) |
+![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
 
 ---
 
-## Example Details
+## Table of Contents
 
-### 1. [QUICKSTART.md](QUICKSTART.md) - Basic Data Flow ⭐
-
-**Use Case**: Single platform communicating with a command station through WAN.
-
-**Scenario**: 
-- USV-10 (autonomous surface vehicle) operating in the field
-- C2-20 (command and control station) monitoring and controlling the platform
-- Communication over satellite or radio WAN link
-
-**What's Demonstrated**:
-- ✅ Platform → C2: Status updates (periodic, 10-second intervals)
-- ✅ C2 → Platform: Commands (content-filtered by destination)
-- ✅ Platform → C2: Command acknowledgments (reliable events)
-- ✅ Domain bridging: Platform LAN (domain 10) ↔ WAN (domain 0) ↔ C2 LAN (domain 20)
-- ✅ QoS profiles: BEST_EFFORT for status, RELIABLE for commands/acks
-- ✅ Content filtering: Platform only receives commands addressed to it
-
-**Architecture**:
-```
-Platform-10 (Domain 10) <--> Router <--> WAN (Domain 0) <--> Router <--> C2-20 (Domain 20)
-```
-
-**What You'll Learn**:
-- How routing services bridge DDS domains
-- How content filtering targets specific recipients
-- Difference between RELIABLE and BEST_EFFORT QoS
-- Basic system startup and monitoring
-
-**Best For**: First-time users, understanding core architecture
+1. [Repository Structure](#repository-structure)
+2. [Use Case Requirements](#use-case-requirements)
+3. [Features](#features)
+4. [Network Architecture](#network-architecture)
+   - [Domain Segmentation](#domain-segmentation)
+   - [Port Allocation](#port-allocation)
+5. [QoS Profiles and Delivery Patterns](#qos-profiles-and-delivery-patterns)
+6. [WAN Tuning](#wan-tuning)
+7. [Data Channels](#data-channels)
+8. [Additional Resources](#additional-resources)
 
 ---
 
-### 2. [MULTI_PLATFORM.md](MULTI_PLATFORM.md) - Multi-Platform System ⭐⭐
+## Repository Structure
 
-**Use Case**: Multiple platforms collaborating and sharing data with each other and C2.
+The repository is organized to separate learning resources, production templates, and shared configuration:
 
-**Scenario**:
-- USV-10 and USV-11 (two autonomous vehicles) operating in the same area
-- C2-20 monitoring both platforms
-- Platforms share sensor data and coordinated maneuvers
-- All nodes communicate through WAN infrastructure
-
-**What's Demonstrated**:
-- ✅ Multiple platforms (USV-10, USV-11) simultaneously
-- ✅ Platform-to-Platform (P2P) communication for collaboration
-- ✅ C2 receives data from all platforms
-- ✅ Each platform has isolated LAN domain (10, 11)
-- ✅ Scalable architecture pattern
-- ✅ Automatic discovery of new platforms
-
-**Architecture**:
 ```
-Platform-10 (Domain 10) <--> Router <--\
-                                        \
-                                         WAN (Domain 0) <--> Router <--> C2-20 (Domain 20)
-                                        /
-Platform-11 (Domain 11) <--> Router <--/
-                    ^                                                          
-                    |_________P2P Data (via WAN)_________|
+rticonnextdds-usecases-act/
+├── config/                      # System-wide configuration
+│   ├── params/                 # System parameters (WAN settings, channels)
+│   │   └── system_params.sh    # Centralized system configuration
+│   ├── qos/                    # QoS profiles (LAN, WAN, Remote Admin)
+│   │   ├── lan_qos_lib.xml
+│   │   ├── wan_qos_lib.xml
+│   │   └── remoteadmin_qos_lib.xml
+│   └── routing/                # Routing Service configuration
+│       └── routing_service_config.xml
+├── examples/                    # Demo implementations for learning
+│   ├── README.md               # Examples overview and learning path
+│   ├── QUICKSTART.md           # 1 Platform + 1 C2 walkthrough
+│   ├── MULTI_PLATFORM.md       # 2 Platforms + 1 C2 walkthrough
+│   ├── REMOTE_ENABLE_P2P.md    # Dynamic P2P control
+│   ├── REMOTE_CONTROL_GROUP.md # Group assignment
+│   └── node_sim/               # Python simulators and demo scripts
+│       ├── params/             # Example parameter files
+│       ├── python_node/        # Python simulators
+│       ├── types/              # Example IDL types
+│       └── start_*.sh          # Demo start scripts
+├── templates/                   # Starting points for deployment
+│   ├── DEPLOYMENT.md           # Comprehensive deployment guide
+│   ├── README.md               # Template usage instructions
+│   ├── params/                 # Parameter file templates
+│   │   ├── system_params.template.sh
+│   │   └── node_params.template.sh
+│   └── scripts/                # Start script templates
+│       ├── start_node_router.template.sh
+│       └── start_node.template.sh
+├── tools/                       # Utilities
+│   └── remote_admin/           # Remote administration tool
+│       ├── README.md           # RemoteAdmin documentation
+│       ├── cmake/              # Local CMake modules
+│       ├── include/            # Header files
+│       ├── src/                # Source code
+│       ├── CMakeLists.txt      # Build configuration
+│       └── remote_admin.sh     # Wrapper script
+├── docs/                        # Documentation and diagrams
+│   └── images/                 # Architecture diagrams
+├── TECHNICAL_DETAILS.md         # This file - technical reference
+└── README.md                    # Main entry point
 ```
 
-**What You'll Learn**:
-- Scaling from 1 to N platforms
-- Platform-to-platform data routes
-- Managing multiple routing services
-- Discovery at scale
-
-**Best For**: Understanding how the system scales, collaborative autonomous systems
+**Directory Purposes**:
+- **config/**: Shared configuration files (QoS, routing, system parameters)
+- **examples/**: Learning resources with runnable demos
+- **templates/**: Production deployment starting points
+- **tools/**: Utilities like RemoteAdmin for runtime control
+- **docs/**: Architecture diagrams and additional documentation
 
 ---
 
-### 3. [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md) - Dynamic P2P Control ⭐⭐⭐
+## Use Case Requirements
 
-**Use Case**: Dynamically enabling platform-to-platform communication based on operational needs without restarting services.
+The ACT architecture is designed to meet the following requirements:
 
-**Scenario**:
-- USV-10 and USV-11 initially operating independently
-- Mission update requires coordinated maneuver
-- Operator remotely enables P2P communication from C2 station
-- Platforms begin sharing tactical data
-- After coordination, P2P can be disabled to reduce bandwidth
+- ✅ Platforms must be able to receive select topics from C2 ([C2 Events](#c2-events))
+- ✅ Platforms must be able to receive *only* commands addressed to them ([C2 Filtered Commands](#c2-command-filtering))
+- ✅ *Only* C2 stations can receive select topics from Platforms ([Platform Events](#platform-events))
+- ✅ C2 must be able to receive select *downsampled* topics from Platforms ([Platform Status](#platform-status))
+- ✅ Platforms must be able to receive select topics from other Platforms ([Platform to Platform](#platform-to-platform))
+- ✅ All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
+- ✅ Platform to Platform messaging can be controlled at runtime
+- ✅ Platforms can be grouped/isolated dynamically
 
-**What's Demonstrated**:
-- ✅ RemoteAdmin tool for runtime control
-- ✅ Enabling P2P routes without service restart
-- ✅ Disabling P2P routes to conserve bandwidth
-- ✅ Remote administration API usage
-- ✅ Immediate reconfiguration (no downtime)
-- ✅ Admin domain (100) for control plane
+These requirements enable secure, scalable, and efficient communication in autonomous collaborative systems.
 
-**Commands Used**:
+---
+
+## Features
+
+This infrastructure performs the following roles:
+
+### Core Features
+- ✅ **Dynamic topic routing**: Instantiate readers/writers based on regex match filters
+- ✅ **Channel-based QoS**: Apply different QoS policies per data "channel"
+- ✅ **Network segmentation**: Domain-based LAN vs WAN isolation
+- ✅ **Content filtering**: Targeted command delivery based on message content
+- ✅ **Automatic discovery**: Platforms and C2 discover each other dynamically
+
+### Routing Capabilities
+Data can flow in multiple patterns:
+- **Platform → C2**: Status updates, events, acknowledgments
+- **C2 → Platform**: Commands (content-filtered by destination)
+- **Platform ↔ Platform**: Peer-to-peer data sharing for collaboration
+
+### Advanced Features
+- ✅ **Scalable architecture**: One-to-many and many-to-one pub/sub patterns
+- ✅ **Runtime reconfiguration**: Via RemoteAdmin tool
+  - Enable/disable platform-to-platform routes on demand
+  - Assign nodes to groups (partitions) for logical isolation
+  - Dynamic control without service restarts
+- ✅ **Downsampling**: Reduce status update rates for WAN bandwidth conservation
+
+---
+
+## Network Architecture
+
+**RTI Routing Service** acts as a relay mechanism between the *internal* LAN and the *external* WAN DDS Domain:
+
+![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
+
+
+**Benefits**:
+- **Network isolation**: DDS domains use unique port ranges, preventing direct communication
+- **Security**: Routing service controls exactly which data flows where
+- **Bandwidth management**: Only selected topics traverse the WAN
+- **Scalability**: New platforms/C2 stations auto-discover through WAN domain
+
+
+### Domain Segmentation
+
+The system uses **3 separate DDS domains** for network-level isolation:
+
+| Domain Type | Domain IDs | Purpose | Network |
+|-------------|------------|---------|---------|
+| **Platform** | 10-19 | Vehicle/Platform local network | LAN |
+| **WAN** | 3 | Wide Area Network | Satellite, Mesh Radio, etc. |
+| **C2** | 20-29 | Command & Control network | LAN |
+| **Admin** | 100 | Remote administration | Control plane |
+
+> **Note on Domain IDs**: In the simulated examples, unique domain IDs (10, 11, etc.) are assigned to each platform to simulate network isolation on a single host. In a deployed environment, platforms would be **physically isolated** on separate networks and would typically use the **same domain ID** (e.g., all platforms use domain 10), as physical network boundaries provide the isolation.
+
+### Port Allocation
+
+RTI Connext DDS uses well-known port formulas based on domain ID and participant index. 
+
+**Example port assignments** (for participant index 0):
+- **Domain 3 (WAN)**: Ports 8150, 8151, 8160, 8161
+- **Domain 10 (Platform-10)**: Ports 9900, 9901, 9910, 9911
+- **Domain 20 (C2-20)**: Ports 12400, 12401, 12410, 12411
+
+Domain IDs can be changed in the routing service configuration and parameter files to suit your deployment needs.
+
+> **Reference**: [What network port numbers does RTI Connext use?](https://community.rti.com/kb/what-network-port-numbers-does-rti-connext-use)  
+> **Port Calculator**: Download the spreadsheet from the reference link above to calculate ports for your configuration.
+
+---
+
+## QoS Profiles and Delivery Patterns
+
+Understanding QoS delivery patterns is key to efficient system design. Two primary QoS patterns are configured in `config/qos/`:
+
+### RELIABLE Delivery (Event QoS)
+
+**Purpose**: For aperiodic, critical data where every message matters.
+
+**How It Works**:
+1. Publisher sends data message
+2. Connext sends "heartbeats" to verify reception
+3. If no acknowledgment received, message is retransmitted
+4. Process repeats until acknowledged or timeout
+
+**Configuration**:
+- Profile: `WAN::event_qos` (defined in `config/qos/wan_qos_lib.xml`)
+- Reliability: RELIABLE
+- History: KEEP_LAST with depth
+- Tunable via WAN parameters (see [WAN Tuning](#wan-tuning) below)
+
+**Used By**:
+- `PLATFORM_EVENT_CHANNEL`: PlatformCommandAck, ContactReport, Alerts
+- `C2_EVENT_CHANNEL`: Mission updates, new targets
+- `C2_COMMAND_FILTER_CHANNEL`: C2Command (targeted delivery)
+
+**Trade-offs**:
+- ➕ Guaranteed delivery (within timeout)
+- ➕ No data loss
+- ➖ Higher bandwidth usage (heartbeats, retransmissions)
+- ➖ Higher latency in poor network conditions
+
+### BEST_EFFORT Delivery (Status QoS)
+
+**Purpose**: For periodic, non-critical data where the latest value is most important.
+
+**How It Works**:
+1. Publisher sends data message once
+2. No acknowledgment required
+3. No retransmission
+4. Next periodic update overrides previous value
+
+**Configuration**:
+- Profile: `WAN::status_qos` (defined in `config/qos/wan_qos_lib.xml`)
+- Reliability: BEST_EFFORT
+- History: KEEP_LAST 1 (only latest)
+- Lower overhead
+
+**Used By**:
+- `PLATFORM_STATUS_*_CHANNEL`: PlatformStatus, Telemetry (periodic)
+- `PLATFORM_TO_PLATFORM_CHANNEL`: PlatformData (periodic sharing)
+
+**Trade-offs**:
+- ➕ Lower bandwidth usage
+- ➕ Lower latency
+- ➕ Better for high-frequency updates
+- ➖ Possible data loss in poor networks
+- ➖ No delivery guarantees
+
+### Choosing the Right QoS
+
+| Data Type | Pattern | QoS | Example |
+|-----------|---------|-----|---------|
+| Commands | Aperiodic, critical | RELIABLE | C2Command, MissionUpdate |
+| Acknowledgments | Aperiodic, critical | RELIABLE | CommandAck, EventConfirm |
+| Alerts/Events | Aperiodic, critical | RELIABLE | ContactReport, Alert |
+| Status Updates | Periodic, non-critical | BEST_EFFORT | PlatformStatus, Telemetry |
+| Sensor Data | Periodic, high-rate | BEST_EFFORT | VideoStream, RawSensor |
+
+---
+
+## WAN Tuning
+
+The WAN QoS profile is specifically tuned for high-latency networks:
+
+**Configurable Parameters** (in `config/params/system_params.sh`):
+- `WAN_LATENCY_SEC`: Round-trip time of WAN link (e.g., 1.5 sec for satellite)
+- `WAN_TIMEOUT_SEC`: Duration before considering node unreachable (e.g., 300 sec)
+- `WAN_TTL`: Multicast time-to-live (number of hops)
+
+**Auto-calculated Values**:
+- `WAN_HB_PERIOD_SEC` = 2 × WAN_LATENCY_SEC
+- `WAN_HB_RETRIES` = WAN_TIMEOUT_SEC / WAN_HB_PERIOD_SEC
+- `WAN_MAX_BLOCKING_SEC` = 10 × WAN_LATENCY_SEC
+
+These ensure RELIABLE delivery works correctly over high-latency links.
+
+---
+
+## Data Channels
+
+![ACT Data Channels Logical View](docs/images/act_channels.jpeg)
+
+Data channels provide an **abstraction layer** for routing configuration. Instead of modifying XML files for every new topic, you define channels in `config/params/system_params.sh` that group topics by their data pattern and apply appropriate QoS policies.
+
+**Key Benefits**:
+- Group topics by data pattern (periodic vs aperiodic)
+- Apply appropriate QoS policies per channel
+- Use regex matching for topic selection
+- Control routing behavior without modifying XML files
+
+### Channel Configuration
+
+**Location**: `config/params/system_params.sh`
+
+**Format**:
+- Comma-separated topic names (no spaces)
+- Supports wildcards for regex matching (e.g., `*Status` matches any prefix)
+- Use `NULL` for unused channels
+
+**Example**:
 ```bash
-# Enable P2P for Platform-10
-./remote_admin.sh -n Platform-10 -t platform --p2p true
-
-# Disable P2P for Platform-10
-./remote_admin.sh -n Platform-10 -t platform --p2p false
+export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport,Alert
+export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus,Telemetry
+export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
 ```
 
-**Architecture**:
-```
-RemoteAdmin (Domain 100) --[Commands]--> Routing Services
-                                              |
-                                        [Enable/Disable]
-                                              |
-                                         P2P Routes
-```
+### Available Channels
 
-**What You'll Learn**:
-- Using RemoteAdmin tool for live reconfiguration
-- Remote administration request-reply pattern
-- Bandwidth management through selective routing
-- Operational flexibility without restarts
+#### Platform Events
+**Variable**: `PLATFORM_EVENT_CHANNEL`  
+**QoS**: RELIABLE (Event QoS)  
+**Purpose**: Critical, aperiodic data from platforms  
+**Direction**: Platform → C2  
+**Examples**: PlatformCommandAck, ContactReport, CriticalAlert
 
-**Best For**: Operations teams, bandwidth-constrained environments, dynamic mission requirements
+#### Platform Status (Downsampled)
+**Variables**: 
+- `PLATFORM_STATUS_FULL_CHANNEL` - No downsampling
+- `PLATFORM_STATUS_1SEC_CHANNEL` - 1 Hz updates
+- `PLATFORM_STATUS_10SEC_CHANNEL` - 0.1 Hz updates
+- `PLATFORM_STATUS_30SEC_CHANNEL` - ~0.033 Hz updates
+- `PLATFORM_STATUS_60SEC_CHANNEL` - ~0.017 Hz updates
 
----
+**QoS**: BEST_EFFORT (Status QoS)  
+**Purpose**: Periodic status updates at various rates  
+**Direction**: Platform → C2  
+**Examples**: PlatformStatus, Telemetry, HealthStatus
 
-### 4. [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md) - Group Assignment ⭐⭐⭐
+**Downsampling**:
+- Platforms publish at native rate on LAN
+- Routing service applies sampling filter
+- Only downsampled updates traverse WAN
+- Conserves bandwidth on constrained links
 
-**Use Case**: Assigning platforms to logical groups for data isolation and multi-tenant operations.
+#### Platform-to-Platform
+**Variable**: `PLATFORM_TO_PLATFORM_CHANNEL`  
+**QoS**: BEST_EFFORT (Status QoS)  
+**Purpose**: Peer-to-peer data sharing  
+**Direction**: Platform ↔ Platform (via WAN)  
+**Examples**: PlatformData, SharedSensor, CoordinationData
 
-**Scenario**:
-- Multiple platforms operating in the same physical area
-- Platform-10 and Platform-11 assigned to different task groups
-- C2-20 monitors all platforms but can filter by group
-- Group assignment changed dynamically based on mission phase
-- Data isolation prevents cross-group information leakage
+**Control**:
+- Can be enabled/disabled at runtime via RemoteAdmin
+- Routes: Platform → WAN → Platform (bidirectional)
+- Useful for collaborative behaviors
 
-**What's Demonstrated**:
-- ✅ DDS partitions for logical grouping
-- ✅ Dynamic group assignment via RemoteAdmin
-- ✅ Data isolation between groups
-- ✅ Multi-tenant scenarios (different organizations/missions)
-- ✅ Group-based data filtering
-- ✅ Operational security through isolation
+#### C2 Events
+**Variable**: `C2_EVENT_CHANNEL`  
+**QoS**: RELIABLE (Event QoS)  
+**Purpose**: Critical commands/updates from C2  
+**Direction**: C2 → Platform  
+**Examples**: MissionUpdate, NewTarget, ConfigChange
 
-**Commands Used**:
+#### C2 Command Filtering
+**Variable**: `C2_COMMAND_FILTER_CHANNEL`  
+**QoS**: RELIABLE (Event QoS)  
+**Purpose**: Content-filtered commands to specific platforms  
+**Direction**: C2 → Platform (filtered)
+
+**Filter Configuration**:
 ```bash
-# Assign Platform-11 to group 5
-./remote_admin.sh -n Platform-11 -t platform -g 5
-
-# Assign Platform-11 back to default group (0)
-./remote_admin.sh -n Platform-11 -t platform -g 0
+export C2_COMMAND_FILTER_CHANNEL="C2Command"
+export C2_COMMAND_FILTER_FIELD="msg.destination"    # Field path in message
+export C2_COMMAND_FILTER_MATCH=$ROUTER_NAME         # Match platform name
 ```
 
-**Architecture**:
-```
-Group 0 (default):        Platform-10 <--> C2-20 (receives all)
-                          
-Group 5 (isolated):       Platform-11 <--> [isolated] <-X-> C2-20 (no data)
-```
+**How It Works**:
+1. C2 publishes C2Command with `destination` field set (e.g., "USV_10")
+2. Routing service evaluates filter: `msg.destination == "USV_10"`
+3. Only Platform-10's router forwards the message
+4. Other platforms never see the command
 
-**What You'll Learn**:
-- DDS partitions for data isolation
-- Multi-tenant system architecture
-- Dynamic partition assignment
-- Security through network segmentation
-- Coalition operations patterns
+**Important**: 
+- `C2_COMMAND_FILTER_FIELD` **must match your actual data structure**
+- If your command type has a different field, update this variable
+- Example: For `command.target_node`, use `C2_COMMAND_FILTER_FIELD="command.target_node"`
 
-**Best For**: Multi-tenant systems, coalition operations, security-sensitive deployments, mission-phase transitions
 
----
 
-## Learning Path
+### Adding New Topics
 
-### Step 1: Understand Basic Architecture
-**Start here**: [QUICKSTART.md](QUICKSTART.md)
+To add a new topic to the system:
 
-Run a minimal system with 1 platform and 1 C2 station. Learn:
-- How routing services bridge domains
-- How data flows Platform → WAN → C2
-- Basic QoS profiles (RELIABLE vs BEST_EFFORT)
-- Command filtering
+1. **Define the data type** (IDL file)
+2. **Determine the pattern**: Is it periodic or aperiodic? Critical or non-critical?
+3. **Choose the appropriate channel** based on the pattern
+4. **Add topic name** to the channel variable in `config/params/system_params.sh`
+5. **Restart routing services** (or use RemoteAdmin for some changes)
 
-**Time**: ~15 minutes
-
-### Step 2: Scale to Multiple Platforms
-**Next**: [MULTI_PLATFORM.md](MULTI_PLATFORM.md)
-
-Add a second platform and enable platform-to-platform communication. Learn:
-- Managing multiple nodes
-- P2P data routes
-- Discovery at scale
-- Network segmentation benefits
-
-**Time**: ~20 minutes
-
-### Step 3: Dynamic Runtime Control
-**Advanced**: [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md)
-
-Control platform-to-platform communication without restarting services. Learn:
-- RemoteAdmin tool usage
-- Enabling/disabling routes at runtime
-- Remote administration API
-- Dynamic system reconfiguration
-
-**Time**: ~20 minutes
-
-### Step 4: Logical Isolation with Groups
-**Advanced**: [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md)
-
-Assign platforms to groups for data isolation. Learn:
-- DDS partitions for grouping
-- Group-based filtering
-- Multi-tenant scenarios
-- Dynamic group assignment
-
-**Time**: ~20 minutes
-
----
-
-## Running Examples
-
-All examples follow the same pattern:
-
-### Basic Steps
-1. Open multiple terminal windows (typically 4-6)
-2. Navigate to `examples/node_sim/`
-3. Run the start scripts in sequence
-4. Observe the output
-5. Follow the walkthrough instructions
-
-### Example Terminal Layout
-```
-Terminal 1: Platform-10 Router
-Terminal 2: Platform-10 Simulator
-Terminal 3: C2-20 Router
-Terminal 4: C2-20 Simulator
-Terminal 5: (Optional) RemoteAdmin tool
-Terminal 6: (Optional) RTI Admin Console
-```
-
-### All Scripts Are Ready to Run
-No configuration needed - examples use pre-configured parameters.
-
----
-
-## Example Components
-
-### Simulators (`node_sim/python_node/`)
-- **`platform_sim.py`**: Simulates a platform (vehicle/UAV/USV)
-  - Publishes: PlatformStatus (periodic), PlatformCommandAck (event)
-  - Subscribes: C2Command (filtered by destination)
-  
-- **`c2_sim.py`**: Simulates a C2 station
-  - Publishes: C2Command (targeted to specific platforms)
-  - Subscribes: PlatformStatus, PlatformCommandAck
-
-### Start Scripts (`node_sim/`)
-- **`start_platform10_router.sh`**: Platform-10 routing service
-- **`start_platform10_sim.sh`**: Platform-10 simulator
-- **`start_platform11_router.sh`**: Platform-11 routing service
-- **`start_platform11_sim.sh`**: Platform-11 simulator
-- **`start_c2_20_router.sh`**: C2-20 routing service
-- **`start_c2_20_sim.sh`**: C2-20 simulator
-
-### Configuration (`node_sim/params/`)
-- Pre-configured parameters for each node
-- **Do not modify** - these are for examples only
-- For deployment, use templates in `../templates/`
-
----
-
-## What's Demonstrated
-
-### Data Flow Patterns
-- ✅ Platform → C2: Status updates, events, acknowledgments
-- ✅ C2 → Platform: Commands (content-filtered by destination)
-- ✅ Platform ↔ Platform: Peer-to-peer data sharing
-- ✅ Downsampling: 10-second status updates to reduce bandwidth
-
-### QoS Profiles
-- ✅ **Event channels**: RELIABLE delivery for critical data
-- ✅ **Status channels**: BEST_EFFORT for periodic updates
-- ✅ **WAN tuning**: Heartbeat periods, timeouts for high-latency links
-- ✅ **Content filtering**: Targeted command delivery
-
-### Routing Features
-- ✅ Domain bridging (LAN ↔ WAN ↔ LAN)
-- ✅ Dynamic route enabling/disabling
-- ✅ Partition-based grouping
-- ✅ Automatic discovery across domains
-- ✅ Topic-based filtering with regex
-
-### Runtime Control
-- ✅ RemoteAdmin tool for live reconfiguration
-- ✅ Enable/disable P2P routes without restart
-- ✅ Assign nodes to groups dynamically
-- ✅ Remote administration domain (100)
-
----
-
-## Monitoring Tools
-
-### RTI Admin Console
+**Example**:
 ```bash
-$NDDSHOME/bin/rtiadminconsole
-```
-View:
-- All DDS participants (routing services, simulators)
-- Topic discovery status
-- Data reader/writer matching
-- Live data samples
-
-### RTI Monitor
-```bash
-$NDDSHOME/bin/rtimonitor
-```
-Monitor:
-- Real-time throughput
-- Latency statistics
-- Resource usage
-- Discovery events
-
-### Routing Service Logs
-Watch terminal output for:
-- Session ENABLED/DISABLED
-- Route ENABLED/DISABLED
-- Participant discovery
-- Data flow messages
-
----
-
-## Common Questions
-
-### Q: Can I modify the examples?
-**A**: Yes, for learning purposes. But **do not use modified examples for production**. Use the [templates](../templates/) instead.
-
-### Q: Why are domains hardcoded (10, 11, 20)?
-**A**: For simplicity in examples. In production, you choose your own domain IDs.
-
-### Q: Can I add my own data types?
-**A**: Yes! See `node_sim/types/act_types.xml` as a reference. Generate type support with `rtiddsgen`.
-
-### Q: Why separate examples from deployment?
-**A**: Examples are optimized for learning (hardcoded, simplified). Production needs flexibility, customization, and proper structure.
-
-### Q: Do I need RemoteAdmin for production?
-**A**: No, it's optional. But it enables runtime control without service restarts - very useful for operations.
-
----
-
-## Troubleshooting
-
-### Can't Start Routing Service
-```bash
-# Check NDDSHOME
-echo $NDDSHOME
-
-# Verify rtiroutingservice exists
-ls $NDDSHOME/bin/rtiroutingservice
+# Add new critical event topic
+export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport,Alert,NewEmergencyTopic
 ```
 
-### Simulators Can't Connect
-- Start routers **before** simulators
-- Wait 10 seconds after starting routers
-- Check for "matched" messages in router logs
-
-### No Data Flowing
-- Verify all terminals are running
-- Check routing service logs for errors
-- Ensure topic names match (case-sensitive)
-
-### RemoteAdmin Errors
-- Rebuild RemoteAdmin if you updated code
-- Check that router's `-appName` matches `-n` parameter
-- Verify `system_params.sh` is sourced
-
----
-
-## After Learning Examples
-
-Once you understand the architecture:
-
-1. **Read the [Deployment Guide](../templates/DEPLOYMENT.md)**
-2. **Create your own deployment structure** using templates
-3. **Define your data types** (IDL files)
-4. **Configure data channels** for your use case
-5. **Integrate your applications** with DDS
+No XML file changes required!
 
 ---
 
 ## Additional Resources
 
-- **Main README**: [../README.md](../README.md) - Architecture overview
-- **Deployment Guide**: [../templates/DEPLOYMENT.md](../templates/DEPLOYMENT.md) - Production setup
-- **Template README**: [../templates/README.md](../templates/README.md) - Template usage
-- **RemoteAdmin README**: [../tools/remote_admin/README.md](../tools/remote_admin/README.md) - Tool documentation
+### Tools
+- **RemoteAdmin**: See `tools/remote_admin/` for runtime configuration
+  - Enable/disable P2P routes dynamically
+  - Assign nodes to groups (partitions)
+  - No service restarts required
+
+### Documentation
+- **Examples**: See `examples/` for hands-on walkthroughs
+  - [QUICKSTART](examples/QUICKSTART.md): 1 Platform + 1 C2
+  - [MULTI_PLATFORM](examples/MULTI_PLATFORM.md): 2 Platforms + 1 C2
+  - [REMOTE_ENABLE_P2P](examples/REMOTE_ENABLE_P2P.md): Dynamic P2P control
+  - [REMOTE_CONTROL_GROUP](examples/REMOTE_CONTROL_GROUP.md): Group assignment
+- **Deployment Guide**: See `templates/DEPLOYMENT.md` for production setup
+- **Architecture Diagrams**: See `docs/images/` for system visuals
+
+### Configuration Files
+- **QoS Profiles**: `config/qos/`
+  - `lan_qos_lib.xml`: LAN-specific QoS
+  - `wan_qos_lib.xml`: WAN-tuned QoS
+  - `remoteadmin_qos_lib.xml`: RemoteAdmin QoS
+- **Routing Configuration**: `config/routing/routing_service_config.xml`
+  - Domain routes
+  - Topic routes
+  - Session definitions
+- **System Parameters**: `config/params/system_params.sh`
+  - WAN tuning parameters
+  - Data channel definitions
+  - QoS profile paths
+
+### RTI Documentation
+- RTI Connext DDS User's Manual
+- RTI Routing Service User's Manual
+- RTI Admin Console User's Manual
+
+For questions or issues, please contact RTI support.
 
 ---
 
-**Remember**: Examples are for **learning only**. For production, use the [Deployment Guide](../templates/DEPLOYMENT.md).
+**Document Version**: 1.0  
+**Last Updated**: December 2024  
+**Applies To**: RTI Connext DDS 7.3.0+
