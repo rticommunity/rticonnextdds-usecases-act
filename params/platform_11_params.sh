@@ -11,10 +11,16 @@
 # to use the software.
 
 
+# Unique identifier for this node
+# - Must be unique across all nodes in the system
+# - Used as the routing service -appName (identifies this routing service instance)
+# - Used as the -n parameter in send_remote_cmd.sh to address this node for remote admin
+# - Used in C2Command messages to address this platform from C2 stations
+export ROUTER_NAME="Platform_11"
+
 # Used for Routing Service
 export PLATFORM_DOMAIN=11
 export TYPE="platform"
-export ROUTER_NAME="USV_11"
 
 # Used for Platform Sim
 export LAN_QOS_PROFILE="LAN::domain_participant_qos"
@@ -29,9 +35,9 @@ export XML_FILES
 
 echo "
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------
+ROUTER_NAME: $ROUTER_NAME (unique identifier for routing service and remote commands)
 PLATFORM_DOMAIN: $PLATFORM_DOMAIN
 TYPE: $TYPE
-ROUTER_NAME: $ROUTER_NAME
 LAN_QOS_PROFILE: $LAN_QOS_PROFILE
 SESSION_ID: $SESSION_ID
 DOMAIN_ID: $DOMAIN_ID
