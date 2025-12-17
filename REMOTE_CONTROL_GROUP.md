@@ -81,7 +81,7 @@ In this example, we will:
 ### Terminal 1: Start Platform-10 Simulator
 
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_sim.sh
 ```
 
@@ -96,7 +96,7 @@ Publishing PlatformData with Session ID 1
 ### Terminal 2: Start Platform-10 Router
 
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_router.sh
 ```
 
@@ -109,7 +109,7 @@ RTI Routing Service started
 ### Terminal 3: Start Platform-11 Simulator
 
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform11_sim.sh
 ```
 
@@ -118,14 +118,14 @@ Similar output as Platform-10, publishing session data.
 ### Terminal 4: Start Platform-11 Router
 
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform11_router.sh
 ```
 
 ### Terminal 5: Start C2 Simulator
 
 ```bash
-cd start_scripts
+cd scripts
 ./start_c2_20_sim.sh
 ```
 

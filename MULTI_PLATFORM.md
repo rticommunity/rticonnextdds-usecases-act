@@ -29,37 +29,37 @@ Open **6 terminals** and run the following commands from the repository root:
 
 ### Terminal 1: Platform 10 Router
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_router.sh
 ```
 
 ### Terminal 2: Platform 10 Simulator
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_sim.sh
 ```
 
 ### Terminal 3: Platform 11 Router
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform11_router.sh
 ```
 
 ### Terminal 4: Platform 11 Simulator
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform11_sim.sh
 ```
 
 ### Terminal 5: C2-20 Router
 ```bash
-cd start_scripts
+cd scripts
 ./start_c2_20_router.sh
 ```
 
 ### Terminal 6: C2-20 Simulator
 ```bash
-cd start_scripts
+cd scripts
 ./start_c2_20_sim.sh
 ```
 

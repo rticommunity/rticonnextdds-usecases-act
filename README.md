@@ -6,6 +6,22 @@ This use case is centered around a Maritime ISR scenario but can be adapted for 
 
 ![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
 
+## Getting Started
+
+### Clone with Submodules
+
+This repository uses git submodules for CMake utilities. Clone with:
+
+```bash
+git clone --recurse-submodules https://github.com/rticommunity/rticonnextdds-usecases-act.git
+```
+
+Or if you've already cloned without submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Choose Your Adventure
 
 ### Examples

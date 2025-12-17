@@ -14,7 +14,6 @@ Understanding these key terms will help you use the Remote Admin tool effectivel
 The **resource** is the name of the RTI Routing Service instance you want to control. This corresponds to the `-appName` parameter used when starting the routing service.
 - **Example**: `Platform-10`, `Platform-11`, `C2-20`, `USV-1`
 - **Usage**: Specified with `-n` or `--name` flag
-- **In Config**: Matches `<routing_service name="...">` in routing service XML
 
 ### Resource ID / Resource Identifier
 The **resource identifier** is the full hierarchical path to a specific entity within a routing service instance. It follows RTI's resource naming convention for remote administration.
@@ -26,11 +25,11 @@ The **resource identifier** is the full hierarchical path to a specific entity w
 
 ### Domain Route
 A **domain route** is a configuration block within Routing Service that defines participants and sessions for bridging DDS domains. In the ACT use case, domain routes connect the LAN, WAN, and C2 domains.
-- **In XML**: Defined as `<domain_route>` within a `<routing_service>` configuration block (no name attribute)
-- **In Paths**: The segment `/domain_routes/<config_name>/` where `config_name` is either "platform" or "c2"
-  - This refers to the domain route within that specific routing service configuration
-- **Example Path**: `/routing_services/Platform-10/domain_routes/platform/sessions/...`
-  - Here "platform" identifies which routing service configuration's domain route to access
+- **In XML**: Defined as `<domain_route name="dr">` within a `<routing_service>` configuration block
+- **In Paths**: The segment `/domain_routes/dr/` where "dr" is the default domain route name
+- **Example Path**: `/routing_services/platform/domain_routes/dr/sessions/...`
+  - Here "platform" is the routing service configuration name from `<routing_service name="platform">`
+  - "dr" is the domain route name from `<domain_route name="dr">`
 - **Purpose**: Groups participants and sessions that handle domain-to-domain data flow
 
 ### Session
@@ -47,14 +46,15 @@ A **session** within Routing Service represents a logical grouping of topic rout
 
 ### Participant
 A **participant** is a DDS Domain Participant within the routing service. It represents the routing service's presence in a specific DDS domain.
-- **Example**: `wan_platform_participant` - The participant handling WAN domain communication
-- **Path**: `/participants/wan_platform_participant`
+- **Platform participants**: `platform_wan` - Platform node's WAN domain participant
+- **C2 participants**: `c2_wan` - C2 node's WAN domain participant
+- **Path Example**: `/participants/platform_wan`
 
 ### Group / Partition
-A **group** (implemented as a DDS partition) is used to logically separate and organize data flow. Assigning a resource to a group ensures it only communicates with others in the same group.
+A **group** (implemented as a DDS Domain Participant partition) is used to logically separate and organize data flow. Assigning a resource to a group ensures it only communicates with others in the same group.
 - **Usage**: Specified with `-g` or `--group` flag
 - **Example**: Group `5` might represent a specific mission or team
-- **DDS Concept**: Implemented using DDS Partitions in QoS
+- **DDS Concept**: Implemented using DDS Domain Participant Partitions in QoS
 
 ### QoS Profile
 A **QoS profile** is a named set of Quality of Service settings that control data delivery behavior (reliability, durability, etc.).
@@ -70,7 +70,7 @@ The **domain ID** is the DDS domain number on which remote administration comman
 - **Purpose**: Separates administrative traffic from application data
 
 ### Command Request/Reply
-Remote administration uses a request-reply pattern where:
+Remote administration uses a request-reply pattern ([API Reference](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html#api-reference)) where:
 - **Command Request**: The command sent to the routing service (enable/disable, update configuration)
 - **Command Reply**: The response from the routing service indicating success or failure
 - **Topics**: `rti/service/admin/command_request` and `rti/service/admin/command_reply`
@@ -97,10 +97,14 @@ The project uses CMake and requires RTI Connext DDS 7.3.0 or later.
 - CMake 3.16+
 - C++11 compatible compiler
 - `NDDSHOME` environment variable set to your RTI Connext installation
+- Git submodules initialized (see [main README](../../README.md#getting-started) for clone instructions)
 
 ### Build Instructions
 
 ```bash
+# Ensure submodules are initialized (if not done during clone)
+git submodule update --init --recursive
+
 cd tools/remote_admin
 rm -rf build
 mkdir build
@@ -114,14 +118,18 @@ The executable `RemoteAdmin` will be created in the `build` directory.
 
 ## Usage
 
-**Important**: Use the `remote_admin.sh` wrapper script to run RemoteAdmin. The wrapper automatically loads system parameters including WAN latency settings required for proper operation with the routing service.
+**Important**: Use the `send_remote_cmd.sh` wrapper script to run RemoteAdmin. The wrapper automatically loads system parameters including WAN latency settings required for proper operation with the routing service.
 
-System parameters are located in `config/params/system_params.sh` at the repository root.
+System parameters are located in `params/system_params.sh` at the repository root.
 
 ```bash
-cd tools/remote_admin
-./remote_admin.sh -n Platform-10 --p2p true
+cd scripts
+./send_remote_cmd.sh -n Platform_10 --p2p true
 ```
+
+**Note**: The `-n` parameter uses the unique identifier (PLATFORM_NAME or C2_NAME) defined in each node's params file:
+- Platform nodes: Use PLATFORM_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
+- C2 nodes: Use C2_NAME from `params/c2_*_params.sh` (e.g., C2_20)
 
 The wrapper script:
 - Sources `system_params.sh` automatically from `config/params/`
@@ -136,59 +144,39 @@ Remote Admin Service Controller.
 Usage:
    -d, --domain     <int>             Domain ID 
    -q, --qos        <string>          QOS Profile (library::profile)
-   -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform-10' 
+   -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_10' 
                                       REQUIRED
    -t, --type       <string>          Node type: 'platform' or 'c2' (default: platform)
-   -g, --group      <int>             Group ID (DDS Partition) to assign resource to 
+   -g, --group      <int>             Group ID (DDS Partition - see https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm) to assign resource to 
 Only applicable to Platforms: 
    --p2p            <bool>            Enable (true) or disable (false) Platform to Platform topic routes.
 
 Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
-      Use the remote_admin.sh wrapper script to automatically load system_params.sh
+      Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh
 ```
 
 ### Required Arguments
 
-- `-n, --name <string>`: The name of the routing service instance to control (e.g., 'Platform-10', 'USV-1'). This must match the routing service's application name.
+- `-n, --name <string>`: The name of the routing service instance to control (e.g., 'Platform_10', 'USV_1'). This must match the routing service's application name.
 
 ### Optional Arguments
 
 - `-d, --domain <int>`: Domain ID for remote administration (default: 100)
 - `-q, --qos <string>`: QoS profile to use (default: REMOTE_ADMIN::remote_admin_default)
 - `-t, --type <string>`: Node type - either "platform" or "c2" (default: platform). This determines which routing service configuration and participant names are used in the resource identifier path.
-- `-g, --group <int>`: Group ID (DDS Partition) to assign the resource to
+- `-g, --group <int>`: Group ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the resource to
 - `--p2p <bool>`: Enable (true) or disable (false) platform-to-platform communication routes
 
-### Examples
+## Usage Examples
 
-Enable Platform-to-Platform Communication:
-```bash
-./remote_admin.sh -n Platform-10 --p2p true
-```
+For complete step-by-step walkthroughs demonstrating RemoteAdmin usage, see:
 
-Disable Platform-to-Platform Communication:
-```bash
-./remote_admin.sh -n Platform-10 --p2p false
-```
-
-Assign Platform Resource to Group:
-```bash
-./remote_admin.sh -n Platform-10 -g 5
-```
-
-Assign C2 Resource to Group:
-```bash
-./remote_admin.sh -n C2-20 -t c2 -g 5
-```
-
-Use Custom Domain:
-```bash
-./remote_admin.sh -d 50 -n USV-1 --p2p true
-```
+- **[REMOTE_ENABLE_P2P.md](../../REMOTE_ENABLE_P2P.md)**: Enable peer-to-peer communication between platforms
+- **[REMOTE_CONTROL_GROUP.md](../../REMOTE_CONTROL_GROUP.md)**: Dynamically assign nodes to different groups and verify isolation
 
 ## How It Works
 
-The Remote Admin tool:
+The Remote Admin tool ([API Reference](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html#api-reference)):
 
 1. Creates a DDS Requester that communicates on the administrative domain (default: 100)
 2. Builds a `CommandRequest` message with:
@@ -200,39 +188,9 @@ The Remote Admin tool:
 4. Waits up to 10 seconds for a reply
 5. Reports success or failure
 
-## Integration with ACT Use Case
-
-This tool is designed to work with the Autonomous Collaborative Teaming (ACT) routing service architecture. The typical use case:
-
-1. Start your platform routing services (e.g., `./start_router.sh` after sourcing `platform_10.sh`)
-2. Use RemoteAdmin to dynamically enable/disable P2P communication between platforms
-3. Control data flow without restarting services or modifying configuration files
-
-### Example Scenario
-
-```bash
-# Terminal 1: Start Platform-10 routing service
-cd start_scripts
-./start_platform10_router.sh
-
-# Terminal 2: Start Platform-11 routing service
-cd start_scripts
-./start_platform11_router.sh
-
-# Terminal 3: Enable P2P communication for Platform-10
-cd tools/remote_admin
-./remote_admin.sh -n Platform-10 --p2p true
-
-# Terminal 4: Enable P2P communication for Platform-11
-cd tools/remote_admin
-./remote_admin.sh -n Platform-11 --p2p true
-```
-
-Now Platform-10 and Platform-11 can exchange data directly through the WAN domain.
-
 ## Files
 
-- `remote_admin.sh`: Wrapper script that sources system_params.sh and invokes RemoteAdmin
+- `send_remote_cmd.sh`: Wrapper script that sources system_params.sh and invokes RemoteAdmin
 - `src/remote_admin.cxx`: Main application source
 - `include/application.hpp`: Argument parsing and application utilities
 - `resources/types/ServiceAdmin.idl`: IDL definitions for admin commands

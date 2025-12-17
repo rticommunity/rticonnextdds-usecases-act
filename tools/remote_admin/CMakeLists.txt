@@ -12,9 +12,9 @@
 cmake_minimum_required(VERSION 3.11)
 project (RemoteAdmin)
 
-# Use local cmake modules
+# Use RTI CMake utilities from submodule
 list(APPEND CMAKE_MODULE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../resources/rticonnextdds-cmake-utils/cmake/Modules"
 )
 
 find_package(

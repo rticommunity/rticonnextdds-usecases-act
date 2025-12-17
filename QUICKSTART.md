@@ -24,25 +24,25 @@ Open **4 terminals** and run the following commands from the repository root:
 
 ### Terminal 1: Platform 10 Router
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_router.sh
 ```
 
 ### Terminal 2: Platform 10 Simulator
 ```bash
-cd start_scripts
+cd scripts
 ./start_platform10_sim.sh
 ```
 
 ### Terminal 3: C2-20 Router
 ```bash
-cd start_scripts
+cd scripts
 ./start_c2_20_router.sh
 ```
 
 ### Terminal 4: C2-20 Simulator
 ```bash
-cd start_scripts
+cd scripts
 ./start_c2_20_sim.sh
 ```
 
@@ -77,14 +77,14 @@ rtiadminconsole
 
 ## Next Steps
 
-- Review scripts in `start_scripts/` and parameters in `params/`
+- Review scripts in `scripts/` and parameters in `params/`
 - Try the [Multi-Platform](MULTI_PLATFORM.md) example
-- Use [RemoteAdmin](tools/remote_admin/) to control routers at runtime
+- Use [RemoteAdmin](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html) to control routers at runtime
 
 ## Troubleshooting
 
 **Issue**: Scripts fail with "file not found"
-- **Solution**: Run scripts from `start_scripts/` directory
+- **Solution**: Run scripts from `scripts/` directory
 
 **Issue**: Python import errors
 - **Solution**: Verify RTI Connext DDS Python API is installed and `NDDSHOME` is set
