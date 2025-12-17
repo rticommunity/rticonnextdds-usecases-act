@@ -17,11 +17,11 @@ The RemoteAdmin tool allows you to change a node's group assignment without rest
 
 In this example, we will:
 
-1. Start two platform simulators (Platform-10 and Platform-11)
+1. Start two platform simulators (Platform_10 and Platform_11)
 2. Start their corresponding routing services (both initially in default group)
 3. Start a C2 simulator that receives data from both platforms
-4. Use RemoteAdmin to assign Platform-11 to a different group (group 5)
-5. Verify that C2 no longer receives data from Platform-11 but still receives from Platform-10
+4. Use RemoteAdmin to assign Platform_11 to a different group (group 5)
+5. Verify that C2 no longer receives data from Platform_11 but still receives from Platform_10
 
 ## Architecture
 
@@ -29,21 +29,21 @@ In this example, we will:
 
 ```
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ Platform-10 │           │ Platform-11 │           │    C2-20    │
+│ Platform_10 │           │ Platform_11 │           │    C2_20    │
 │  Simulator  │           │  Simulator  │           │  Simulator  │
 └──────┬──────┘           └──────┬──────┘           └──────┬──────┘
        │                         │                         │
        │ LAN Domain 0            │ LAN Domain 1            │ C2 Domain 2
        │                         │                         │
 ┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
-│ Platform-10 │           │ Platform-11 │           │    C2-20    │
+│ Platform_10 │           │ Platform_11 │           │    C2_20    │
 │   Router    │◄──────────┤   Router    │──────────►│   Router    │
 │  (default)  │  WAN      │  (default)  │  WAN      │  (default)  │
 └─────────────┘  Domain 10└─────────────┘  Domain 10└─────────────┘
       ▲                                                     │
       │                                                     │
       └─────────────────────────────────────────────────────┘
-           C2 receives data from both Platform-10 and Platform-11
+           C2 receives data from both Platform_10 and Platform_11
 ```
 
 ### After Group Change (Platform-11 → Group 5)
@@ -78,7 +78,7 @@ In this example, we will:
 
 ## Step-by-Step Walkthrough
 
-### Terminal 1: Start Platform-10 Simulator
+### Terminal 1: Start Platform_10 Simulator
 
 ```bash
 cd scripts
@@ -93,27 +93,27 @@ Publishing PlatformData with Session ID 1
 ...
 ```
 
-### Terminal 2: Start Platform-10 Router
+### Terminal 4: Start Platform_11 Router
 
 ```bash
 cd scripts
 ./start_platform10_router.sh
 ```
 
-The routing service will start and bridge Platform-10's LAN domain to the WAN domain. Look for:
+The routing service will start and bridge Platform_10's LAN domain to the WAN domain. Look for:
 
 ```
 RTI Routing Service started
 ```
 
-### Terminal 3: Start Platform-11 Simulator
+### Terminal 3: Start Platform_11 Simulator
 
 ```bash
 cd scripts
 ./start_platform11_sim.sh
 ```
 
-Similar output as Platform-10, publishing session data.
+Similar output as Platform_10, publishing session data.
 
 ### Terminal 4: Start Platform-11 Router
 
@@ -129,7 +129,7 @@ cd scripts
 ./start_c2_20_sim.sh
 ```
 
-### Terminal 6: Start C2-20 Router
+### Terminal 6: Start C2_20 Router
 
 ```bash
 cd scripts
@@ -171,9 +171,9 @@ Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qo
 
 Waiting for a matching replier...
 Sending Remote GROUP UPDATE: 
-resource_identifier: /routing_services/Platform-11/domain_routes/dr/participants/platform_wan
+resource_identifier: /routing_services/Platform_11/domain_routes/dr/participants/platform_wan
 body_text: str://"<participant><domain_participant_qos><partition><name><element>5</element></name></partition></domain_participant_qos></participant>"
-application_name: Platform-11
+application_name: Platform_11
 Command returned: OK
 ```
 
@@ -216,7 +216,7 @@ After moving Platform_11 back to the default group, C2 should start receiving da
 
 ## What's Happening Behind the Scenes
 
-When you run `./remote_admin.sh -n Platform_11 -g 5`:
+When you run `./send_remote_cmd.sh -n Platform_11 -g 5`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
@@ -255,17 +255,17 @@ When you run `./remote_admin.sh -n Platform_11 -g 5`:
 You can also assign C2 to a specific group to create an isolated communication cell:
 
 ```bash
-# Move Platform_10 to group 3 (using PLATFORM_NAME from params/platform_10_params.sh)
+# Move Platform_10 to group 3 (using ROUTER_NAME from params/platform_10_params.sh)
 ./send_remote_cmd.sh -n Platform_10 -g 3 --type platform
 
-# Move C2_20 to group 3 (using C2_NAME from params/c2_20_params.sh)
+# Move C2_20 to group 3 (using ROUTER_NAME from params/c2_20_params.sh)
 ./send_remote_cmd.sh -n C2_20 -g 3 --type c2
 
 # Platform_11 stays in default group
 ```
 
 Now:
-- Platform_10 and C2-20 communicate (both in group 3)
+- Platform_10 and C2_20 communicate (both in group 3)
 - Platform_11 is isolated (in default group)
 - To add Platform_11 to the group: `./send_remote_cmd.sh -n Platform_11 -g 3 --type platform`
 

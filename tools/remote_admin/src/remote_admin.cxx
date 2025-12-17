@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
         setup_signal_handlers();
 
         // QoS provider will use NDDS_QOS_PROFILES environment variable
-        // which should be set by remote_admin.sh wrapper or manually
+        // which should be set by send_remote_cmd.sh wrapper or manually
         dds::core::QosProvider qos_provider = dds::core::QosProvider::Default();
 
         // Create a DomainParticipant with the custom QOS

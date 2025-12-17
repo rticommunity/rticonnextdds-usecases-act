@@ -5,8 +5,8 @@ This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming)
 ## Overview
 
 This example launches:
-- **Platform 10 (USV_10)**: First unmanned surface vehicle
-- **Platform 11 (USV_11)**: Second unmanned surface vehicle
+- **Platform 10 (Platform_10)**: First unmanned surface vehicle
+- **Platform 11 (Platform_11)**: Second unmanned surface vehicle
 - **C2 Station 20**: Command and control station
 
 Key features demonstrated:
@@ -104,7 +104,7 @@ cd scripts
 - Publishing `ContactReport` data
 
 **C2 Simulator** will show:
-- Receiving `PlatformStatus` from both USV_10 and USV_11
+- Receiving `PlatformStatus` from both Platform_10 and Platform_11
 - Sending `C2Command` to both platforms
 - Receiving `PlatformCommandAck` from both platforms
 - Receiving `ContactReport` from both platforms
@@ -119,8 +119,8 @@ rtiadminconsole
 ```
 
 You should see:
-- Domain 10: USV_10 publications/subscriptions
-- Domain 11: USV_11 publications/subscriptions
+- Domain 10: Platform_10 publications/subscriptions
+- Domain 11: Platform_11 publications/subscriptions
 - Domain 20: C2_20 publications/subscriptions
 - Domain 0: WAN routing traffic
 

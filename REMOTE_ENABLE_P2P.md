@@ -137,7 +137,7 @@ Platform_11 should stop receiving messages from Platform_10.
 
 ```
 ┌─────────────┐                        ┌─────────────┐
-│ Platform-10 │                        │ Platform-11 │
+│ Platform_10 │                        │ Platform_11 │
 │ Domain: 10  │                        │ Domain: 11  │
 │             │                        │             │
 │ Simulator   │                        │ Simulator   │
