@@ -4,7 +4,7 @@ This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming)
 
 ## Overview
 
-This example uses the shared scripts from `../node_sim/` to launch:
+This example launches:
 - **Platform 10 (USV_10)**: First unmanned surface vehicle
 - **Platform 11 (USV_11)**: Second unmanned surface vehicle
 - **C2 Station 20**: Command and control station
@@ -17,9 +17,11 @@ Key features demonstrated:
 
 ## Prerequisites
 
-- RTI Connext DDS Professional 7.3.0+
-- Python 3 with RTI Connext DDS Python API
+- [RTI Connext DDS Professional 7.3.0+](https://community.rti.com/static/documentation/developers/get-started/) (free license available immediately)
+- Python 3 with RTI Connext DDS Python API ([setup guide](https://community.rti.com/static/documentation/developers/get-started/pip-install.html#section-pip-install))
 - RTI Routing Service
+- `NDDSHOME` environment variable set
+- `RTI_LICENSE_FILE` environment variable set
 
 ## Full Deployment
 
@@ -27,37 +29,37 @@ Open **6 terminals** and run the following commands from the repository root:
 
 ### Terminal 1: Platform 10 Router
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_router.sh
 ```
 
 ### Terminal 2: Platform 10 Simulator
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_sim.sh
 ```
 
 ### Terminal 3: Platform 11 Router
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_router.sh
 ```
 
 ### Terminal 4: Platform 11 Simulator
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_sim.sh
 ```
 
 ### Terminal 5: C2-20 Router
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_c2_20_router.sh
 ```
 
 ### Terminal 6: C2-20 Simulator
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_c2_20_sim.sh
 ```
 
@@ -151,7 +153,7 @@ To add Platform 12:
 
 1. Copy an existing platform param file:
    ```bash
-   cd examples/node_sim/params
+   cd params
    cp platform_10_params.sh platform_12_params.sh
    ```
 
@@ -186,7 +188,7 @@ QoS profiles are in `../../config/qos/`:
 
 - Experiment with stopping/starting individual routers
 - Use RemoteAdmin to pause/resume routes
-- Monitor with RTI Admin Console or RTI Monitor
+- Monitor with RTI Admin Console
 - Add more platforms using the scaling instructions
 - Modify QoS profiles to test different reliability settings
 

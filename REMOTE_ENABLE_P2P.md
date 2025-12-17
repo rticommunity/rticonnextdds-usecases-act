@@ -16,16 +16,18 @@ Two platforms (Platform-10 and Platform-11) are running with routing services. W
 
 ## Prerequisites
 
-- RTI Connext DDS 7.3.0+
+- RTI Connext DDS 7.3.0+ ([C++ setup guide](https://community.rti.com/static/documentation/developers/get-started/apt-install.html))
 - Built RemoteAdmin tool (`tools/remote_admin/build/RemoteAdmin`)
-- Python 3.x (for simulators)
+- Python 3 with RTI Connext DDS Python API ([setup guide](https://community.rti.com/static/documentation/developers/get-started/pip-install.html#section-pip-install))
+- `NDDSHOME` environment variable set
+- `RTI_LICENSE_FILE` environment variable set
 
 ## Running the Example
 
 ### Terminal 1: Start Platform-10
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_sim.sh
 ```
 
@@ -34,7 +36,7 @@ Leave this running. Platform-10 will publish PlatformData on the PLATFORM_TO_PLA
 ### Terminal 2: Start Platform-10 Routing Service
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_router.sh
 ```
 
@@ -43,7 +45,7 @@ Leave this running. The routing service starts with P2P routes available but can
 ### Terminal 3: Start Platform-11
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_sim.sh
 ```
 
@@ -52,7 +54,7 @@ Leave this running. Platform-11 will subscribe to PlatformData from other platfo
 ### Terminal 4: Start Platform-11 Routing Service
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_router.sh
 ```
 

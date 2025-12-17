@@ -12,15 +12,20 @@
 
 
 # Used for Routing Service
-export PLATFORM_DOMAIN=11
+export PLATFORM_DOMAIN=10
 export TYPE="platform"
-export ROUTER_NAME="USV_11"
+export ROUTER_NAME="USV_10"
 
 # Used for Platform Sim
 export LAN_QOS_PROFILE="LAN::domain_participant_qos"
-export SESSION_ID=11
+export SESSION_ID=10
 export DOMAIN_ID=$PLATFORM_DOMAIN
 export DESTINATION="C2_20"
+
+# XML Files for Platform applications
+XML_FILES="../config/qos/lan_qos_lib.xml;"
+XML_FILES+="../node_sim/datamodel/act_types.xml"
+export XML_FILES
 
 echo "
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------
@@ -30,5 +35,6 @@ ROUTER_NAME: $ROUTER_NAME
 LAN_QOS_PROFILE: $LAN_QOS_PROFILE
 SESSION_ID: $SESSION_ID
 DOMAIN_ID: $DOMAIN_ID
+XML_FILES: $XML_FILES
 DESTINATION: $DESTINATION
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------"

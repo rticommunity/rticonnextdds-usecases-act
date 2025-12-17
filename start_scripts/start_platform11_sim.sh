@@ -10,8 +10,8 @@
 # any incidental or consequential damages arising out of the use or inability
 # to use the software.
 
-# Source NODE parameters
-source ./params/c2_20_params.sh
+# Source Platform 11 parameters
+source ../params/platform_11_params.sh
 
 # Set verbosity
 # 0: dds.Verbosity.SILENT
@@ -22,11 +22,22 @@ VERBOSITY=2
 
 ################################################################################
 
-# RUN C2 Simulator
-python3 ./python_node/c2_sim.py --files ${XML_FILES} \
-                            --qos_profile ${LAN_QOS_PROFILE} \
-                           --domain_id ${DOMAIN_ID} \
-                           --source ${ROUTER_NAME} \
-                           --destination ${DESTINATION} \
-                           --session ${SESSION_ID} \
-                           --verbosity ${VERBOSITY}
+echo "
+-------------------------------- SIM CONFIGS: --------------------------------
+XML FILES:  $XML_FILES
+QOS_PROFILE:  $LAN_QOS_PROFILE
+DOMAIN_ID:  $DOMAIN_ID
+SOURCE:  $ROUTER_NAME
+DESTINATION:  $DESTINATION
+SESSION:  $SESSION_ID
+VERBOSITY:  $VERBOSITY
+-------------------------------- SIM CONFIGS: --------------------------------"
+
+# RUN Platform Simulator
+python3 ../node_sim/python/platform_sim.py --files ${XML_FILES} \
+                                 --qos_profile ${LAN_QOS_PROFILE} \
+                                 --domain_id ${DOMAIN_ID} \
+                                 --source ${ROUTER_NAME} \
+                                 --destination ${DESTINATION} \
+                                 --session ${SESSION_ID} \
+                                 --verbosity ${VERBOSITY}

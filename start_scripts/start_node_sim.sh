@@ -10,23 +10,28 @@
 # any incidental or consequential damages arising out of the use or inability
 # to use the software.
 
-# Source NODE params
-source ./params/c2_20_params.sh
+# Generic node simulator start script
+# source ./params/<node>_params.sh
 
-# Source SYSTEM parameters
-source ../../config/params/system_params.sh
+# Set verbosity
+# 0: dds.Verbosity.SILENT
+# 1: dds.Verbosity.EXCEPTION
+# 2: dds.Verbosity.WARNING
+# 3: dds.Verbosity.STATUS_ALL
+VERBOSITY=2
 
-# Check NDDSHOME variable
-if [[ -z "${NDDSHOME}" ]]; then
-    echo "Must set the NDDSHOME environment variable "
-    exit 1;
-fi
 
 ################################################################################
-#                                 VERBOSITY                                    #
-################################################################################
 
-verbosity=ERROR:ERROR
+# RUN - TYPE should be set to "platform" or "c2" in the sourced params file
+python3 ../node_sim/python/${TYPE}_sim.py --files ${XML_FILES} \
+                                --qos_profile ${LAN_QOS_PROFILE} \
+                                --domain_id ${DOMAIN_ID} \
+                                --source ${ROUTER_NAME} \
+                                --destination ${DESTINATION} \
+                                --session ${SESSION_ID} \
+                                --verbosity ${VERBOSITY}
 
-# Run Routing Service
-$NDDSHOME/bin/rtiroutingservice -appName $ROUTER_NAME -cfgName $TYPE -verbosity $verbosity
+
+
+

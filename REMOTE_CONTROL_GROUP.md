@@ -69,16 +69,19 @@ In this example, we will:
 
 ## Prerequisites
 
-- RTI Connext DDS 7.3.0 or later installed and `NDDSHOME` set
+- RTI Connext DDS 7.3.0 or later ([C++ setup guide](https://community.rti.com/static/documentation/developers/get-started/apt-install.html))
+- Python 3 with RTI Connext DDS Python API ([setup guide](https://community.rti.com/static/documentation/developers/get-started/pip-install.html#section-pip-install))
+- `NDDSHOME` environment variable set
+- `RTI_LICENSE_FILE` environment variable set
 - RemoteAdmin tool built (`tools/remote_admin/build/RemoteAdmin`)
-- Example parameter files configured (`examples/node_sim/params/`)
+- Parameter files in `params/`
 
 ## Step-by-Step Walkthrough
 
 ### Terminal 1: Start Platform-10 Simulator
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_sim.sh
 ```
 
@@ -93,7 +96,7 @@ Publishing PlatformData with Session ID 1
 ### Terminal 2: Start Platform-10 Router
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_router.sh
 ```
 
@@ -106,7 +109,7 @@ RTI Routing Service started
 ### Terminal 3: Start Platform-11 Simulator
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_sim.sh
 ```
 
@@ -115,14 +118,14 @@ Similar output as Platform-10, publishing session data.
 ### Terminal 4: Start Platform-11 Router
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform11_router.sh
 ```
 
 ### Terminal 5: Start C2 Simulator
 
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_c2_20_sim.sh
 ```
 
@@ -155,8 +158,8 @@ Expected output:
 =============================================================
 Remote Admin - RTI Routing Service Controller
 =============================================================
-Using system parameters from: /media/sf_VM_SHARED/ACT/rticonnextdds-usecases-act/examples/node_sim/params
-Exported NDDS_QOS_PROFILES: /media/sf_VM_SHARED/ACT/rticonnextdds-usecases-act/config/qos/remoteadmin_qos_lib.xml
+Using system parameters from: rticonnextdds-usecases-act/params
+Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qos_lib.xml
 =============================================================
 
 Waiting for a matching replier...

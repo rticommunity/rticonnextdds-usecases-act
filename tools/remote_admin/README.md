@@ -212,13 +212,11 @@ This tool is designed to work with the Autonomous Collaborative Teaming (ACT) ro
 
 ```bash
 # Terminal 1: Start Platform-10 routing service
-cd examples/node_sim
-source ./platform_10_params.sh
+cd start_scripts
 ./start_platform10_router.sh
 
 # Terminal 2: Start Platform-11 routing service
-cd examples/node_sim
-source ./platform_11_params.sh
+cd start_scripts
 ./start_platform11_router.sh
 
 # Terminal 3: Enable P2P communication for Platform-10

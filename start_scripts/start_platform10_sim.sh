@@ -11,13 +11,7 @@
 # to use the software.
 
 # Source Platform 10 parameters
-source ./params/platform_10_params.sh
-
-# LAN QOS file
-XML_FILES+="../../config/qos/lan_qos_lib.xml;"
-
-# Add Types file
-XML_FILES+="./types/act_types.xml"
+source ../params/platform_10_params.sh
 
 # Set verbosity
 # 0: dds.Verbosity.SILENT
@@ -40,7 +34,7 @@ VERBOSITY:  $VERBOSITY
 -------------------------------- SIM CONFIGS: --------------------------------"
 
 # RUN Platform Simulator
-python3 ./python_node/platform_sim.py --files ${XML_FILES} \
+python3 ../node_sim/python/platform_sim.py --files ${XML_FILES} \
                                  --qos_profile ${LAN_QOS_PROFILE} \
                                  --domain_id ${DOMAIN_ID} \
                                  --source ${ROUTER_NAME} \

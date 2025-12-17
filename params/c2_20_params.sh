@@ -21,12 +21,9 @@ export LAN_QOS_PROFILE="LAN::domain_participant_qos"
 export SESSION_ID=20
 export DOMAIN_ID=$C2_DOMAIN
 
-# LAN QOS file
-XML_FILES+="../../config/qos/lan_qos_lib.xml;"
-
-# Add Types file
-XML_FILES+="./types/act_types.xml"
-
+# XML Files for C2 applications
+XML_FILES="../config/qos/lan_qos_lib.xml;"
+XML_FILES+="../node_sim/datamodel/act_types.xml"
 export XML_FILES
 
 # Matches Platform10

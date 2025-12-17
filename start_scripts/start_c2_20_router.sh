@@ -10,25 +10,23 @@
 # any incidental or consequential damages arising out of the use or inability
 # to use the software.
 
+# Source NODE parameters
+source ../params/c2_20_params.sh
 
-# Used for Routing Service
-export PLATFORM_DOMAIN=10
-export TYPE="platform"
-export ROUTER_NAME="USV_10"
+# Source SYSTEM parameters
+source ../params/system_params.sh
 
-# Used for Platform Sim
-export LAN_QOS_PROFILE="LAN::domain_participant_qos"
-export SESSION_ID=10
-export DOMAIN_ID=$PLATFORM_DOMAIN
-export DESTINATION="C2_20"
+# Check NDDSHOME variable
+if [[ -z "${NDDSHOME}" ]]; then
+    echo "Must set the NDDSHOME environment variable "
+    exit 1;
+fi
 
-echo "
--------------------------------- $ROUTER_NAME CONFIGS: -------------------------
-PLATFORM_DOMAIN: $PLATFORM_DOMAIN
-TYPE: $TYPE
-ROUTER_NAME: $ROUTER_NAME
-LAN_QOS_PROFILE: $LAN_QOS_PROFILE
-SESSION_ID: $SESSION_ID
-DOMAIN_ID: $DOMAIN_ID
-DESTINATION: $DESTINATION
--------------------------------- $ROUTER_NAME CONFIGS: -------------------------"
+################################################################################
+#                                 VERBOSITY                                    #
+################################################################################
+
+verbosity=ERROR:ERROR
+
+# Run Routing Service
+$NDDSHOME/bin/rtiroutingservice -appName $ROUTER_NAME -cfgName $TYPE -verbosity $verbosity

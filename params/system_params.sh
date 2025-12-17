@@ -14,26 +14,26 @@
 # SYSTEM PARAMETERS
 ################################################################################
 # This is the default system_params.sh file for the ACT use case.
-# Location: config/params/system_params.sh
+# Location: params/system_params.sh
 #
 # These parameters are shared across all nodes in the system.
-# Paths are relative to this file's location (config/params/).
+# Paths are relative to this file's location (params/).
 ################################################################################
 
 # XML Files
 export NDDS_QOS_PROFILES=""
 
-# WAN QoS (relative path from config/params/ to config/qos/)
-NDDS_QOS_PROFILES+="../qos/wan_qos_lib.xml;"
+# WAN QoS (relative path from params/ to config/qos/)
+NDDS_QOS_PROFILES+="../config/qos/wan_qos_lib.xml;"
 
 # LAN QoS
-NDDS_QOS_PROFILES+="../qos/lan_qos_lib.xml;"
+NDDS_QOS_PROFILES+="../config/qos/lan_qos_lib.xml;"
 
 # Remote Admin QoS
-NDDS_QOS_PROFILES+="../qos/remoteadmin_qos_lib.xml;"
+NDDS_QOS_PROFILES+="../config/qos/remoteadmin_qos_lib.xml;"
 
-# Routing Service file (relative path from config/params/ to config/routing/)
-NDDS_QOS_PROFILES+="../routing/routing_service_config.xml"
+# Routing Service file (relative path from params/ to config/routing/)
+NDDS_QOS_PROFILES+="../config/routing/routing_service_config.xml"
 
 echo "
 -----------------------------XML PROFILES---------------------------------------

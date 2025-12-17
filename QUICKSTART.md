@@ -4,7 +4,7 @@ This is a minimal example demonstrating the ACT (Autonomous Collaborative Teamin
 
 ## Overview
 
-This example uses the shared scripts from `../node_sim/` to launch:
+This example launches:
 - **Platform 10 (USV_10)**: A simulated unmanned surface vehicle
 - **C2 Station 20**: A command and control station
 
@@ -12,9 +12,11 @@ Each node requires both a **routing service** (bridges domains) and a **simulato
 
 ## Prerequisites
 
-- RTI Connext DDS Professional 7.3.0+
-- Python 3 with RTI Connext DDS Python API
+- [RTI Connext DDS Professional 7.3.0+](https://community.rti.com/static/documentation/developers/get-started/) (free license available immediately)
+- Python 3 with RTI Connext DDS Python API ([setup guide](https://community.rti.com/static/documentation/developers/get-started/pip-install.html#section-pip-install))
 - RTI Routing Service
+- `NDDSHOME` environment variable set
+- `RTI_LICENSE_FILE` environment variable set
 
 ## Quick Start
 
@@ -22,25 +24,25 @@ Open **4 terminals** and run the following commands from the repository root:
 
 ### Terminal 1: Platform 10 Router
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_router.sh
 ```
 
 ### Terminal 2: Platform 10 Simulator
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_platform10_sim.sh
 ```
 
 ### Terminal 3: C2-20 Router
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_c2_20_router.sh
 ```
 
 ### Terminal 4: C2-20 Simulator
 ```bash
-cd examples/node_sim
+cd start_scripts
 ./start_c2_20_sim.sh
 ```
 
@@ -65,28 +67,24 @@ cd examples/node_sim
 
 ## Monitoring with RTI Tools
 
-You can monitor the system using RTI Admin Console or RTI Monitor:
+You can monitor the system using RTI Admin Console:
 
 ```bash
 # From repository root
-# Admin Console will use config/qos/rti_admin_console_qos_lib.xml
+# Admin Console can use config/qos/rti_admin_console_qos_lib.xml for UDPv6
 rtiadminconsole
 ```
 
 ## Next Steps
 
-- Review the scripts in `../node_sim/` to understand the configuration
-- Check parameter files in `../node_sim/params/` to see domain/QoS settings
-- Try the **multi-platform** example for a more advanced scenario
-- Use the **RemoteAdmin** tool (`tools/remote_admin/`) to control routers at runtime
+- Review scripts in `start_scripts/` and parameters in `params/`
+- Try the [Multi-Platform](MULTI_PLATFORM.md) example
+- Use [RemoteAdmin](tools/remote_admin/) to control routers at runtime
 
 ## Troubleshooting
 
 **Issue**: Scripts fail with "file not found"
-- **Solution**: Make sure to run scripts from `examples/node_sim/` directory
-
-**Issue**: Simulators don't see each other's data
-- **Solution**: Ensure both routers are running before starting simulators
+- **Solution**: Run scripts from `start_scripts/` directory
 
 **Issue**: Python import errors
 - **Solution**: Verify RTI Connext DDS Python API is installed and `NDDSHOME` is set

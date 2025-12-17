@@ -25,57 +25,62 @@ For quick start information, see the main [README.md](README.md).
 
 ## Repository Structure
 
-The repository is organized to separate learning resources, production templates, and shared configuration:
-
 ```
 rticonnextdds-usecases-act/
 ├── config/                      # System-wide configuration
-│   ├── params/                 # System parameters (WAN settings, channels)
-│   │   └── system_params.sh    # Centralized system configuration
 │   ├── qos/                    # QoS profiles (LAN, WAN, Remote Admin)
 │   │   ├── lan_qos_lib.xml
 │   │   ├── wan_qos_lib.xml
 │   │   └── remoteadmin_qos_lib.xml
 │   └── routing/                # Routing Service configuration
 │       └── routing_service_config.xml
-├── examples/                    # Demo implementations for learning
-│   ├── README.md               # Examples overview and learning path
-│   ├── QUICKSTART.md           # 1 Platform + 1 C2 walkthrough
-│   ├── MULTI_PLATFORM.md       # 2 Platforms + 1 C2 walkthrough
-│   ├── REMOTE_ENABLE_P2P.md    # Dynamic P2P control
-│   ├── REMOTE_CONTROL_GROUP.md # Group assignment
-│   └── node_sim/               # Python simulators and demo scripts
-│       ├── params/             # Example parameter files
-│       ├── python_node/        # Python simulators
-│       ├── types/              # Example IDL types
-│       └── start_*.sh          # Demo start scripts
-├── templates/                   # Starting points for deployment
-│   ├── DEPLOYMENT.md           # Comprehensive deployment guide
-│   ├── README.md               # Template usage instructions
-│   ├── params/                 # Parameter file templates
-│   │   ├── system_params.template.sh
-│   │   └── node_params.template.sh
-│   └── scripts/                # Start script templates
-│       ├── start_node_router.template.sh
-│       └── start_node.template.sh
+├── params/                      # Parameter files
+│   ├── system_params.sh        # System-wide parameters
+│   ├── platform_10_params.sh   # Platform 10 configuration
+│   ├── platform_11_params.sh   # Platform 11 configuration
+│   └── c2_20_params.sh         # C2-20 configuration
+├── start_scripts/               # Launch scripts
+│   ├── start_platform10_router.sh
+│   ├── start_platform10_sim.sh
+│   ├── start_platform11_router.sh
+│   ├── start_platform11_sim.sh
+│   ├── start_c2_20_router.sh
+│   └── start_c2_20_sim.sh
+├── node_sim/                    # Node simulator components
+│   ├── python/                 # Python simulators
+│   │   ├── platform_sim.py
+│   │   └── c2_sim.py
+│   └── datamodel/              # Type definitions
+│       └── act_types.xml
 ├── tools/                       # Utilities
 │   └── remote_admin/           # Remote administration tool
-│       ├── README.md           # RemoteAdmin documentation
-│       ├── cmake/              # Local CMake modules
+│       ├── cmake/              # CMake modules
+│       │   ├── ConnextDdsArgumentChecks.cmake
+│       │   ├── ConnextDdsCodegen.cmake
+│       │   ├── FindRTIConnextDDS.cmake
+│       │   └── README.md
 │       ├── include/            # Header files
+│       │   └── application.hpp
 │       ├── src/                # Source code
+│       │   └── remote_admin.cxx
 │       ├── CMakeLists.txt      # Build configuration
+│       ├── README.md           # Documentation
 │       └── remote_admin.sh     # Wrapper script
 ├── docs/                        # Documentation and diagrams
 │   └── images/                 # Architecture diagrams
-├── TECHNICAL_DETAILS.md         # This file - technical reference
+├── QUICKSTART.md                # Basic example
+├── MULTI_PLATFORM.md            # Multi-platform example
+├── REMOTE_ENABLE_P2P.md         # P2P control example
+├── REMOTE_CONTROL_GROUP.md      # Group assignment example
+├── TECHNICAL_DETAILS.md         # This file
 └── README.md                    # Main entry point
 ```
 
 **Directory Purposes**:
-- **config/**: Shared configuration files (QoS, routing, system parameters)
-- **examples/**: Learning resources with runnable demos
-- **templates/**: Production deployment starting points
+- **config/**: QoS profiles and routing service configuration
+- **params/**: All parameter files (system-wide and node-specific)
+- **start_scripts/**: Scripts to start routers and simulators
+- **node_sim/**: Python simulators and data model definitions
 - **tools/**: Utilities like RemoteAdmin for runtime control
 - **docs/**: Architecture diagrams and additional documentation
 

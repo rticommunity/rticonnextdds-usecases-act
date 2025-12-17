@@ -11,10 +11,10 @@
 # to use the software.
 
 # Source Platform 10 parameters
-source ./params/platform_10_params.sh
+source ../params/platform_10_params.sh
 
 # Source SYSTEM parameters
-source ../../config/params/system_params.sh
+source ../params/system_params.sh
 
 # Check NDDSHOME variable
 if [[ -z "${NDDSHOME}" ]]; then
