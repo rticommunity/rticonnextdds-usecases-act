@@ -4,7 +4,7 @@ This example demonstrates how to use the RemoteAdmin tool to dynamically assign 
 
 ## Concept
 
-In the ACT architecture, **groups** are implemented using DDS partitions to logically isolate communication between nodes. Only nodes assigned to the same group can exchange data. This is useful for:
+In the ACT architecture, **groups** are implemented using DDS Domain Participant partitions to logically isolate communication between nodes. Only nodes assigned to the same group can exchange data. This is useful for:
 
 - **Mission separation**: Different teams or operations on separate groups
 - **Security zones**: Restricting data flow to authorized participants
@@ -129,27 +129,34 @@ cd scripts
 ./start_c2_20_sim.sh
 ```
 
-**Important**: Watch the C2 output carefully. You should see it receiving data from **both** Platform-10 and Platform-11:
+### Terminal 6: Start C2-20 Router
+
+```bash
+cd scripts
+./start_c2_20_router.sh
+```
+
+**Important**: Watch the C2 output carefully (Terminal 5). You should see it receiving data from **both** Platform_10 and Platform_11:
 
 ```
-Received PlatformData with Session ID 15 from DDS sample
-Received PlatformData with Session ID 27 from DDS sample
+- Received ContactReport Data: 10 from source: Platform_10 type: Platform
+- Received ContactReport Data: 11 from source: Platform_11 type: Platform
 ...
 ```
 
 The session IDs will alternate or interleave, showing data from both platforms.
 
-### Terminal 6: Verify Initial State
+### Terminal 7: Verify Initial State
 
 Before making any changes, confirm C2 is receiving from both platforms. Let it run for about 10-15 seconds and observe the session IDs. You should see a mix of session IDs from both simulators.
 
-### Terminal 7: Change Platform-11 Group Assignment
+### Terminal 8: Change Platform_11 Group Assignment
 
-Now use RemoteAdmin to assign Platform-11 to group 5:
+Now use RemoteAdmin to assign Platform_11 to group 5:
 
 ```bash
-cd tools/remote_admin
-./remote_admin.sh -n Platform-11 -t platform -g 5
+cd scripts
+./send_remote_cmd.sh -n Platform_11 --type platform -g 5
 ```
 
 Expected output:
@@ -176,50 +183,44 @@ Switch back to Terminal 5 where the C2 simulator is running. You should now see:
 
 **Before group change:**
 ```
-Received PlatformData with Session ID 15 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 27 from DDS sample  ← Platform-11
-Received PlatformData with Session ID 16 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 28 from DDS sample  ← Platform-11
+- Received ContactReport Data: 10 from source: Platform_10 type: Platform
+- Received ContactReport Data: 11 from source: Platform_11 type: Platform
 ```
 
 **After group change:**
 ```
-Received PlatformData with Session ID 17 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 18 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 19 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 20 from DDS sample  ← Platform-10
+- Received ContactReport Data: 10 from source: Platform_10 type: Platform
 ```
 
-Notice that after the group change, you only see session IDs from Platform-10. Platform-11's data is no longer received because it's in a different group (partition).
+Notice that after the group change, you only see ContactReports from Platform_10. Platform_11's data is no longer received because it's in a different group (partition).
 
-### Terminal 7: Move Platform-11 Back to Default Group
+### Terminal 8: Reset Platform_11 to Default Partition
 
-To restore communication, move Platform-11 back to the default group (empty partition):
+To restore communication, reset Platform_11's Domain Participant Partition back to "ALL" (the default):
 
 ```bash
-cd tools/remote_admin
-./remote_admin.sh -n Platform-11 -t platform -g ""
+cd scripts
+./send_remote_cmd.sh -n Platform_11 -g ALL --type platform
 ```
 
-**Note**: Use an empty string `""` or `''` for the default (no partition) group.
+**Note**: The default Domain Participant Partition is "ALL", not an empty string.
 
 ### Terminal 5 (C2): Verify Communication Restored
 
-After moving Platform-11 back to the default group, C2 should start receiving data from both platforms again:
+After moving Platform_11 back to the default group, C2 should start receiving data from both platforms again:
 
 ```
-Received PlatformData with Session ID 45 from DDS sample  ← Platform-10
-Received PlatformData with Session ID 31 from DDS sample  ← Platform-11
-Received PlatformData with Session ID 46 from DDS sample  ← Platform-10
+- Received ContactReport Data: 10 from source: Platform_10 type: Platform
+- Received ContactReport Data: 11 from source: Platform_11 type: Platform
 ```
 
 ## What's Happening Behind the Scenes
 
-When you run `./remote_admin.sh -n Platform-11 -g 5`:
+When you run `./remote_admin.sh -n Platform_11 -g 5`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
-   /routing_services/Platform-11/domain_routes/dr/participants/platform_wan
+   /routing_services/Platform_11/domain_routes/dr/participants/platform_wan
    ```
 
 2. **Creates an XML QoS update** to set the partition:
@@ -245,42 +246,42 @@ When you run `./remote_admin.sh -n Platform-11 -g 5`:
 
 - **Group isolation is immediate**: As soon as the group change is applied, communication stops
 - **No restart required**: The routing service remains running during the reconfiguration
-- **Session IDs continue**: Platform-11 keeps publishing, but C2 can't receive it
-- **Bidirectional isolation**: Platform-11 also can't receive data meant for the default group
-- **Group "0" vs empty**: The default group is an empty partition, not partition "0"
+- **Session IDs continue**: Platform_11 keeps publishing, but C2 can't receive it
+- **Bidirectional isolation**: Platform_11 also can't receive data meant for the default group
+- **Default partition is "ALL"**: The default Domain Participant Partition is set to "ALL", not an empty string or "0"
 
 ## Advanced: Assign C2 to a Group
 
 You can also assign C2 to a specific group to create an isolated communication cell:
 
 ```bash
-# Move Platform-10 to group 3
-./remote_admin.sh -n Platform-10 -t platform -g 3
+# Move Platform_10 to group 3 (using PLATFORM_NAME from params/platform_10_params.sh)
+./send_remote_cmd.sh -n Platform_10 -g 3 --type platform
 
-# Move C2-20 to group 3
-./remote_admin.sh -n C2-20 -t c2 -g 3
+# Move C2_20 to group 3 (using C2_NAME from params/c2_20_params.sh)
+./send_remote_cmd.sh -n C2_20 -g 3 --type c2
 
-# Platform-11 stays in default group
+# Platform_11 stays in default group
 ```
 
 Now:
-- Platform-10 and C2-20 communicate (both in group 3)
-- Platform-11 is isolated (in default group)
-- To add Platform-11 to the group: `./remote_admin.sh -n Platform-11 -g 3`
+- Platform_10 and C2-20 communicate (both in group 3)
+- Platform_11 is isolated (in default group)
+- To add Platform_11 to the group: `./send_remote_cmd.sh -n Platform_11 -g 3 --type platform`
 
 ## Troubleshooting
 
 ### C2 Still Receiving Data After Group Change
 
-- **Verify the command succeeded**: Check RemoteAdmin output for "Command returned: OK"
+- **Verify the command succeeded**: Check RemoteAdmin output for "Command returned: entity updated OK"
 - **Check routing service logs**: Look for partition updates in the router terminal
-- **Confirm correct resource name**: Use `-n Platform-11` not `-n platform-11` (case-sensitive)
+- **Confirm correct resource name**: Use `-n Platform_11` not `-n platform_11` (case-sensitive)
 - **Wait a few seconds**: There may be a small delay for DDS discovery to update
 
 ### RemoteAdmin Shows "No matching replier found"
 
-- **Verify routing service is running**: Check Terminal 4 (Platform-11 router)
-- **Check application name**: The `-appName Platform-11` in the router must match `-n Platform-11` in RemoteAdmin
+- **Verify routing service is running**: Check Terminal 4 (Platform_11 router)
+- **Check application name**: The `-appName Platform_11` in the router must match `-n Platform_11` in RemoteAdmin
 - **Verify admin domain**: Both router and RemoteAdmin must use the same admin domain (default: 100)
 
 ### C2 Not Receiving Any Data
@@ -293,11 +294,12 @@ Now:
 
 To stop all processes, press `Ctrl+C` in each terminal:
 
-1. Terminal 1: Platform-10 simulator
-2. Terminal 2: Platform-10 router
-3. Terminal 3: Platform-11 simulator
-4. Terminal 4: Platform-11 router
-5. Terminal 5: C2-20 simulator
+1. Terminal 1: Platform_10 simulator
+2. Terminal 2: Platform_10 router
+3. Terminal 3: Platform_11 simulator
+4. Terminal 4: Platform_11 router
+5. Terminal 5: C2_20 simulator
+6. Terminal 6: C2_20 router
 
 ## Related Examples
 
@@ -310,7 +312,7 @@ To stop all processes, press `Ctrl+C` in each terminal:
 This example demonstrates:
 
 ✅ Dynamic group assignment using RemoteAdmin  
-✅ DDS partition-based isolation between groups  
+✅ [DDS Domain Participant Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)-based isolation between groups  
 ✅ Runtime reconfiguration without service restarts  
 ✅ Verification of group isolation through message observation  
 ✅ Restoring communication by reassigning groups  

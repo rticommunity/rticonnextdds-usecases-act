@@ -5,8 +5,8 @@ This is a minimal example demonstrating the ACT (Autonomous Collaborative Teamin
 ## Overview
 
 This example launches:
-- **Platform 10 (USV_10)**: A simulated unmanned surface vehicle
-- **C2 Station 20**: A command and control station
+- **Platform 10 (Platform_10)**: A simulated platform node
+- **C2 Station 20 (C2_20)**: A command and control station
 
 Each node requires both a **routing service** (bridges domains) and a **simulator** (generates/processes data).
 
@@ -61,9 +61,9 @@ cd scripts
 - Sending `PlatformCommandAck` acknowledgments
 
 **C2 Simulator** will show:
-- Receiving `PlatformStatus` from USV_10
-- Sending `C2Command` to USV_10
-- Receiving `PlatformCommandAck` from USV_10
+- Receiving `PlatformStatus` from Platform_10
+- Sending `C2Command` to Platform_10
+- Receiving `PlatformCommandAck` from Platform_10
 
 ## Monitoring with RTI Tools
 
@@ -79,7 +79,7 @@ rtiadminconsole
 
 - Review scripts in `scripts/` and parameters in `params/`
 - Try the [Multi-Platform](MULTI_PLATFORM.md) example
-- Use [RemoteAdmin](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html) to control routers at runtime
+- Use [RemoteAdmin](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html) ([local tool docs](tools/remote_admin/README.md)) to control routers at runtime - see [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md) and [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md) for examples
 
 ## Troubleshooting
 

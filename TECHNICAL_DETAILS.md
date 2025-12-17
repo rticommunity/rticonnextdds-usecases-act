@@ -39,7 +39,7 @@ rticonnextdds-usecases-act/
 │   ├── platform_10_params.sh   # Platform 10 configuration
 │   ├── platform_11_params.sh   # Platform 11 configuration
 │   └── c2_20_params.sh         # C2-20 configuration
-├── start_scripts/               # Launch scripts
+├── scripts/                    # Launch scripts and remote admin wrapper
 │   ├── start_platform10_router.sh
 │   ├── start_platform10_sim.sh
 │   ├── start_platform11_router.sh
@@ -65,7 +65,7 @@ rticonnextdds-usecases-act/
 │       │   └── remote_admin.cxx
 │       ├── CMakeLists.txt      # Build configuration
 │       ├── README.md           # Documentation
-│       └── remote_admin.sh     # Wrapper script
+│       └── send_remote_cmd.sh     # Wrapper script
 ├── docs/                        # Documentation and diagrams
 │   └── images/                 # Architecture diagrams
 ├── QUICKSTART.md                # Basic example
@@ -79,7 +79,7 @@ rticonnextdds-usecases-act/
 **Directory Purposes**:
 - **config/**: QoS profiles and routing service configuration
 - **params/**: All parameter files (system-wide and node-specific)
-- **start_scripts/**: Scripts to start routers and simulators
+- **scripts/**: Scripts to start routers, simulators, and send remote admin commands
 - **node_sim/**: Python simulators and data model definitions
 - **tools/**: Utilities like RemoteAdmin for runtime control
 - **docs/**: Architecture diagrams and additional documentation

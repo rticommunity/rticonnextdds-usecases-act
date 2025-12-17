@@ -127,9 +127,9 @@ cd scripts
 ./send_remote_cmd.sh -n Platform_10 --p2p true
 ```
 
-**Note**: The `-n` parameter uses the unique identifier (PLATFORM_NAME or C2_NAME) defined in each node's params file:
-- Platform nodes: Use PLATFORM_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
-- C2 nodes: Use C2_NAME from `params/c2_*_params.sh` (e.g., C2_20)
+**Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
+- Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
+- C2 nodes: Use ROUTER_NAME from `params/c2_*_params.sh` (e.g., C2_20)
 
 The wrapper script:
 - Sources `system_params.sh` automatically from `config/params/`

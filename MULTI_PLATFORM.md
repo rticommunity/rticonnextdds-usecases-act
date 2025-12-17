@@ -134,18 +134,23 @@ The P2P communication happens automatically between platforms. To verify:
 
 ## Advanced: Remote Administration
 
-Control routers at runtime using the RemoteAdmin tool:
+Control routers at runtime using the [RemoteAdmin tool](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html):
 
 ```bash
-cd tools/remote_admin/build
-./RemoteAdmin
+cd scripts
+# Enable P2P on Platform_10
+./send_remote_cmd.sh -n Platform_10 --p2p true
+
+# Assign Platform_11 to group 5
+./send_remote_cmd.sh -n Platform_11 --type platform -g 5
 ```
 
 RemoteAdmin allows you to:
-- Enable/disable routes dynamically
-- Pause/resume data flow
-- Monitor routing service status
-- Test failover scenarios
+- Enable/disable P2P routes dynamically
+- Assign nodes to different groups for isolation
+- Control data flow without restarting services
+
+See [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md) and [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md) for detailed examples.
 
 ## Scaling to More Platforms
 
@@ -159,7 +164,7 @@ To add Platform 12:
 
 2. Edit `platform_12_params.sh`:
    - Change `PLATFORM_DOMAIN=12`
-   - Change `ROUTER_NAME="USV_12"`
+   - Change `ROUTER_NAME="Platform_12"`
    - Change `SESSION_ID=12`
 
 3. Copy and update start scripts:
@@ -173,13 +178,13 @@ To add Platform 12:
 
 ## Configuration Details
 
-All configurations are in `../node_sim/params/`:
-- `platform_10_params.sh`: USV_10 on domain 10
-- `platform_11_params.sh`: USV_11 on domain 11
+All configurations are in `params/`:
+- `platform_10_params.sh`: Platform_10 on domain 10
+- `platform_11_params.sh`: Platform_11 on domain 11
 - `c2_20_params.sh`: C2_20 on domain 20
-- `config/params/system_params.sh`: WAN timing, channel setup and network parameters
+- `system_params.sh`: WAN timing, channel setup and network parameters
 
-QoS profiles are in `../../config/qos/`:
+QoS profiles are in `config/qos/`:
 - `lan_qos_lib.xml`: LAN domain QoS
 - `wan_qos_lib.xml`: WAN domain QoS
 - `remoteadmin_qos_lib.xml`: Remote admin QoS
@@ -203,7 +208,7 @@ QoS profiles are in `../../config/qos/`:
 - **Solution**: Check domain IDs in parameter files match
 
 **Issue**: High latency or packet loss
-- **Solution**: Adjust `config/params/system_params.sh` WAN timing parameters
+- **Solution**: Adjust `params/system_params.sh` WAN timing parameters
 - **Solution**: Check network connectivity between nodes
 
 ---
