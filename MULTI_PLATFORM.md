@@ -205,3 +205,9 @@ QoS profiles are in `../../config/qos/`:
 **Issue**: High latency or packet loss
 - **Solution**: Adjust `config/params/system_params.sh` WAN timing parameters
 - **Solution**: Check network connectivity between nodes
+
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!

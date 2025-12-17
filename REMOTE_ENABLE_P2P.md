@@ -189,3 +189,9 @@ pkill -f "rtiroutingservice"
 - **RemoteAdmin Tool**: See `tools/remote_admin/README.md` for detailed usage
 - **QUICKSTART**: See `examples/QUICKSTART.md` for basic setup
 - **MULTI_PLATFORM**: See `examples/MULTI_PLATFORM.md` for more complex scenarios
+
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!

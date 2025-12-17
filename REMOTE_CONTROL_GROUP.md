@@ -316,3 +316,9 @@ This example demonstrates:
 ✅ Restoring communication by reassigning groups  
 
 Groups provide a powerful mechanism for organizing and isolating communication in complex distributed systems. Use RemoteAdmin to dynamically manage these assignments as operational requirements change.
+
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!

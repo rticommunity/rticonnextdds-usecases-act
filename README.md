@@ -18,3 +18,9 @@ This use case is centered around a Maritime ISR scenario but can be adapted for 
 ### Technical Details
 
 **[TECHNICAL_DETAILS.md](TECHNICAL_DETAILS.md)** - Architecture, QoS patterns, data channels, and configuration details.
+
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!

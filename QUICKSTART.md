@@ -88,3 +88,9 @@ rtiadminconsole
 
 **Issue**: Python import errors
 - **Solution**: Verify RTI Connext DDS Python API is installed and `NDDSHOME` is set
+
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!

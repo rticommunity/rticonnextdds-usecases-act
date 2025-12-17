@@ -418,7 +418,11 @@ No XML file changes required!
 - RTI Routing Service User's Manual
 - RTI Admin Console User's Manual
 
-For questions or issues, please contact RTI support.
+---
+
+## Questions or Feedback?
+
+Reach out to us at **services_community@rti.com** - we welcome your questions and feedback!
 
 ---
 
