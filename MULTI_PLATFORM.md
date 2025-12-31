@@ -1,6 +1,6 @@
 # ACT Multi-Platform Example
 
-This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming) deployment with **2 Platforms** and **1 C2 Station**, including **platform-to-platform (P2P)** communication.
+This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming) deployment with **2 Platforms** and **1 C2 Station**, including **platform-to-platform (TEAM)** communication.
 
 ## Overview
 
@@ -11,7 +11,7 @@ This example launches:
 
 Key features demonstrated:
 - Multiple platforms communicating through WAN
-- Platform-to-platform (P2P) direct communication
+- Platform-to-platform (TEAM) direct communication
 - C2 commanding multiple platforms
 - Contact report sharing between platforms
 
@@ -71,7 +71,7 @@ cd scripts
 ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
 │ Platform 10 │         │ Platform 11 │         │    C2-20    │
 │  (Domain 10)│◄───────►│  (Domain 11)│◄───────►│  (Domain 20)│
-└──────┬──────┘    P2P  └──────┬──────┘    WAN  └──────┬──────┘
+└──────┬──────┘    TEAM  └──────┬──────┘    WAN  └──────┬──────┘
        │                        │                        │
        └────────────────────────┴────────────────────────┘
                           WAN Domain 0
@@ -84,7 +84,7 @@ cd scripts
    - C2 sends `C2Command` → Platforms receive
    - Platforms send `PlatformCommandAck` → C2 receives
 
-2. **Platform-to-Platform (P2P)**:
+2. **Platform-to-Platform (TEAM)**:
    - Platforms share `PlatformData` directly
    - Platforms exchange `ContactReport` information
    - Collaborative awareness without C2 relay
@@ -92,13 +92,13 @@ cd scripts
 3. **Multi-Platform Coordination**:
    - C2 monitors status from both platforms
    - C2 can command either platform independently
-   - Platforms coordinate autonomously via P2P
+   - Platforms coordinate autonomously via TEAM
 
 ## Expected Output
 
 **Platform Simulators** will show:
 - Publishing `PlatformStatus` to C2
-- Publishing `PlatformData` for P2P
+- Publishing `PlatformData` for TEAM
 - Receiving `C2Command` from C2-20
 - Sending `PlatformCommandAck` to C2-20
 - Publishing `ContactReport` data
@@ -124,9 +124,9 @@ You should see:
 - Domain 20: C2_20 publications/subscriptions
 - Domain 0: WAN routing traffic
 
-## Testing P2P Communication
+## Testing TEAM Communication
 
-The P2P communication happens automatically between platforms. To verify:
+The TEAM communication happens automatically between platforms. To verify:
 
 1. Watch for `PlatformData` messages in the simulator output
 2. Both platforms should see each other's data
@@ -137,20 +137,20 @@ The P2P communication happens automatically between platforms. To verify:
 Control routers at runtime using the [RemoteAdmin tool](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html):
 
 ```bash
-cd scripts
-# Enable P2P on Platform_10
-./send_remote_cmd.sh -n Platform_10 --p2p true
+cd tools/remote_admin
+# Enable TEAM on Platform_10
+./send_remote_cmd.sh -n Platform_10 --team true
 
-# Assign Platform_11 to group 5
+# Assign Platform_11 to team 5
 ./send_remote_cmd.sh -n Platform_11 --type platform -g 5
 ```
 
 RemoteAdmin allows you to:
-- Enable/disable P2P routes dynamically
+- Enable/disable TEAM routes dynamically
 - Assign nodes to different groups for isolation
 - Control data flow without restarting services
 
-See [REMOTE_ENABLE_P2P.md](REMOTE_ENABLE_P2P.md) and [REMOTE_CONTROL_GROUP.md](REMOTE_CONTROL_GROUP.md) for detailed examples.
+See [REMOTE_ENABLE_TEAM.md](REMOTE_ENABLE_TEAM.md) and [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) for detailed examples.
 
 ## Scaling to More Platforms
 
@@ -199,8 +199,8 @@ QoS profiles are in `config/qos/`:
 
 ## Troubleshooting
 
-**Issue**: Platforms can't see each other's P2P data
-- **Solution**: Verify routing services are configured for P2P routes
+**Issue**: Platforms can't see each other's TEAM data
+- **Solution**: Verify routing services are configured for TEAM routes
 - **Solution**: Check that both platform routers are running
 
 **Issue**: C2 not receiving data from one platform

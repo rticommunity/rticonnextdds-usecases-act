@@ -65,13 +65,13 @@ rticonnextdds-usecases-act/
 │       │   └── remote_admin.cxx
 │       ├── CMakeLists.txt      # Build configuration
 │       ├── README.md           # Documentation
-│       └── send_remote_cmd.sh     # Wrapper script
+│       └── send_remote_cmd.sh  # Wrapper script
 ├── docs/                        # Documentation and diagrams
 │   └── images/                 # Architecture diagrams
 ├── QUICKSTART.md                # Basic example
 ├── MULTI_PLATFORM.md            # Multi-platform example
-├── REMOTE_ENABLE_P2P.md         # P2P control example
-├── REMOTE_CONTROL_GROUP.md      # Group assignment example
+├── REMOTE_ENABLE_TEAM.md         # TEAM control example
+├── REMOTE_CONTROL_TEAM.md      # Team assignment example
 ├── TECHNICAL_DETAILS.md         # This file
 └── README.md                    # Main entry point
 ```
@@ -265,10 +265,10 @@ These ensure RELIABLE delivery works correctly over high-latency links.
 
 ![ACT Data Channels Logical View](docs/images/act_channels.jpeg)
 
-Data channels provide an **abstraction layer** for routing configuration. Instead of modifying XML files for every new topic, you define channels in `config/params/system_params.sh` that group topics by their data pattern and apply appropriate QoS policies.
+Data channels provide an **abstraction layer** for routing configuration. Instead of modifying XML files for every new topic, you define channels in `config/params/system_params.sh` that team topics by their data pattern and apply appropriate QoS policies.
 
 **Key Benefits**:
-- Group topics by data pattern (periodic vs aperiodic)
+- Team topics by data pattern (periodic vs aperiodic)
 - Apply appropriate QoS policies per channel
 - Use regex matching for topic selection
 - Control routing behavior without modifying XML files
@@ -386,7 +386,7 @@ No XML file changes required!
 
 ### Tools
 - **RemoteAdmin**: See `tools/remote_admin/` for runtime configuration
-  - Enable/disable P2P routes dynamically
+  - Enable/disable TEAM routes dynamically
   - Assign nodes to groups (partitions)
   - No service restarts required
 
@@ -394,8 +394,8 @@ No XML file changes required!
 - **Examples**: See `examples/` for hands-on walkthroughs
   - [QUICKSTART](examples/QUICKSTART.md): 1 Platform + 1 C2
   - [MULTI_PLATFORM](examples/MULTI_PLATFORM.md): 2 Platforms + 1 C2
-  - [REMOTE_ENABLE_P2P](examples/REMOTE_ENABLE_P2P.md): Dynamic P2P control
-  - [REMOTE_CONTROL_GROUP](examples/REMOTE_CONTROL_GROUP.md): Group assignment
+  - [REMOTE_ENABLE_TEAM](examples/REMOTE_ENABLE_TEAM.md): Dynamic TEAM control
+  - [REMOTE_CONTROL_TEAM](examples/REMOTE_CONTROL_TEAM.md): Team assignment
 - **Deployment Guide**: See `templates/DEPLOYMENT.md` for production setup
 - **Architecture Diagrams**: See `docs/images/` for system visuals
 

@@ -31,8 +31,8 @@ using namespace RTI::Service::Admin;
 static constexpr unsigned int WAIT_TIMEOUT_SEC_MAX = 10;
 
 // Session names
-static const std::string PLATFORM_TO_WAN_P2P = "platform_to_wan_p2p";
-static const std::string WAN_TO_PLATFORM_P2P = "wan_to_platform_p2p";
+static const std::string PLATFORM_TO_WAN_TEAM = "platform_to_wan_team";
+static const std::string WAN_TO_PLATFORM_TEAM = "wan_to_platform_team";
 
 // Participant and routing service configuration names
 static const std::string PLATFORM_WAN_PARTICIPANT = "platform_wan";
@@ -49,7 +49,7 @@ static const std::string PATH_SESSIONS = "/sessions/";
 static const std::string PATH_STATE = "/state";
 static const std::string PATH_PARTICIPANTS = "/participants/";
 
-// XML request segments for group update
+// XML request segments for team update
 static const std::string XML_STR_PREFIX = "str://";
 static const std::string XML_PARTICIPANT_START = 
     "\"<participant><domain_participant_qos><partition><name><element>";
@@ -92,7 +92,7 @@ static void send_route_update(
                      "application_name: "
                   << args.name << std::endl;
 
-        if (args.p2p) {
+        if (args.enable_team_comms) {
             // Sets state to Enabled
             dds::topic::topic_type_support<EntityState>::to_cdr_buffer(
                     reinterpret_cast<std::vector<char> &>(request.octet_body()),
@@ -130,7 +130,7 @@ static void send_route_update(
     }
 }
 
-static void send_group_update(
+static void send_team_update(
         rti::request::Requester<
                 RTI::Service::Admin::CommandRequest,
                 RTI::Service::Admin::CommandReply> &requester,
@@ -159,9 +159,9 @@ static void send_group_update(
                 + participant_name;
 
         std::string string_body = XML_STR_PREFIX + XML_PARTICIPANT_START
-                + args.group + XML_PARTICIPANT_END;
+                + args.team + XML_PARTICIPANT_END;
 
-        std::cout << "Sending Remote GROUP UPDATE: \n"
+        std::cout << "Sending Remote TEAM UPDATE: \n"
                      "resource_identifier: "
                   << resource_identifier
                   << "\n"
@@ -252,27 +252,27 @@ int main(int argc, char *argv[])
         }
 
 
-        if (arguments.update_p2p) {
-            // Enable or disable both P2P sessions based on --p2p flag
+        if (arguments.update_enable_team_comms) {
+            // Enable or disable both TEAM sessions based on --enable-team-comms flag
             send_route_update(
                     requester,
                     arguments,
-                    PLATFORM_TO_WAN_P2P,
+                    PLATFORM_TO_WAN_TEAM,
                     RS_CONFIG_NAME_PLATFORM);
             send_route_update(
                     requester,
                     arguments,
-                    WAN_TO_PLATFORM_P2P,
+                    WAN_TO_PLATFORM_TEAM,
                     RS_CONFIG_NAME_PLATFORM);
         }
 
 
-        if (arguments.update_group) {
+        if (arguments.update_team) {
             // Select config name based on node type
             std::string config_name = (arguments.node_type == "c2") 
                                       ? RS_CONFIG_NAME_C2 
                                       : RS_CONFIG_NAME_PLATFORM;
-            send_group_update(requester, arguments, config_name);
+            send_team_update(requester, arguments, config_name);
         }
 
     } catch (const std::exception &ex) {

@@ -52,13 +52,13 @@ struct ApplicationArguments {
 
     // Required parameters - empty means "not provided"
     std::string name = "";
-    std::string group = "";
     std::string node_type = "platform";  // "platform" or "c2"
+    std::string team = "";
 
     // Flags with sensible defaults
-    bool p2p = false;
-    bool update_group = false;
-    bool update_p2p = false;
+    bool update_team = false;
+    bool enable_team_comms = false;
+    bool update_enable_team_comms = false;
 };
 
 // Parses application arguments.
@@ -89,15 +89,14 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
             arg_processing += 2;
         } else if (
                 (argc > arg_processing + 1)
-                && (strcmp(argv[arg_processing], "-g") == 0
-                    || strcmp(argv[arg_processing], "--group") == 0)) {
-            args.group = argv[arg_processing + 1];
-            args.update_group = true;
+                && (strcmp(argv[arg_processing], "-t") == 0
+                    || strcmp(argv[arg_processing], "--team") == 0)) {
+            args.team = argv[arg_processing + 1];
+            args.update_team = true;
             arg_processing += 2;
         } else if (
                 (argc > arg_processing + 1)
-                && (strcmp(argv[arg_processing], "-t") == 0
-                    || strcmp(argv[arg_processing], "--type") == 0)) {
+                && (strcmp(argv[arg_processing], "--type") == 0)) {
             std::string type_value = argv[arg_processing + 1];
             if (type_value == "platform" || type_value == "c2") {
                 args.node_type = type_value;
@@ -110,19 +109,19 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
             arg_processing += 2;
         } else if (
                 (argc > arg_processing + 1)
-                && strcmp(argv[arg_processing], "--p2p") == 0) {
-            std::string p2p_value = argv[arg_processing + 1];
-            if (p2p_value == "true" || p2p_value == "1") {
-                args.p2p = true;
-            } else if (p2p_value == "false" || p2p_value == "0") {
-                args.p2p = false;
+                && strcmp(argv[arg_processing], "--enable-team-comms") == 0) {
+            std::string team_comms_value = argv[arg_processing + 1];
+            if (team_comms_value == "true" || team_comms_value == "1") {
+                args.enable_team_comms = true;
+            } else if (team_comms_value == "false" || team_comms_value == "0") {
+                args.enable_team_comms = false;
             } else {
-                std::cout << "Bad parameter value for --p2p. Use 'true' or 'false'." << std::endl;
+                std::cout << "Bad parameter value for --enable-team-comms. Use 'true' or 'false'." << std::endl;
                 show_usage = true;
                 args.parse_result = ParseReturn::failure;
                 break;
             }
-            args.update_p2p = true;
+            args.update_enable_team_comms = true;
             arg_processing += 2;
         } else if (
                 strcmp(argv[arg_processing], "-h") == 0
@@ -145,15 +144,15 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                      "   -n, --name       <string>          Resource name "
                      "(routing service instance) i.e. 'Platform-10' \n"
                      "                                      REQUIRED\n"
-                     "   -t, --type       <string>          Node type: 'platform' or 'c2' (default: platform)\n"
-                     "   -g, --group      <int>             Group ID (DDS Partition) to assign "
+                     "   --type           <string>          Node type: 'platform' or 'c2' (default: platform)\n"
+                     "   -t, --team       <int>             Team ID (DDS Partition) to assign "
                      "resource to \n"
                      "Only applicable to Platforms: \n"
-                     "   --p2p            <bool>           Enable (true) or disable (false) "
-                     "Platform to Platform topic routes.\n"
+                     "   --enable-team-comms <bool>        Enable (true) or disable (false) "
+                     "Platform to Platform topic routes within team.\n"
                      "\n"
                      "Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.\n"
-                     "      Use the remote_admin.sh wrapper script to automatically load system_params.sh\n"
+                     "      Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh\n"
 
                   << std::endl;
     }

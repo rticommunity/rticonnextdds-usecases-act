@@ -1,6 +1,6 @@
 # Remote Admin Service Controller
 
-A command-line utility for remotely controlling RTI Routing Service configurations, specifically designed to dynamically enable/disable platform-to-platform (P2P) communication routes during runtime.
+A command-line utility for remotely controlling RTI Routing Service configurations, specifically designed to dynamically enable/disable platform-to-platform (TEAM) communication routes during runtime.
 
 ## Overview
 
@@ -39,9 +39,9 @@ A **session** within Routing Service represents a logical grouping of topic rout
   - `wan_to_platform_p2p` - WAN to Platform peer-to-peer communication
 - **Example Path**: `/sessions/platform_to_wan_p2p/state`
 
-### P2P (Peer-to-Peer)
-**P2P** or **platform-to-platform** communication refers to direct data exchange between platforms without involving C2 stations. This is useful for collaborative autonomous operations.
-- **Control**: Enable/disable with `--p2p true` or `--p2p false` flags
+### TEAM (Peer-to-Peer)
+**TEAM** or **platform-to-platform** communication refers to direct data exchange between platforms without involving C2 stations. This is useful for collaborative autonomous operations.
+- **Control**: Enable/disable with `--team true` or `--team false` flags
 - **Sessions**: Controls both `platform_to_wan_p2p` and `wan_to_platform_p2p` sessions
 
 ### Participant
@@ -50,10 +50,10 @@ A **participant** is a DDS Domain Participant within the routing service. It rep
 - **C2 participants**: `c2_wan` - C2 node's WAN domain participant
 - **Path Example**: `/participants/platform_wan`
 
-### Group / Partition
-A **group** (implemented as a DDS Domain Participant partition) is used to logically separate and organize data flow. Assigning a resource to a group ensures it only communicates with others in the same group.
-- **Usage**: Specified with `-g` or `--group` flag
-- **Example**: Group `5` might represent a specific mission or team
+### Team / Partition
+A **team** (implemented as a DDS Domain Participant partition) is used to logically separate and organize data flow. Assigning a resource to a team ensures it only communicates with others in the same team.
+- **Usage**: Specified with `-g` or `--team` flag
+- **Example**: Team `5` might represent a specific mission or team
 - **DDS Concept**: Implemented using DDS Domain Participant Partitions in QoS
 
 ### QoS Profile
@@ -78,13 +78,13 @@ Remote administration uses a request-reply pattern ([API Reference](https://comm
 ### Entity State
 The **entity state** represents whether a routing service entity (like a session) is active or inactive.
 - **States**: `ENABLED`, `DISABLED`
-- **Control**: P2P commands set session state to enable or disable data flow
+- **Control**: TEAM commands set session state to enable or disable data flow
 
 ## Features
 
 - **Remote Control**: Send commands to Routing Service instances over DDS
-- **P2P Route Management**: Enable/disable platform-to-platform communication routes
-- **Group Assignment**: Assign resources to specific groups
+- **TEAM Route Management**: Enable/disable platform-to-platform communication routes
+- **Team Assignment**: Assign resources to specific groups
 - **Flexible Configuration**: Override domain ID and QoS settings
 
 ## Building
@@ -123,8 +123,8 @@ The executable `RemoteAdmin` will be created in the `build` directory.
 System parameters are located in `params/system_params.sh` at the repository root.
 
 ```bash
-cd scripts
-./send_remote_cmd.sh -n Platform_10 --p2p true
+cd tools/remote_admin
+./send_remote_cmd.sh -n Platform_10 --team true
 ```
 
 **Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
@@ -147,9 +147,9 @@ Usage:
    -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_10' 
                                       REQUIRED
    -t, --type       <string>          Node type: 'platform' or 'c2' (default: platform)
-   -g, --group      <int>             Group ID (DDS Partition - see https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm) to assign resource to 
+   -g, --team      <int>             Team ID (DDS Partition - see https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm) to assign resource to 
 Only applicable to Platforms: 
-   --p2p            <bool>            Enable (true) or disable (false) Platform to Platform topic routes.
+   --team            <bool>            Enable (true) or disable (false) Platform to Platform topic routes.
 
 Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
       Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh
@@ -164,15 +164,15 @@ Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
 - `-d, --domain <int>`: Domain ID for remote administration (default: 100)
 - `-q, --qos <string>`: QoS profile to use (default: REMOTE_ADMIN::remote_admin_default)
 - `-t, --type <string>`: Node type - either "platform" or "c2" (default: platform). This determines which routing service configuration and participant names are used in the resource identifier path.
-- `-g, --group <int>`: Group ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the resource to
-- `--p2p <bool>`: Enable (true) or disable (false) platform-to-platform communication routes
+- `-g, --team <int>`: Team ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the resource to
+- `--team <bool>`: Enable (true) or disable (false) platform-to-platform communication routes
 
 ## Usage Examples
 
 For complete step-by-step walkthroughs demonstrating RemoteAdmin usage, see:
 
-- **[REMOTE_ENABLE_P2P.md](../../REMOTE_ENABLE_P2P.md)**: Enable peer-to-peer communication between platforms
-- **[REMOTE_CONTROL_GROUP.md](../../REMOTE_CONTROL_GROUP.md)**: Dynamically assign nodes to different groups and verify isolation
+- **[REMOTE_ENABLE_TEAM.md](../../REMOTE_ENABLE_TEAM.md)**: Enable peer-to-peer communication between platforms
+- **[REMOTE_CONTROL_TEAM.md](../../REMOTE_CONTROL_TEAM.md)**: Dynamically assign nodes to different groups and verify isolation
 
 ## How It Works
 

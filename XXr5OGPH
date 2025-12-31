@@ -155,7 +155,7 @@ Before making any changes, confirm C2 is receiving from both platforms. Let it r
 Now use RemoteAdmin to assign Platform_11 to group 5:
 
 ```bash
-cd scripts
+cd tools/remote_admin
 ./send_remote_cmd.sh -n Platform_11 --type platform -g 5
 ```
 
@@ -199,7 +199,7 @@ Notice that after the group change, you only see ContactReports from Platform_10
 To restore communication, reset Platform_11's Domain Participant Partition back to "ALL" (the default):
 
 ```bash
-cd scripts
+cd tools/remote_admin
 ./send_remote_cmd.sh -n Platform_11 -g ALL --type platform
 ```
 
@@ -255,6 +255,8 @@ When you run `./send_remote_cmd.sh -n Platform_11 -g 5`:
 You can also assign C2 to a specific group to create an isolated communication cell:
 
 ```bash
+cd tools/remote_admin
+
 # Move Platform_10 to group 3 (using ROUTER_NAME from params/platform_10_params.sh)
 ./send_remote_cmd.sh -n Platform_10 -g 3 --type platform
 

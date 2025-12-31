@@ -131,7 +131,7 @@ to use the software.
       </element>
 
       <element>
-        <name>WAN_P2P_QOS</name>
+        <name>WAN_TEAM_QOS</name>
         <value>WAN::status_qos</value>
       </element>
 
@@ -141,7 +141,7 @@ to use the software.
         This variable enables messaging Routes between Platforms
       -->
       <element>
-        <name>P2P_ENABLE</name>
+        <name>TEAM_ENABLE</name>
         <value>false</value>
       </element>
 
@@ -327,18 +327,12 @@ to use the software.
       <participant name="c2_wan">
         <domain_id>$(WAN_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(WAN_C2_PARTICIPANT_QOS)">
-          <!-- <participant_name>
-            <name>WAN</name>
-          </participant_name> -->
         </domain_participant_qos>
       </participant>
 
       <participant name="c2_lan">
         <domain_id>$(C2_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(C2_PARTICIPANT_QOS)">
-          <!-- <participant_name>
-            <name>LAN</name>
-          </participant_name> -->
         </domain_participant_qos>
       </participant>
 
@@ -578,21 +572,20 @@ to use the software.
       <participant name="platform_lan">
         <domain_id>$(PLATFORM_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(PLATFORM_PARTICIPANT_QOS)">
-          <!-- <participant_name>
-            <name>LAN</name>
-          </participant_name> -->
         </domain_participant_qos>
       </participant>
 
       <participant name="platform_wan">
         <domain_id>$(WAN_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(WAN_PLATFORM_PARTICIPANT_QOS)">
-          <!-- <participant_name>
-            <name>WAN</name>
-          </participant_name> -->
         </domain_participant_qos>
       </participant>
 
+      <participant name="team_wan">
+        <domain_id>$(WAN_DOMAIN)</domain_id>
+        <domain_participant_qos base_name="$(WAN_PLATFORM_PARTICIPANT_QOS)">
+        </domain_participant_qos>
+      </participant>
 
       <session name="platform_to_wan_status">
 
@@ -776,67 +769,35 @@ to use the software.
       </session>
 
       <!-- This session moves messages between platforms -->
-      <session name="platform_to_wan_p2p" enabled="$(P2P_ENABLE)">
+      <session name="platform_to_wan_team" enabled="$(TEAM_ENABLE)">
 
-        <!-- Internal LAN Partition to match with ALL Publishers -->
-        <subscriber_qos>
-          <partition>
-            <name>
-              <element>*</element>
-            </name>
-          </partition>
-        </subscriber_qos>
+        <!-- Using DP Partition QOS to isolate TEAM comms-->
 
-        <!-- External WAN Partition to match with SQUAD Subscribers -->
-        <publisher_qos>
-          <partition>
-            <name>
-              <element>SQUAD</element>
-            </name>
-          </partition>
-        </publisher_qos>
-
-        <!-- PLATFORM -> WAN P2P messages -->
+        <!-- PLATFORM -> WAN TEAM messages -->
         <auto_topic_route name="platform_to_wan">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
-          <output participant="platform_wan">
+          <output participant="team_wan">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_P2P_QOS)" />
+            <datawriter_qos base_name="$(WAN_TEAM_QOS)" />
           </output>
         </auto_topic_route>
       </session>
 
       <!-- This session moves messages between platforms -->
-      <session name="wan_to_platform_p2p" enabled="$(P2P_ENABLE)">
+      <session name="wan_to_platform_team" enabled="$(TEAM_ENABLE)">
 
-        <!-- External WAN Partition to match with SQUAD Publishers -->
-        <subscriber_qos>
-          <partition>
-            <name>
-              <element>SQUAD</element>
-            </name>
-          </partition>
-        </subscriber_qos>
+        <!-- Using DP Partition QOS to isolate TEAM comms-->
 
-        <!-- Internal LAN Partition to match with ALL Subscribers -->
-        <publisher_qos>
-          <partition>
-            <name>
-              <element>*</element>
-            </name>
-          </partition>
-        </publisher_qos>
-
-        <!-- WAN -> PLATFORM P2P messages -->
+        <!-- WAN -> PLATFORM SQUAD messages -->
         <auto_topic_route name="wan_to_platform">
           <publish_with_original_info>true</publish_with_original_info>
-          <input participant="platform_wan">
+          <input participant="team_wan">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_P2P_QOS)" />
+            <datareader_qos base_name="$(WAN_TEAM_QOS)" />
           </input>
           <output participant="platform_lan">
             <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>

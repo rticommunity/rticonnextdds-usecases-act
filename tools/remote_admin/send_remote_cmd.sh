@@ -13,40 +13,62 @@
 # Remote Admin Wrapper Script
 # 
 # This script sources system parameters before invoking the RemoteAdmin tool.
+# It also automatically builds RemoteAdmin if it's not found.
+#
 # Remote Admin uses WAN latency settings from system_params.sh for proper
 # operation with the routing service.
-#
-# NOTE: System parameters are located in config/params/system_params.sh
-#       For production deployment, create your own system_params.sh based on
-#       templates/params/system_params.template.sh
 
 # Determine script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Load system parameters from config/params/system_params.sh
-SYSTEM_PARAMS="../../config/params/system_params.sh"
+# Path to RemoteAdmin executable
+REMOTE_ADMIN_BINARY="$SCRIPT_DIR/build/RemoteAdmin"
+
+# Check if RemoteAdmin binary exists, build if not
+if [ ! -f "$REMOTE_ADMIN_BINARY" ]; then
+    echo "RemoteAdmin binary not found. Building..."
+    echo ""
+    
+    # Navigate to remote_admin directory (we're already here)
+    cd "$SCRIPT_DIR" || exit 1
+    
+    # Create build directory if it doesn't exist
+    mkdir -p build
+    cd build || exit 1
+    
+    # Run cmake and make
+    echo "Running cmake..."
+    cmake .. || { echo "ERROR: cmake failed"; exit 1; }
+    
+    echo "Running make..."
+    make || { echo "ERROR: make failed"; exit 1; }
+    
+    echo ""
+    echo "Build complete!"
+    echo ""
+    
+    # Return to scripts directory
+    cd "$SCRIPT_DIR" || exit 1
+fi
+
+# Load system parameters
+SYSTEM_PARAMS="$SCRIPT_DIR/../../params/system_params.sh"
 
 if [ -f "$SYSTEM_PARAMS" ]; then
-    echo "Loading system parameters from $SYSTEM_PARAMS"
     source "$SYSTEM_PARAMS"
 else
     echo "ERROR: system_params.sh not found at $SYSTEM_PARAMS"
     echo ""
     echo "System parameters are required for RemoteAdmin to function properly."
-    echo "The system_params.sh file should be located at: config/params/system_params.sh"
-    echo ""
-    echo "For deployment, you can customize system parameters:"
-    echo "  cp templates/params/system_params.template.sh config/params/system_params.sh"
-    echo "  # Then edit config/params/system_params.sh for your deployment"
     exit 1
 fi
-
-# Build the command with parameters from environment
-CMD="$SCRIPT_DIR/build/RemoteAdmin"
 
 # Use NDDS_QOS_PROFILES environment variable for XML files
 # Remote Admin will use this to load all necessary QoS profiles
 export NDDS_QOS_PROFILES
+
+# Build the command with parameters from environment
+CMD="$REMOTE_ADMIN_BINARY"
 
 # Pass through all command-line arguments
 CMD="$CMD $@"
