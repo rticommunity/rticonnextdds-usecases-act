@@ -90,66 +90,6 @@ to use the software.
 
     </qos_profile>
 
-    <qos_profile name="status_10sec_qos" base_name="LAN::status_qos">
-
-      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
-
-      <datareader_qos>
-        <!-- 
-          We want to downsample on the LAN "Input" Routing Service reader before 
-          it goes into Routing Service 
-          This minimizes resource usage as high rate data is not processed at full rate
-          -->
-        <time_based_filter>
-          <minimum_separation>
-            <sec>10</sec>
-            <nanosec>0</nanosec>
-          </minimum_separation>
-        </time_based_filter>
-      </datareader_qos>
-
-    </qos_profile>
-
-    <qos_profile name="status_30sec_qos" base_name="LAN::status_qos">
-
-      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
-
-      <datareader_qos>
-        <!-- 
-          We want to downsample on the LAN "Input" Routing Service reader before 
-          it goes into Routing Service 
-          This minimizes resource usage as high rate data is not processed at full rate
-          -->
-        <time_based_filter>
-          <minimum_separation>
-            <sec>30</sec>
-            <nanosec>0</nanosec>
-          </minimum_separation>
-        </time_based_filter>
-      </datareader_qos>
-
-    </qos_profile>
-
-    <qos_profile name="status_60sec_qos" base_name="LAN::status_qos">
-
-      <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
-
-      <datareader_qos>
-        <!-- 
-          We want to downsample on the LAN "Input" Routing Service reader before 
-          it goes into Routing Service 
-          This minimizes resource usage as high rate data is not processed at full rate
-          -->        
-        <time_based_filter>
-          <minimum_separation>
-            <sec>60</sec>
-            <nanosec>0</nanosec>
-          </minimum_separation>
-        </time_based_filter>
-      </datareader_qos>
-
-    </qos_profile>
-
 
     <qos_profile name="event_qos" base_name="BuiltinQosLib::Generic.Common">
       <!-- Update here per an Aperiodic Command Data Pattern/your system -->

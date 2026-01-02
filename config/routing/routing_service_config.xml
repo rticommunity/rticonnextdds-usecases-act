@@ -85,21 +85,6 @@ to use the software.
       </element>
 
       <element>
-        <name>PLATFORM_STATUS_10SEC_QOS</name>
-        <value>LAN::status_10sec_qos</value>
-      </element>
-
-      <element>
-        <name>PLATFORM_STATUS_30SEC_QOS</name>
-        <value>LAN::status_30sec_qos</value>
-      </element>
-
-      <element>
-        <name>PLATFORM_STATUS_60SEC_QOS</name>
-        <value>LAN::status_60sec_qos</value>
-      </element>
-
-      <element>
         <name>CONTROL_PARTICIPANT_QOS</name>
         <value>LAN::domain_participant_qos</value>
       </element>
