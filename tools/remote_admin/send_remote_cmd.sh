@@ -53,6 +53,7 @@ fi
 
 # Load system parameters
 SYSTEM_PARAMS="$SCRIPT_DIR/../../params/system_params.sh"
+REPO_ROOT="$SCRIPT_DIR/../.."
 
 if [ -f "$SYSTEM_PARAMS" ]; then
     source "$SYSTEM_PARAMS"
@@ -82,6 +83,9 @@ echo "QoS Profiles: $NDDS_QOS_PROFILES"
 echo "Command: $CMD"
 echo "=============================="
 echo ""
+
+# Change to params directory so relative paths in NDDS_QOS_PROFILES work correctly
+cd "$REPO_ROOT/params" || exit 1
 
 # Execute the command
 $CMD
