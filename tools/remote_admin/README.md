@@ -19,7 +19,7 @@ The **resource** is the name of the RTI Routing Service instance you want to con
 The **resource identifier** is the full hierarchical path to a specific entity within a routing service instance. It follows RTI's resource naming convention for remote administration.
 - **Format**: `/routing_services/<name>/domain_routes/<config_name>/...`
   - `<name>` = routing service instance name (e.g., "Platform-10")
-  - `<config_name>` = routing service configuration ("platform" or "c2")
+  - `<config_name>` = routing service configuration ("platform" or "control")
 - **Example**: `/routing_services/Platform-10/domain_routes/platform/sessions/platform_to_wan_p2p/state`
 - **Purpose**: Uniquely identifies the entity to be controlled or queried
 
@@ -47,7 +47,7 @@ A **session** within Routing Service represents a logical grouping of topic rout
 ### Participant
 A **participant** is a DDS Domain Participant within the routing service. It represents the routing service's presence in a specific DDS domain.
 - **Platform participants**: `platform_wan` - Platform node's WAN domain participant
-- **C2 participants**: `c2_wan` - C2 node's WAN domain participant
+- **C2 participants**: `control_wan` - C2 node's WAN domain participant
 - **Path Example**: `/participants/platform_wan`
 
 ### Team / Partition
@@ -129,7 +129,7 @@ cd tools/remote_admin
 
 **Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
 - Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
-- C2 nodes: Use ROUTER_NAME from `params/c2_*_params.sh` (e.g., C2_20)
+- C2 nodes: Use ROUTER_NAME from `params/c2_*_params.sh` (e.g., Control_20)
 
 The wrapper script:
 - Sources `system_params.sh` automatically from `config/params/`
@@ -163,7 +163,7 @@ Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
 
 - `-d, --domain <int>`: Domain ID for remote administration (default: 100)
 - `-q, --qos <string>`: QoS profile to use (default: REMOTE_ADMIN::remote_admin_default)
-- `-t, --type <string>`: Node type - either "platform" or "c2" (default: platform). This determines which routing service configuration and participant names are used in the resource identifier path.
+- `-t, --type <string>`: Node type - either "platform" or "control" (default: platform). This determines which routing service configuration and participant names are used in the resource identifier path.
 - `-g, --team <int>`: Team ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the resource to
 - `--team <bool>`: Enable (true) or disable (false) platform-to-platform communication routes
 

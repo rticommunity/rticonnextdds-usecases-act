@@ -1,18 +1,18 @@
 # ACT Multi-Platform Example
 
-This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming) deployment with **2 Platforms** and **1 C2 Station**, including **platform-to-platform (TEAM)** communication.
+This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming) deployment with **2 Platforms** and **1 Control Station**, including **platform-to-platform (TEAM)** communication.
 
 ## Overview
 
 This example launches:
 - **Platform 10 (Platform_10)**: First unmanned surface vehicle
 - **Platform 11 (Platform_11)**: Second unmanned surface vehicle
-- **C2 Station 20**: Command and control station
+- **Control Station 20**: Command and control station
 
 Key features demonstrated:
 - Multiple platforms communicating through WAN
 - Platform-to-platform (TEAM) direct communication
-- C2 commanding multiple platforms
+- Control commanding multiple platforms
 - Contact report sharing between platforms
 
 ## Prerequisites
@@ -51,16 +51,16 @@ cd scripts
 ./start_platform11_sim.sh
 ```
 
-### Terminal 5: C2-20 Router
+### Terminal 5: Control-20 Router
 ```bash
 cd scripts
-./start_c2_20_router.sh
+./start_control_20_router.sh
 ```
 
-### Terminal 6: C2-20 Simulator
+### Terminal 6: Control-20 Simulator
 ```bash
 cd scripts
-./start_c2_20_sim.sh
+./start_control_20_sim.sh
 ```
 
 ## What's Happening?
@@ -69,7 +69,7 @@ cd scripts
 
 ```
 ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-│ Platform 10 │         │ Platform 11 │         │    C2-20    │
+│ Platform 10 │         │ Platform 11 │         │    Control-20    │
 │  (Domain 10)│◄───────►│  (Domain 11)│◄───────►│  (Domain 20)│
 └──────┬──────┘    TEAM  └──────┬──────┘    WAN  └──────┬──────┘
        │                        │                        │
@@ -79,33 +79,33 @@ cd scripts
 
 ### Communication Flows
 
-1. **Platform-to-C2 (via WAN)**:
-   - Platforms publish `PlatformStatus` → C2 receives
-   - C2 sends `C2Command` → Platforms receive
-   - Platforms send `PlatformCommandAck` → C2 receives
+1. **Platform-to-Control (via WAN)**:
+   - Platforms publish `PlatformStatus` → Control receives
+   - Control sends `ControlCommand` → Platforms receive
+   - Platforms send `PlatformCommandAck` → Control receives
 
 2. **Platform-to-Platform (TEAM)**:
    - Platforms share `PlatformData` directly
    - Platforms exchange `ContactReport` information
-   - Collaborative awareness without C2 relay
+   - Collaborative awareness without Control relay
 
 3. **Multi-Platform Coordination**:
-   - C2 monitors status from both platforms
-   - C2 can command either platform independently
+   - Control monitors status from both platforms
+   - Control can command either platform independently
    - Platforms coordinate autonomously via TEAM
 
 ## Expected Output
 
 **Platform Simulators** will show:
-- Publishing `PlatformStatus` to C2
+- Publishing `PlatformStatus` to Control
 - Publishing `PlatformData` for TEAM
-- Receiving `C2Command` from C2-20
-- Sending `PlatformCommandAck` to C2-20
+- Receiving `ControlCommand` from Control-20
+- Sending `PlatformCommandAck` to Control-20
 - Publishing `ContactReport` data
 
-**C2 Simulator** will show:
+**Control Simulator** will show:
 - Receiving `PlatformStatus` from both Platform_10 and Platform_11
-- Sending `C2Command` to both platforms
+- Sending `ControlCommand` to both platforms
 - Receiving `PlatformCommandAck` from both platforms
 - Receiving `ContactReport` from both platforms
 
@@ -121,7 +121,7 @@ rtiadminconsole
 You should see:
 - Domain 10: Platform_10 publications/subscriptions
 - Domain 11: Platform_11 publications/subscriptions
-- Domain 20: C2_20 publications/subscriptions
+- Domain 20: Control_20 publications/subscriptions
 - Domain 0: WAN routing traffic
 
 ## Testing TEAM Communication
@@ -181,7 +181,7 @@ To add Platform 12:
 All configurations are in `params/`:
 - `platform_10_params.sh`: Platform_10 on domain 10
 - `platform_11_params.sh`: Platform_11 on domain 11
-- `c2_20_params.sh`: C2_20 on domain 20
+- `control_20_params.sh`: Control_20 on domain 20
 - `system_params.sh`: WAN timing, channel setup and network parameters
 
 QoS profiles are in `config/qos/`:
@@ -203,7 +203,7 @@ QoS profiles are in `config/qos/`:
 - **Solution**: Verify routing services are configured for TEAM routes
 - **Solution**: Check that both platform routers are running
 
-**Issue**: C2 not receiving data from one platform
+**Issue**: Control not receiving data from one platform
 - **Solution**: Ensure that platform's router is running
 - **Solution**: Check domain IDs in parameter files match
 

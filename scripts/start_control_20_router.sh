@@ -11,7 +11,7 @@
 # to use the software.
 
 # Source NODE parameters
-source ../params/c2_20_params.sh
+source ../params/control_20_params.sh
 
 # Source SYSTEM parameters
 source ../params/system_params.sh

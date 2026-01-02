@@ -11,7 +11,7 @@
 # to use the software.
 
 # Source NODE parameters
-source ../params/c2_20_params.sh
+source ../params/control_20_params.sh
 
 # Set verbosity
 # 0: dds.Verbosity.SILENT
@@ -22,8 +22,8 @@ VERBOSITY=2
 
 ################################################################################
 
-# RUN C2 Simulator
-python3 ../node_sim/python/c2_sim.py --files ${XML_FILES} \
+# RUN Control Simulator
+python3 ../node_sim/python/control_sim.py --files ${XML_FILES} \
                             --qos_profile ${LAN_QOS_PROFILE} \
                            --domain_id ${DOMAIN_ID} \
                            --source ${ROUTER_NAME} \

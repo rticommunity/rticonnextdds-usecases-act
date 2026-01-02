@@ -15,28 +15,28 @@
 # - Must be unique across all nodes in the system
 # - Used as the routing service -appName (identifies this routing service instance)
 # - Used as the -n parameter in send_remote_cmd.sh to address this node for remote admin
-export ROUTER_NAME="C2_20"
+export ROUTER_NAME="Control_20"
 
 # Node Router Params
-export C2_DOMAIN=20
-export TYPE="c2"
+export CONTROL_DOMAIN=20
+export TYPE="control"
 
 # Node Sim Params
 export LAN_QOS_PROFILE="LAN::domain_participant_qos"
 export SESSION_ID=20
-export DOMAIN_ID=$C2_DOMAIN
+export DOMAIN_ID=$CONTROL_DOMAIN
 
-# XML Files for C2 applications
+# XML Files for Control Nodes
 XML_FILES="../config/qos/lan_qos_lib.xml;"
 XML_FILES+="../node_sim/datamodel/act_types.xml"
 export XML_FILES
 
-# Matches Platform_10 ROUTER_NAME for addressing C2Command messages
+# Matches Platform_10 ROUTER_NAME for addressing ControlCommand messages
 export DESTINATION="Platform_10"
 
 echo "
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------
-C2_DOMAIN: $C2_DOMAIN
+CONTROL_DOMAIN: $CONTROL_DOMAIN
 TYPE: $TYPE
 ROUTER_NAME: $ROUTER_NAME
 LAN_QOS_PROFILE: $LAN_QOS_PROFILE

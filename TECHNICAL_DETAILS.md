@@ -38,18 +38,18 @@ rticonnextdds-usecases-act/
 │   ├── system_params.sh        # System-wide parameters
 │   ├── platform_10_params.sh   # Platform 10 configuration
 │   ├── platform_11_params.sh   # Platform 11 configuration
-│   └── c2_20_params.sh         # C2-20 configuration
+│   └── control_20_params.sh         # Control-20 configuration
 ├── scripts/                    # Launch scripts and remote admin wrapper
 │   ├── start_platform10_router.sh
 │   ├── start_platform10_sim.sh
 │   ├── start_platform11_router.sh
 │   ├── start_platform11_sim.sh
-│   ├── start_c2_20_router.sh
-│   └── start_c2_20_sim.sh
+│   ├── start_control_20_router.sh
+│   └── start_control_20_sim.sh
 ├── node_sim/                    # Node simulator components
 │   ├── python/                 # Python simulators
 │   │   ├── platform_sim.py
-│   │   └── c2_sim.py
+│   │   └── control_sim.py
 │   └── datamodel/              # Type definitions
 │       └── act_types.xml
 ├── tools/                       # Utilities
@@ -90,12 +90,12 @@ rticonnextdds-usecases-act/
 
 The ACT architecture is designed to meet the following requirements:
 
-- ✅ Platforms must be able to receive select topics from C2 ([C2 Events](#c2-events))
+- ✅ Platforms must be able to receive select topics from Control ([C2 Events](#c2-events))
 - ✅ Platforms must be able to receive *only* commands addressed to them ([C2 Filtered Commands](#c2-command-filtering))
-- ✅ *Only* C2 stations can receive select topics from Platforms ([Platform Events](#platform-events))
-- ✅ C2 must be able to receive select *downsampled* topics from Platforms ([Platform Status](#platform-status))
+- ✅ *Only* Control stations can receive select topics from Platforms ([Platform Events](#platform-events))
+- ✅ Control must be able to receive select *downsampled* topics from Platforms ([Platform Status](#platform-status))
 - ✅ Platforms must be able to receive select topics from other Platforms ([Platform to Platform](#platform-to-platform))
-- ✅ All Platforms and C2 have automatic discovery of other Platforms and C2 endpoints
+- ✅ All Platforms and Control have automatic discovery of other Platforms and Control endpoints
 - ✅ Platform to Platform messaging can be controlled at runtime
 - ✅ Platforms can be grouped/isolated dynamically
 
@@ -112,7 +112,7 @@ This infrastructure performs the following roles:
 - ✅ **Channel-based QoS**: Apply different QoS policies per data "channel"
 - ✅ **Network segmentation**: Domain-based LAN vs WAN isolation
 - ✅ **Content filtering**: Targeted command delivery based on message content
-- ✅ **Automatic discovery**: Platforms and C2 discover each other dynamically
+- ✅ **Automatic discovery**: Platforms and Control discover each other dynamically
 
 ### Routing Capabilities
 Data can flow in multiple patterns:
@@ -164,7 +164,7 @@ RTI Connext DDS uses well-known port formulas based on domain ID and participant
 **Example port assignments** (for participant index 0):
 - **Domain 3 (WAN)**: Ports 8150, 8151, 8160, 8161
 - **Domain 10 (Platform-10)**: Ports 9900, 9901, 9910, 9911
-- **Domain 20 (C2-20)**: Ports 12400, 12401, 12410, 12411
+- **Domain 20 (Control-20)**: Ports 12400, 12401, 12410, 12411
 
 Domain IDs can be changed in the routing service configuration and parameter files to suit your deployment needs.
 
@@ -195,8 +195,8 @@ Understanding QoS delivery patterns is key to efficient system design. Two prima
 
 **Used By**:
 - `PLATFORM_EVENTS_CHANNEL`: PlatformCommandAck, ContactReport, Alerts
-- `CONTROLLER_EVENTS_CHANNEL`: Mission updates, new targets
-- `CONTROLLER_COMMANDS_CHANNEL`: C2Command (targeted delivery)
+- `CONTROL_EVENTS_CHANNEL`: Mission updates, new targets
+- `CONTROL_COMMANDS_CHANNEL`: ControlCommand (targeted delivery)
 
 **Trade-offs**:
 - ➕ Guaranteed delivery (within timeout)
@@ -235,7 +235,7 @@ Understanding QoS delivery patterns is key to efficient system design. Two prima
 
 | Data Type | Pattern | QoS | Example |
 |-----------|---------|-----|---------|
-| Commands | Aperiodic, critical | RELIABLE | C2Command, MissionUpdate |
+| Commands | Aperiodic, critical | RELIABLE | ControlCommand, MissionUpdate |
 | Acknowledgments | Aperiodic, critical | RELIABLE | CommandAck, EventConfirm |
 | Alerts/Events | Aperiodic, critical | RELIABLE | ContactReport, Alert |
 | Status Updates | Periodic, non-critical | BEST_EFFORT | PlatformStatus, Telemetry |
@@ -295,7 +295,7 @@ export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
 **Variable**: `PLATFORM_EVENTS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Critical, aperiodic data from platforms  
-**Direction**: Platform → C2  
+**Direction**: Platform → Control  
 **Examples**: PlatformCommandAck, ContactReport, CriticalAlert
 
 #### Platform Status (Downsampled)
@@ -305,7 +305,7 @@ export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
 
 **QoS**: BEST_EFFORT (Status QoS)  
 **Purpose**: Periodic status updates at various rates  
-**Direction**: Platform → C2  
+**Direction**: Platform → Control  
 **Examples**: PlatformStatus, Telemetry, HealthStatus
 
 **Downsampling**:
@@ -326,36 +326,36 @@ export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
 - Routes: Platform → WAN → Platform (bidirectional)
 - Useful for collaborative behaviors
 
-#### C2 Events
-**Variable**: `CONTROLLER_EVENTS_CHANNEL`  
+#### Control Events
+**Variable**: `CONTROL_EVENTS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
-**Purpose**: Critical commands/updates from C2  
-**Direction**: C2 → Platform  
+**Purpose**: Critical commands/updates from Control  
+**Direction**: Control → Platform  
 **Examples**: MissionUpdate, NewTarget, ConfigChange
 
-#### C2 Command Filtering
-**Variable**: `CONTROLLER_COMMANDS_CHANNEL`  
+#### Control Command Filtering
+**Variable**: `CONTROL_COMMANDS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Content-filtered commands to specific platforms  
-**Direction**: C2 → Platform (filtered)
+**Direction**: Control → Platform (filtered)
 
 **Filter Configuration**:
 ```bash
-export CONTROLLER_COMMANDS_CHANNEL="C2Command"
-export C2_COMMAND_FILTER_FIELD="msg.destination"    # Field path in message
-export C2_COMMAND_FILTER_MATCH=$ROUTER_NAME         # Match platform name
+export CONTROL_COMMANDS_CHANNEL="ControlCommand"
+export CONTROL_COMMAND_FILTER_FIELD="msg.destination"    # Field path in message
+export CONTROL_COMMAND_FILTER_MATCH=$ROUTER_NAME         # Match platform name
 ```
 
 **How It Works**:
-1. C2 publishes C2Command with `destination` field set (e.g., "USV_10")
+1. Control publishes ControlCommand with `destination` field set (e.g., "USV_10")
 2. Routing service evaluates filter: `msg.destination == "USV_10"`
 3. Only Platform-10's router forwards the message
 4. Other platforms never see the command
 
 **Important**: 
-- `C2_COMMAND_FILTER_FIELD` **must match your actual data structure**
+- `CONTROL_COMMAND_FILTER_FIELD` **must match your actual data structure**
 - If your command type has a different field, update this variable
-- Example: For `command.target_node`, use `C2_COMMAND_FILTER_FIELD="command.target_node"`
+- Example: For `command.target_node`, use `CONTROL_COMMAND_FILTER_FIELD="command.target_node"`
 
 
 

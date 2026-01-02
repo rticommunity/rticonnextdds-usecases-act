@@ -1,12 +1,12 @@
 # ACT Quickstart Example
 
-This is a minimal example demonstrating the ACT (Autonomous Collaborative Teaming) system with **1 Platform** and **1 C2 Station**.
+This is a minimal example demonstrating the ACT (Autonomous Collaborative Teaming) system with **1 Platform** and **1 Control Station**.
 
 ## Overview
 
 This example launches:
 - **Platform 10 (Platform_10)**: A simulated platform node
-- **C2 Station 20 (C2_20)**: A command and control station
+- **Control Station 20 (Control_20)**: A command and control station
 
 Each node requires both a **routing service** (bridges domains) and a **simulator** (generates/processes data).
 
@@ -34,35 +34,35 @@ cd scripts
 ./start_platform10_sim.sh
 ```
 
-### Terminal 3: C2-20 Router
+### Terminal 3: Control-20 Router
 ```bash
 cd scripts
-./start_c2_20_router.sh
+./start_control_20_router.sh
 ```
 
-### Terminal 4: C2-20 Simulator
+### Terminal 4: Control-20 Simulator
 ```bash
 cd scripts
-./start_c2_20_sim.sh
+./start_control_20_sim.sh
 ```
 
 ## What's Happening?
 
-1. **Platform 10 Router**: Bridges Platform LAN (domain 10) ↔ WAN (domain 0) ↔ C2 LAN (domain 20)
-2. **Platform 10 Simulator**: Publishes status updates, receives commands from C2
-3. **C2-20 Router**: Bridges C2 LAN (domain 20) ↔ WAN (domain 0) ↔ Platform LAN (domain 10)
-4. **C2-20 Simulator**: Receives platform status, sends commands to platforms
+1. **Platform 10 Router**: Bridges Platform LAN (domain 10) ↔ WAN (domain 0) ↔ Control LAN (domain 20)
+2. **Platform 10 Simulator**: Publishes status updates, receives commands from Control
+3. **Control-20 Router**: Bridges Control LAN (domain 20) ↔ WAN (domain 0) ↔ Platform LAN (domain 10)
+4. **Control-20 Simulator**: Receives platform status, sends commands to platforms
 
 ## Expected Output
 
 **Platform Simulator** will show:
 - Publishing `PlatformStatus` messages periodically
-- Receiving `C2Command` messages from C2-20
+- Receiving `ControlCommand` messages from Control-20
 - Sending `PlatformCommandAck` acknowledgments
 
-**C2 Simulator** will show:
+**Control Simulator** will show:
 - Receiving `PlatformStatus` from Platform_10
-- Sending `C2Command` to Platform_10
+- Sending `ControlCommand` to Platform_10
 - Receiving `PlatformCommandAck` from Platform_10
 
 ## Monitoring with RTI Tools

@@ -41,7 +41,7 @@ class PlatformSim:
       # Create Topics and associate with types
       self.c2_cmd_topic = dds.DynamicData.Topic(
           self.participant,
-          "C2Command",
+          "ControlCommand",
           self.c2_cmd_type
       )
       self.c2_cmd_ack_topic = dds.DynamicData.Topic(
@@ -143,7 +143,7 @@ class PlatformSim:
 
       while True:
           self.c2_cmd_ack_writer.write(cmd_ack_sample)
-          print("Writing to C2CommandAck topic")
+          print("Writing to ControlCommandAck topic")
           await asyncio.sleep(1)
 
     async def write_status(self):

@@ -1,6 +1,6 @@
 # Remote Control Group Assignment Example
 
-This example demonstrates how to use the RemoteAdmin tool to dynamically assign nodes to different groups (DDS partitions) and verify that group isolation prevents cross-group communication. You'll see how changing a platform's group assignment stops C2 from receiving its data.
+This example demonstrates how to use the RemoteAdmin tool to dynamically assign nodes to different groups (DDS partitions) and verify that group isolation prevents cross-group communication. You'll see how changing a platform's group assignment stops Control from receiving its data.
 
 ## Concept
 
@@ -19,9 +19,9 @@ In this example, we will:
 
 1. Start two platform simulators (Platform_10 and Platform_11)
 2. Start their corresponding routing services (both initially in default group)
-3. Start a C2 simulator that receives data from both platforms
+3. Start a Control simulator that receives data from both platforms
 4. Use RemoteAdmin to assign Platform_11 to a different group (group 5)
-5. Verify that C2 no longer receives data from Platform_11 but still receives from Platform_10
+5. Verify that Control no longer receives data from Platform_11 but still receives from Platform_10
 
 ## Architecture
 
@@ -29,21 +29,21 @@ In this example, we will:
 
 ```
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ Platform_10 │           │ Platform_11 │           │    C2_20    │
+│ Platform_10 │           │ Platform_11 │           │    Control_20    │
 │  Simulator  │           │  Simulator  │           │  Simulator  │
 └──────┬──────┘           └──────┬──────┘           └──────┬──────┘
        │                         │                         │
-       │ LAN Domain 0            │ LAN Domain 1            │ C2 Domain 2
+       │ LAN Domain 0            │ LAN Domain 1            │ Control Domain 2
        │                         │                         │
 ┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
-│ Platform_10 │           │ Platform_11 │           │    C2_20    │
+│ Platform_10 │           │ Platform_11 │           │    Control_20    │
 │   Router    │◄──────────┤   Router    │──────────►│   Router    │
 │  (default)  │  WAN      │  (default)  │  WAN      │  (default)  │
 └─────────────┘  Domain 10└─────────────┘  Domain 10└─────────────┘
       ▲                                                     │
       │                                                     │
       └─────────────────────────────────────────────────────┘
-           C2 receives data from both Platform_10 and Platform_11
+           Control receives data from both Platform_10 and Platform_11
 ```
 
 ### After Group Change (Platform-11 → Group 5)
@@ -54,7 +54,7 @@ In this example, we will:
 │  Simulator  │           │  Simulator  │           │  Simulator  │
 └──────┬──────┘           └──────┬──────┘           └──────┬──────┘
        │                         │                         │
-       │ LAN Domain 0            │ LAN Domain 1            │ C2 Domain 2
+       │ LAN Domain 0            │ LAN Domain 1            │ Control Domain 2
        │                         │                         │
 ┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
 │ Platform-10 │           │ Platform-11 │           │    C2-20    │
@@ -64,7 +64,7 @@ In this example, we will:
       ▲              └──────────┘                          │
       │             Group Mismatch                         │
       └────────────────────────────────────────────────────┘
-           C2 receives data ONLY from Platform-10
+           Control receives data ONLY from Platform-10
 ```
 
 ## Prerequisites
@@ -122,21 +122,21 @@ cd scripts
 ./start_platform11_router.sh
 ```
 
-### Terminal 5: Start C2 Simulator
+### Terminal 5: Start Control Simulator
 
 ```bash
 cd scripts
-./start_c2_20_sim.sh
+./start_control_20_sim.sh
 ```
 
-### Terminal 6: Start C2_20 Router
+### Terminal 6: Start Control_20 Router
 
 ```bash
 cd scripts
-./start_c2_20_router.sh
+./start_control_20_router.sh
 ```
 
-**Important**: Watch the C2 output carefully (Terminal 5). You should see it receiving data from **both** Platform_10 and Platform_11:
+**Important**: Watch the Control output carefully (Terminal 5). You should see it receiving data from **both** Platform_10 and Platform_11:
 
 ```
 - Received ContactReport Data: 10 from source: Platform_10 type: Platform
@@ -260,14 +260,14 @@ cd tools/remote_admin
 # Move Platform_10 to group 3 (using ROUTER_NAME from params/platform_10_params.sh)
 ./send_remote_cmd.sh -n Platform_10 -g 3 --type platform
 
-# Move C2_20 to group 3 (using ROUTER_NAME from params/c2_20_params.sh)
-./send_remote_cmd.sh -n C2_20 -g 3 --type c2
+# Move Control_20 to group 3 (using ROUTER_NAME from params/control_20_params.sh)
+./send_remote_cmd.sh -n Control_20 -g 3 --type c2
 
 # Platform_11 stays in default group
 ```
 
 Now:
-- Platform_10 and C2_20 communicate (both in group 3)
+- Platform_10 and Control_20 communicate (both in group 3)
 - Platform_11 is isolated (in default group)
 - To add Platform_11 to the group: `./send_remote_cmd.sh -n Platform_11 -g 3 --type platform`
 
@@ -290,7 +290,7 @@ Now:
 
 - **Check all routers are running**: Verify Terminals 2 and 4 show active routing services
 - **Verify simulators are publishing**: Check Terminals 1 and 3 for "Publishing PlatformData" messages
-- **Check C2 router**: Ensure `start_c2_20_router.sh` is running (if using separate C2 router)
+- **Check C2 router**: Ensure `start_control_20_router.sh` is running (if using separate C2 router)
 
 ## Cleanup
 
@@ -300,8 +300,8 @@ To stop all processes, press `Ctrl+C` in each terminal:
 2. Terminal 2: Platform_10 router
 3. Terminal 3: Platform_11 simulator
 4. Terminal 4: Platform_11 router
-5. Terminal 5: C2_20 simulator
-6. Terminal 6: C2_20 router
+5. Terminal 5: Control_20 simulator
+6. Terminal 6: Control_20 router
 
 ## Related Examples
 

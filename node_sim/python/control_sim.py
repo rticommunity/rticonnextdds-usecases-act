@@ -39,7 +39,7 @@ class C2Sim:
       # Create Topics and associate with types
       self.c2_cmd_topic = dds.DynamicData.Topic(
           self.participant,
-          "C2Command",
+          "ControlCommand",
           self.c2_cmd_type
       )
       self.platform_cmd_ack_topic = dds.DynamicData.Topic(
@@ -145,7 +145,7 @@ class C2Sim:
       while True:
           # Send C2 Command
           self.c2_cmd_writer.write(cmd_sample)
-          print("Writing to C2Command topic")
+          print("Writing to ControlCommand topic")
 
           # Send C2 Contact Report
           self.c2_contact_report_writer.write(contact_report_sample)

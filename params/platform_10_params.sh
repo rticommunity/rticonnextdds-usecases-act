@@ -15,7 +15,7 @@
 # - Must be unique across all nodes in the system
 # - Used as the routing service -appName (identifies this routing service instance)
 # - Used as the -n parameter in send_remote_cmd.sh to address this node for remote admin
-# - Used in C2Command messages to address this platform from C2 stations
+# - Used in ControlCommand messages to address this platform from C2 stations
 export ROUTER_NAME="Platform_10"
 
 # Used for Routing Service
@@ -26,7 +26,7 @@ export TYPE="platform"
 export LAN_QOS_PROFILE="LAN::domain_participant_qos"
 export SESSION_ID=10
 export DOMAIN_ID=$PLATFORM_DOMAIN
-export DESTINATION="C2_20"
+export DESTINATION="Control_20"
 
 # XML Files for Platform applications
 XML_FILES="../config/qos/lan_qos_lib.xml;"

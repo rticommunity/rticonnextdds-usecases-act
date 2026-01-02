@@ -36,10 +36,10 @@ static const std::string WAN_TO_PLATFORM_TEAM = "wan_to_platform_team";
 
 // Participant and routing service configuration names
 static const std::string PLATFORM_WAN_PARTICIPANT = "platform_wan";
-static const std::string C2_WAN_PARTICIPANT = "c2_wan";
+static const std::string CONTROL_WAN_PARTICIPANT = "control_wan";
 
 static const std::string RS_CONFIG_NAME_PLATFORM = "platform";
-static const std::string RS_CONFIG_NAME_C2 = "c2";
+static const std::string RS_CONFIG_NAME_CONTROL = "control";
 static const std::string DEFAULT_DOMAIN_ROUTE_NAME = "dr";
 
 // Resource identifier path segments
@@ -144,8 +144,8 @@ static void send_team_update(
         CommandRequest request;
 
         // Select participant name based on node type
-        std::string participant_name = (args.node_type == "c2") 
-                                       ? C2_WAN_PARTICIPANT 
+        std::string participant_name = (args.node_type == "control") 
+                                       ? CONTROL_WAN_PARTICIPANT 
                                        : PLATFORM_WAN_PARTICIPANT;
 
         // Configuration name is from the <routing_service name="..."> in
@@ -269,8 +269,8 @@ int main(int argc, char *argv[])
 
         if (arguments.update_team) {
             // Select config name based on node type
-            std::string config_name = (arguments.node_type == "c2") 
-                                      ? RS_CONFIG_NAME_C2 
+            std::string config_name = (arguments.node_type == "control") 
+                                      ? RS_CONFIG_NAME_CONTROL 
                                       : RS_CONFIG_NAME_PLATFORM;
             send_team_update(requester, arguments, config_name);
         }
