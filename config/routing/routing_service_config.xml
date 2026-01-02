@@ -146,6 +146,16 @@ to use the software.
       </element>
 
       <!-- 
+        Enable/Disable full-rate status data transmission.
+        When disabled, only primary (downsampled) status is transmitted.
+        Enable on-demand for full diagnostic data.
+      -->
+      <element>
+        <name>FULL_STATUS_ENABLE</name>
+        <value>false</value>
+      </element>
+
+      <!-- 
         Enable distributed logging/monitoring. 
         Creates another DomainParticipant in CONTROL_DOMAIN that publishes
         internal log/statistic data to view in Admin Console
@@ -379,8 +389,8 @@ to use the software.
           </partition>
         </publisher_qos>
 
-        <!-- WAN -> C2 Status -->
-        <auto_topic_route name="platform_status_filter">
+        <!-- WAN -> Control Status -->
+        <auto_topic_route name="platform_status_filter" enabled="$(FULL_STATUS_ENABLE)">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_wan">
             <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
@@ -548,7 +558,7 @@ to use the software.
         </publisher_qos>
 
         <!-- PLATFORM -> WAN Status messages -->
-        <auto_topic_route name="platform_status_route">
+        <auto_topic_route name="platform_status_route" enabled="$(FULL_STATUS_ENABLE)">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
             <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
