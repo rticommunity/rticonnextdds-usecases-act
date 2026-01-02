@@ -116,9 +116,9 @@ This infrastructure performs the following roles:
 
 ### Routing Capabilities
 Data can flow in multiple patterns:
-- **Platform → C2**: Status updates, events, acknowledgments
-- **C2 → Platform**: Commands (content-filtered by destination)
-- **Platform ↔ Platform**: Peer-to-peer data sharing for collaboration
+- **Platform → Control**: Status updates, events, acknowledgments
+- **Control → Platform**: Commands (content-filtered by destination)
+- **Platform ↔ Platform**: Peer-to-peer data sharing for team collaboration
 
 ### Advanced Features
 - ✅ **Scalable architecture**: One-to-many and many-to-one pub/sub patterns
@@ -146,25 +146,22 @@ Data can flow in multiple patterns:
 
 ### Domain Segmentation
 
-The system uses **3 separate DDS domains** for network-level isolation:
+The system uses **4 separate DDS domains** for network-level isolation:
 
 | Domain Type | Domain IDs | Purpose | Network |
-|-------------|------------|---------|---------|
-| **Platform** | 10-19 | Vehicle/Platform local network | LAN |
-| **WAN** | 3 | Wide Area Network | Satellite, Mesh Radio, etc. |
-| **C2** | 20-29 | Command & Control network | LAN |
-| **Admin** | 100 | Remote administration | Control plane |
+|-------------|------------|---------|---------||
+| **PLATFORM_DOMAIN** | 30-100 | Platform local network | LAN |
+| **CONTROL_DOMAIN** | 10-30 | Command & Control network | LAN |
+| **WAN_DOMAIN** | 200 | Wide Area Network (control-to-platform and platform-to-platform) | Satellite, Mesh Radio, etc. |
+| **ADMIN_DOMAIN** | 100 | Remote administration | Admin plane |
 
-> **Note on Domain IDs**: In the simulated examples, unique domain IDs (10, 11, etc.) are assigned to each platform to simulate network isolation on a single host. In a deployed environment, platforms would be **physically isolated** on separate networks and would typically use the **same domain ID** (e.g., all platforms use domain 10), as physical network boundaries provide the isolation.
+> **Note on Domain IDs**: In the simulated examples (VLAN simulation), unique domain IDs (e.g., Platform_30 uses domain 30, Platform_31 uses domain 31) are assigned to each platform to simulate network isolation on a single host. In a deployed environment, platforms would be **physically isolated** on separate networks and would typically use the **same domain ID** (e.g., all platforms use domain 30), as physical network boundaries provide the isolation.
 
 ### Port Allocation
 
 RTI Connext DDS uses well-known port formulas based on domain ID and participant index. 
 
-**Example port assignments** (for participant index 0):
-- **Domain 3 (WAN)**: Ports 8150, 8151, 8160, 8161
-- **Domain 10 (Platform-10)**: Ports 9900, 9901, 9910, 9911
-- **Domain 20 (Control-20)**: Ports 12400, 12401, 12410, 12411
+
 
 Domain IDs can be changed in the routing service configuration and parameter files to suit your deployment needs.
 

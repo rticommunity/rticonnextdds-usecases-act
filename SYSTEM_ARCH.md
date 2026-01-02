@@ -8,6 +8,8 @@ The Autonomous Collaborative Teaming (ACT) Routing System is a middleware infras
 The architecture facilitates a transition from 1:1 operator-to-platform ratios to 1:N (team) operations. 
 It utilizes DDS (Data Distribution Service) and a Routing Service layer to abstract complex networking into logical domains, ensuring interoperability between diverse vendors while managing data flow across bandwidth-constrained Wide Area Networks (WAN).
 
+> **Note:** The requirements, scenarios, and use cases defined in this document are provided as reference examples only and can be modified as needed to target specific use cases. This architecture is intended to highlight various technical options and implementation patterns aligned with autonomous collaborative teaming scenarios.
+
 ## 2. Scenarios
 
 This architecture focuses on the DDS implementation of the message routing use case and is aligned with the following scenarios:

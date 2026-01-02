@@ -68,10 +68,10 @@ Now enable TEAM on both platforms using RemoteAdmin:
 cd tools/remote_admin
 
 # Enable TEAM on Platform_30
-./send_remote_cmd.sh -n Platform_30 --team true
+./send_remote_cmd.sh -n Platform_30 --enable-team-comms true
 
 # Wait a moment, then enable TEAM on Platform_31
-./send_remote_cmd.sh -n Platform_31 --team true
+./send_remote_cmd.sh -n Platform_31 --enable-team-comms true
 ```
 
 **Note**: Each RemoteAdmin command is uniquely addressed to a specific node using the `-n` (name) parameter. This ensures that commands only affect the targeted routing service (Platform_30 or Platform_31), allowing precise control of individual nodes in a multi-platform deployment.
@@ -105,10 +105,10 @@ To disable TEAM communication:
 cd tools/remote_admin
 
 # Disable TEAM on Platform_30
-./send_remote_cmd.sh -n Platform_30 --team false
+./send_remote_cmd.sh -n Platform_30 --enable-team-comms false
 
 # Disable TEAM on Platform_31
-./send_remote_cmd.sh -n Platform_31 --team false
+./send_remote_cmd.sh -n Platform_31 --enable-team-comms false
 ```
 
 Platform_31 should stop receiving messages from Platform_30.
@@ -164,6 +164,8 @@ Platform_31 should stop receiving messages from Platform_30.
 ## Related Documentation
 
 - **RemoteAdmin Tool**: See `tools/remote_admin/README.md` for detailed usage
+- **REMOTE_ENABLE_FULL_STATUS.md**: Enable on-demand high-bandwidth telemetry
+- **REMOTE_CONTROL_TEAM.md**: Dynamically assign nodes to teams using DDS partitions
 - **QUICKSTART**: See `examples/QUICKSTART.md` for basic setup
 - **MULTI_PLATFORM**: See `examples/MULTI_PLATFORM.md` for more complex scenarios
 

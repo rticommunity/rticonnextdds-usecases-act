@@ -156,7 +156,7 @@ Now use RemoteAdmin to assign Platform_31 to team 5:
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_31 --type platform -g 5
+./send_remote_cmd.sh -n Platform_31 --type platform --team 5
 ```
 
 Expected output:
@@ -200,7 +200,7 @@ To restore communication, reset Platform_31's Domain Participant Partition back 
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_31 -g ALL --type platform
+./send_remote_cmd.sh -n Platform_31 --team ALL --type platform
 ```
 
 **Note**: The default Domain Participant Partition is "ALL", not an empty string.
@@ -216,7 +216,7 @@ After moving Platform_31 back to the default team, Control should start receivin
 
 ## What's Happening Behind the Scenes
 
-When you run `./send_remote_cmd.sh -n Platform_31 -g 5`:
+When you run `./send_remote_cmd.sh -n Platform_31 --team 5`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
@@ -258,10 +258,10 @@ You can also assign Control to a specific team to create an isolated communicati
 cd tools/remote_admin
 
 # Move Platform_30 to team 3 (using ROUTER_NAME from params/platform_10_params.sh)
-./send_remote_cmd.sh -n Platform_30 -g 3 --type platform
+./send_remote_cmd.sh -n Platform_30 --team 3 --type platform
 
 # Move Control_20 to team 3 (using ROUTER_NAME from params/control_20_params.sh)
-./send_remote_cmd.sh -n Control_20 -g 3 --type c2
+./send_remote_cmd.sh -n Control_20 --team 3 --type control
 
 # Platform_31 stays in default team
 ```
@@ -269,7 +269,7 @@ cd tools/remote_admin
 Now:
 - Platform_30 and Control_20 communicate (both in team 3)
 - Platform_31 is isolated (in default team)
-- To add Platform_31 to the team: `./send_remote_cmd.sh -n Platform_31 -g 3 --type platform`
+- To add Platform_31 to the team: `./send_remote_cmd.sh -n Platform_31 --team 3 --type platform`
 
 ## Troubleshooting
 
@@ -306,6 +306,7 @@ To stop all processes, press `Ctrl+C` in each terminal:
 ## Related Examples
 
 - **REMOTE_ENABLE_TEAM.md**: Enable direct platform-to-platform communication
+- **REMOTE_ENABLE_FULL_STATUS.md**: Enable on-demand high-bandwidth telemetry
 - **QUICKSTART.md**: Basic setup and initial testing
 - **MULTI_PLATFORM.md**: Scaling to many platforms
 
