@@ -5,7 +5,7 @@ This is a minimal example demonstrating the ACT (Autonomous Collaborative Teamin
 ## Overview
 
 This example launches:
-- **Platform 10 (Platform_10)**: A simulated platform node
+- **Platform 10 (Platform_30)**: A simulated platform node
 - **Control Station 20 (Control_20)**: A command and control station
 
 Each node requires both a **routing service** (bridges domains) and a **simulator** (generates/processes data).
@@ -61,9 +61,9 @@ cd scripts
 - Sending `PlatformCommandAck` acknowledgments
 
 **Control Simulator** will show:
-- Receiving `PlatformStatus` from Platform_10
-- Sending `ControlCommand` to Platform_10
-- Receiving `PlatformCommandAck` from Platform_10
+- Receiving `PlatformStatus` from Platform_30
+- Sending `ControlCommand` to Platform_30
+- Receiving `PlatformCommandAck` from Platform_30
 
 ## Monitoring with RTI Tools
 

@@ -5,8 +5,8 @@ This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming)
 ## Overview
 
 This example launches:
-- **Platform 10 (Platform_10)**: First unmanned surface vehicle
-- **Platform 11 (Platform_11)**: Second unmanned surface vehicle
+- **Platform 10 (Platform_30)**: First unmanned surface vehicle
+- **Platform 11 (Platform_31)**: Second unmanned surface vehicle
 - **Control Station 20**: Command and control station
 
 Key features demonstrated:
@@ -104,7 +104,7 @@ cd scripts
 - Publishing `ContactReport` data
 
 **Control Simulator** will show:
-- Receiving `PlatformStatus` from both Platform_10 and Platform_11
+- Receiving `PlatformStatus` from both Platform_30 and Platform_31
 - Sending `ControlCommand` to both platforms
 - Receiving `PlatformCommandAck` from both platforms
 - Receiving `ContactReport` from both platforms
@@ -119,8 +119,8 @@ rtiadminconsole
 ```
 
 You should see:
-- Domain 10: Platform_10 publications/subscriptions
-- Domain 11: Platform_11 publications/subscriptions
+- Domain 10: Platform_30 publications/subscriptions
+- Domain 11: Platform_31 publications/subscriptions
 - Domain 20: Control_20 publications/subscriptions
 - Domain 0: WAN routing traffic
 
@@ -138,11 +138,11 @@ Control routers at runtime using the [RemoteAdmin tool](https://community.rti.co
 
 ```bash
 cd tools/remote_admin
-# Enable TEAM on Platform_10
-./send_remote_cmd.sh -n Platform_10 --team true
+# Enable TEAM on Platform_30
+./send_remote_cmd.sh -n Platform_30 --team true
 
-# Assign Platform_11 to team 5
-./send_remote_cmd.sh -n Platform_11 --type platform -g 5
+# Assign Platform_31 to team 5
+./send_remote_cmd.sh -n Platform_31 --type platform -g 5
 ```
 
 RemoteAdmin allows you to:
@@ -163,9 +163,9 @@ To add Platform 12:
    ```
 
 2. Edit `platform_12_params.sh`:
-   - Change `PLATFORM_DOMAIN=12`
+   - Change `PLATFORM_DOMAIN=32`
    - Change `ROUTER_NAME="Platform_12"`
-   - Change `SESSION_ID=12`
+   - Change `SESSION_ID=32`
 
 3. Copy and update start scripts:
    ```bash
@@ -179,8 +179,8 @@ To add Platform 12:
 ## Configuration Details
 
 All configurations are in `params/`:
-- `platform_10_params.sh`: Platform_10 on domain 10
-- `platform_11_params.sh`: Platform_11 on domain 11
+- `platform_10_params.sh`: Platform_30 on domain 10
+- `platform_11_params.sh`: Platform_31 on domain 11
 - `control_20_params.sh`: Control_20 on domain 20
 - `system_params.sh`: WAN timing, channel setup and network parameters
 

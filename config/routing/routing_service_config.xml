@@ -32,21 +32,27 @@ to use the software.
       </element>
 
       <!-- ________________________ Domain IDS _____________________________ -->
+      <!-- Domain architecture for VLAN simulation (normally physical separation):
+           - ADMIN_DOMAIN: 100 (Remote administration and monitoring)
+           - WAN_DOMAIN: 200 (Wide-area network between all nodes)
+           - CONTROL_DOMAIN range: 10-30 (Control station local LANs)
+           - PLATFORM_DOMAIN range: 30-100 (Platform node local LANs)
+      -->
       <element>
-        <name>CONTROL_DOMAIN</name>
+        <name>ADMIN_DOMAIN</name>
         <value>100</value>
       </element>
       <element>
         <name>PLATFORM_DOMAIN</name>
-        <value>10</value>
+        <value>30</value>
       </element>
       <element>
         <name>WAN_DOMAIN</name>
-        <value>3</value>
+        <value>200</value>
       </element>
       <element>
         <name>CONTROL_DOMAIN</name>
-        <value>20</value>
+        <value>10</value>
       </element>
 
       <!-- ________________________ QOS Profiles____________________________ -->
@@ -157,7 +163,7 @@ to use the software.
 
       <!-- 
         Enable distributed logging/monitoring. 
-        Creates another DomainParticipant in CONTROL_DOMAIN that publishes
+        Creates another DomainParticipant in ADMIN_DOMAIN that publishes
         internal log/statistic data to view in Admin Console
       -->
       <element>
@@ -170,7 +176,7 @@ to use the software.
         REQUEST/REPLY endpoint to update Routing Service config at runtime.
       -->
       <element>
-        <name>CONTROL_MODE</name>
+        <name>REMOTE_ADMIN_MODE</name>
         <value>true</value>
       </element>
 
@@ -230,7 +236,7 @@ to use the software.
 
       <!-- PLATFORM -> PLATFORM -->
       <element>
-        <name>PLATFORM_TEAM_COMMS_CHANNEL</name>
+        <name>PLATFORM_TEAM_CHANNEL</name>
         <value>PlatformData</value>
       </element>
     </value>
@@ -265,8 +271,8 @@ to use the software.
     <!-- The administration tag enables remote administration, and is
             required when using Admin Console. -->
     <administration>
-      <enabled>$(CONTROL_MODE)</enabled>
-      <domain_id>$(CONTROL_DOMAIN)</domain_id>
+      <enabled>$(REMOTE_ADMIN_MODE)</enabled>
+      <domain_id>$(ADMIN_DOMAIN)</domain_id>
       <distributed_logger>
         <enabled>$(DEBUG_MODE)</enabled>
         <filter_level>WARNING</filter_level>
@@ -287,7 +293,7 @@ to use the software.
     <monitoring>
       <enabled>$(DEBUG_MODE)</enabled>
       <!-- The domain id where to publish the monitoring information -->
-      <domain_id>$(CONTROL_DOMAIN)</domain_id>
+      <domain_id>$(ADMIN_DOMAIN)</domain_id>
       <!-- How often to publish it -->
       <status_publication_period>
         <sec>5</sec>
@@ -474,8 +480,8 @@ to use the software.
     <!-- The administration tag enables remote administration, and is
             required when using Admin Console. -->
     <administration>
-      <enabled>$(CONTROL_MODE)</enabled>
-      <domain_id>$(CONTROL_DOMAIN)</domain_id>
+      <enabled>$(REMOTE_ADMIN_MODE)</enabled>
+      <domain_id>$(ADMIN_DOMAIN)</domain_id>
       <distributed_logger>
         <enabled>$(DEBUG_MODE)</enabled>
         <filter_level>WARNING</filter_level>
@@ -496,7 +502,7 @@ to use the software.
     <monitoring>
       <enabled>$(DEBUG_MODE)</enabled>
       <!-- The domain id where to publish the monitoring information -->
-      <domain_id>$(CONTROL_DOMAIN)</domain_id>
+      <domain_id>$(ADMIN_DOMAIN)</domain_id>
       <!-- How often to publish it -->
       <status_publication_period>
         <sec>5</sec>
@@ -707,11 +713,11 @@ to use the software.
         <auto_topic_route name="platform_to_wan">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="team_wan">
-            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_TEAM_QOS)" />
           </output>
         </auto_topic_route>
@@ -726,11 +732,11 @@ to use the software.
         <auto_topic_route name="wan_to_platform">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="team_wan">
-            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_TEAM_QOS)" />
           </input>
           <output participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>

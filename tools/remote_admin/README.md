@@ -124,11 +124,11 @@ System parameters are located in `params/system_params.sh` at the repository roo
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_10 --team true
+./send_remote_cmd.sh -n Platform_30 --team true
 ```
 
 **Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
-- Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
+- Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_30, Platform_31)
 - Control nodes: Use ROUTER_NAME from `params/control_*_params.sh` (e.g., Control_20)
 
 The wrapper script:
@@ -144,7 +144,7 @@ Remote Admin Service Controller.
 Usage:
    -d, --domain     <int>             Domain ID 
    -q, --qos        <string>          QOS Profile (library::profile)
-   -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_10' 
+   -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_30' 
                                       REQUIRED
    -t, --type       <string>          Node type: 'platform' or 'c2' (default: platform)
    -g, --team      <int>             Team ID (DDS Partition - see https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm) to assign resource to 
@@ -157,7 +157,7 @@ Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
 
 ### Required Arguments
 
-- `-n, --name <string>`: The name of the routing service instance to control (e.g., 'Platform_10', 'USV_1'). This must match the routing service's application name.
+- `-n, --name <string>`: The name of the routing service instance to control (e.g., 'Platform_30', 'USV_1'). This must match the routing service's application name.
 
 ### Optional Arguments
 

@@ -18,6 +18,7 @@
 export ROUTER_NAME="Control_20"
 
 # Node Router Params
+# CONTROL_DOMAIN range: 10-30 (VLAN simulation, normally physical separation)
 export CONTROL_DOMAIN=20
 export TYPE="control"
 
@@ -31,8 +32,8 @@ XML_FILES="../config/qos/lan_qos_lib.xml;"
 XML_FILES+="../node_sim/datamodel/act_types.xml"
 export XML_FILES
 
-# Matches Platform_10 ROUTER_NAME for addressing ControlCommand messages
-export DESTINATION="Platform_10"
+# Matches Platform_30 ROUTER_NAME for addressing ControlCommand messages
+export DESTINATION="Platform_30"
 
 echo "
 -------------------------------- $ROUTER_NAME CONFIGS: -------------------------

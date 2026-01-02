@@ -17,11 +17,11 @@ The RemoteAdmin tool allows you to change a node's team assignment without resta
 
 In this example, we will:
 
-1. Start two platform simulators (Platform_10 and Platform_11)
+1. Start two platform simulators (Platform_30 and Platform_31)
 2. Start their corresponding routing services (both initially in default team)
 3. Start a Control simulator that receives data from both platforms
-4. Use RemoteAdmin to assign Platform_11 to a different team (team 5)
-5. Verify that Control no longer receives data from Platform_11 but still receives from Platform_10
+4. Use RemoteAdmin to assign Platform_31 to a different team (team 5)
+5. Verify that Control no longer receives data from Platform_31 but still receives from Platform_30
 
 ## Architecture
 
@@ -29,21 +29,21 @@ In this example, we will:
 
 ```
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ Platform_10 │           │ Platform_11 │           │    Control_20    │
+│ Platform_30 │           │ Platform_31 │           │    Control_20    │
 │  Simulator  │           │  Simulator  │           │  Simulator  │
 └──────┬──────┘           └──────┬──────┘           └──────┬──────┘
        │                         │                         │
        │ LAN Domain 0            │ LAN Domain 1            │ Control Domain 2
        │                         │                         │
 ┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
-│ Platform_10 │           │ Platform_11 │           │    Control_20    │
+│ Platform_30 │           │ Platform_31 │           │    Control_20    │
 │   Router    │◄──────────┤   Router    │──────────►│   Router    │
 │  (default)  │  WAN      │  (default)  │  WAN      │  (default)  │
 └─────────────┘  Domain 10└─────────────┘  Domain 10└─────────────┘
       ▲                                                     │
       │                                                     │
       └─────────────────────────────────────────────────────┘
-           Control receives data from both Platform_10 and Platform_11
+           Control receives data from both Platform_30 and Platform_31
 ```
 
 ### After Team Change (Platform-11 → Team 5)
@@ -78,7 +78,7 @@ In this example, we will:
 
 ## Step-by-Step Walkthrough
 
-### Terminal 1: Start Platform_10 Simulator
+### Terminal 1: Start Platform_30 Simulator
 
 ```bash
 cd scripts
@@ -93,27 +93,27 @@ Publishing PlatformData with Session ID 1
 ...
 ```
 
-### Terminal 4: Start Platform_11 Router
+### Terminal 4: Start Platform_31 Router
 
 ```bash
 cd scripts
 ./start_platform10_router.sh
 ```
 
-The routing service will start and bridge Platform_10's LAN domain to the WAN domain. Look for:
+The routing service will start and bridge Platform_30's LAN domain to the WAN domain. Look for:
 
 ```
 RTI Routing Service started
 ```
 
-### Terminal 3: Start Platform_11 Simulator
+### Terminal 3: Start Platform_31 Simulator
 
 ```bash
 cd scripts
 ./start_platform11_sim.sh
 ```
 
-Similar output as Platform_10, publishing session data.
+Similar output as Platform_30, publishing session data.
 
 ### Terminal 4: Start Platform-11 Router
 
@@ -136,11 +136,11 @@ cd scripts
 ./start_control_20_router.sh
 ```
 
-**Important**: Watch the Control output carefully (Terminal 5). You should see it receiving data from **both** Platform_10 and Platform_11:
+**Important**: Watch the Control output carefully (Terminal 5). You should see it receiving data from **both** Platform_30 and Platform_31:
 
 ```
-- Received ContactReport Data: 10 from source: Platform_10 type: Platform
-- Received ContactReport Data: 11 from source: Platform_11 type: Platform
+- Received ContactReport Data: 10 from source: Platform_30 type: Platform
+- Received ContactReport Data: 11 from source: Platform_31 type: Platform
 ...
 ```
 
@@ -150,13 +150,13 @@ The session IDs will alternate or interleave, showing data from both platforms.
 
 Before making any changes, confirm Control is receiving from both platforms. Let it run for about 10-15 seconds and observe the session IDs. You should see a mix of session IDs from both simulators.
 
-### Terminal 8: Change Platform_11 Team Assignment
+### Terminal 8: Change Platform_31 Team Assignment
 
-Now use RemoteAdmin to assign Platform_11 to team 5:
+Now use RemoteAdmin to assign Platform_31 to team 5:
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_11 --type platform -g 5
+./send_remote_cmd.sh -n Platform_31 --type platform -g 5
 ```
 
 Expected output:
@@ -171,9 +171,9 @@ Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qo
 
 Waiting for a matching replier...
 Sending Remote TEAM UPDATE: 
-resource_identifier: /routing_services/Platform_11/domain_routes/dr/participants/platform_wan
+resource_identifier: /routing_services/Platform_31/domain_routes/dr/participants/platform_wan
 body_text: str://"<participant><domain_participant_qos><partition><name><element>5</element></name></partition></domain_participant_qos></participant>"
-application_name: Platform_11
+application_name: Platform_31
 Command returned: OK
 ```
 
@@ -183,44 +183,44 @@ Switch back to Terminal 5 where the Control simulator is running. You should now
 
 **Before team change:**
 ```
-- Received ContactReport Data: 10 from source: Platform_10 type: Platform
-- Received ContactReport Data: 11 from source: Platform_11 type: Platform
+- Received ContactReport Data: 10 from source: Platform_30 type: Platform
+- Received ContactReport Data: 11 from source: Platform_31 type: Platform
 ```
 
 **After team change:**
 ```
-- Received ContactReport Data: 10 from source: Platform_10 type: Platform
+- Received ContactReport Data: 10 from source: Platform_30 type: Platform
 ```
 
-Notice that after the team change, you only see ContactReports from Platform_10. Platform_11's data is no longer received because it's in a different team (partition).
+Notice that after the team change, you only see ContactReports from Platform_30. Platform_31's data is no longer received because it's in a different team (partition).
 
-### Terminal 8: Reset Platform_11 to Default Partition
+### Terminal 8: Reset Platform_31 to Default Partition
 
-To restore communication, reset Platform_11's Domain Participant Partition back to "ALL" (the default):
+To restore communication, reset Platform_31's Domain Participant Partition back to "ALL" (the default):
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_11 -g ALL --type platform
+./send_remote_cmd.sh -n Platform_31 -g ALL --type platform
 ```
 
 **Note**: The default Domain Participant Partition is "ALL", not an empty string.
 
 ### Terminal 5 (C2): Verify Communication Restored
 
-After moving Platform_11 back to the default team, Control should start receiving data from both platforms again:
+After moving Platform_31 back to the default team, Control should start receiving data from both platforms again:
 
 ```
-- Received ContactReport Data: 10 from source: Platform_10 type: Platform
-- Received ContactReport Data: 11 from source: Platform_11 type: Platform
+- Received ContactReport Data: 10 from source: Platform_30 type: Platform
+- Received ContactReport Data: 11 from source: Platform_31 type: Platform
 ```
 
 ## What's Happening Behind the Scenes
 
-When you run `./send_remote_cmd.sh -n Platform_11 -g 5`:
+When you run `./send_remote_cmd.sh -n Platform_31 -g 5`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
-   /routing_services/Platform_11/domain_routes/dr/participants/platform_wan
+   /routing_services/Platform_31/domain_routes/dr/participants/platform_wan
    ```
 
 2. **Creates an XML QoS update** to set the partition:
@@ -246,8 +246,8 @@ When you run `./send_remote_cmd.sh -n Platform_11 -g 5`:
 
 - **Team isolation is immediate**: As soon as the team change is applied, communication stops
 - **No restart required**: The routing service remains running during the reconfiguration
-- **Session IDs continue**: Platform_11 keeps publishing, but Control can't receive it
-- **Bidirectional isolation**: Platform_11 also can't receive data meant for the default team
+- **Session IDs continue**: Platform_31 keeps publishing, but Control can't receive it
+- **Bidirectional isolation**: Platform_31 also can't receive data meant for the default team
 - **Default partition is "ALL"**: The default Domain Participant Partition is set to "ALL", not an empty string or "0"
 
 ## Advanced: Assign Control to a Team
@@ -257,19 +257,19 @@ You can also assign Control to a specific team to create an isolated communicati
 ```bash
 cd tools/remote_admin
 
-# Move Platform_10 to team 3 (using ROUTER_NAME from params/platform_10_params.sh)
-./send_remote_cmd.sh -n Platform_10 -g 3 --type platform
+# Move Platform_30 to team 3 (using ROUTER_NAME from params/platform_10_params.sh)
+./send_remote_cmd.sh -n Platform_30 -g 3 --type platform
 
 # Move Control_20 to team 3 (using ROUTER_NAME from params/control_20_params.sh)
 ./send_remote_cmd.sh -n Control_20 -g 3 --type c2
 
-# Platform_11 stays in default team
+# Platform_31 stays in default team
 ```
 
 Now:
-- Platform_10 and Control_20 communicate (both in team 3)
-- Platform_11 is isolated (in default team)
-- To add Platform_11 to the team: `./send_remote_cmd.sh -n Platform_11 -g 3 --type platform`
+- Platform_30 and Control_20 communicate (both in team 3)
+- Platform_31 is isolated (in default team)
+- To add Platform_31 to the team: `./send_remote_cmd.sh -n Platform_31 -g 3 --type platform`
 
 ## Troubleshooting
 
@@ -277,13 +277,13 @@ Now:
 
 - **Verify the command succeeded**: Check RemoteAdmin output for "Command returned: entity updated OK"
 - **Check routing service logs**: Look for partition updates in the router terminal
-- **Confirm correct resource name**: Use `-n Platform_11` not `-n platform_11` (case-sensitive)
+- **Confirm correct resource name**: Use `-n Platform_31` not `-n platform_11` (case-sensitive)
 - **Wait a few seconds**: There may be a small delay for DDS discovery to update
 
 ### RemoteAdmin Shows "No matching replier found"
 
-- **Verify routing service is running**: Check Terminal 4 (Platform_11 router)
-- **Check application name**: The `-appName Platform_11` in the router must match `-n Platform_11` in RemoteAdmin
+- **Verify routing service is running**: Check Terminal 4 (Platform_31 router)
+- **Check application name**: The `-appName Platform_31` in the router must match `-n Platform_31` in RemoteAdmin
 - **Verify admin domain**: Both router and RemoteAdmin must use the same admin domain (default: 100)
 
 ### Control Not Receiving Any Data
@@ -296,10 +296,10 @@ Now:
 
 To stop all processes, press `Ctrl+C` in each terminal:
 
-1. Terminal 1: Platform_10 simulator
-2. Terminal 2: Platform_10 router
-3. Terminal 3: Platform_11 simulator
-4. Terminal 4: Platform_11 router
+1. Terminal 1: Platform_30 simulator
+2. Terminal 2: Platform_30 router
+3. Terminal 3: Platform_31 simulator
+4. Terminal 4: Platform_31 router
 5. Terminal 5: Control_20 simulator
 6. Terminal 6: Control_20 router
 

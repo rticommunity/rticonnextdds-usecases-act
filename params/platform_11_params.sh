@@ -16,15 +16,16 @@
 # - Used as the routing service -appName (identifies this routing service instance)
 # - Used as the -n parameter in send_remote_cmd.sh to address this node for remote admin
 # - Used in ControlCommand messages to address this platform from C2 stations
-export ROUTER_NAME="Platform_11"
+export ROUTER_NAME="Platform_31"
 
 # Used for Routing Service
-export PLATFORM_DOMAIN=11
+# PLATFORM_DOMAIN range: 30-100 (VLAN simulation, normally physical separation)
+export PLATFORM_DOMAIN=31
 export TYPE="platform"
 
 # Used for Platform Sim
 export LAN_QOS_PROFILE="LAN::domain_participant_qos"
-export SESSION_ID=11
+export SESSION_ID=31
 export DOMAIN_ID=$PLATFORM_DOMAIN
 export DESTINATION="Control_20"
 

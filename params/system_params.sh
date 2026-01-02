@@ -35,10 +35,28 @@ NDDS_QOS_PROFILES+="../config/qos/remoteadmin_qos_lib.xml;"
 # Routing Service file (relative path from params/ to config/routing/)
 NDDS_QOS_PROFILES+="../config/routing/routing_service_config.xml"
 
+################################################################################
+#                            DOMAIN ARCHITECTURE                               #
+################################################################################
+# Domain IDs for VLAN simulation (normally there would be physical separation):
+#   - CONTROL_DOMAIN range: 10-30 (Control station local LANs)
+#   - PLATFORM_DOMAIN range: 30-100 (Platform node local LANs)
+#   - ADMIN_DOMAIN: 100 (Remote administration and monitoring)
+#   - WAN_DOMAIN: 200 (Wide-area network between all nodes)
+################################################################################
+
+export ADMIN_DOMAIN=100
+export WAN_DOMAIN=200
+
 echo "
 -----------------------------XML PROFILES---------------------------------------
 NDDS_QOS_PROFILES = $NDDS_QOS_PROFILES
------------------------------XML PROFILES---------------------------------------"
+-----------------------------XML PROFILES---------------------------------------
+
+-----------------------------DOMAIN IDS-----------------------------------------
+ADMIN_DOMAIN:  $ADMIN_DOMAIN  (Remote administration and monitoring)
+WAN_DOMAIN:    $WAN_DOMAIN  (Wide-area network between all nodes)
+-----------------------------DOMAIN IDS-----------------------------------------"
 
 
 ################################################################################
@@ -100,7 +118,7 @@ export PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL=PlatformStatus
 export PLATFORM_FULL_STATUS_CHANNEL=NULL
 
 # Platform topics to be shared within the Team
-export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
+export PLATFORM_TEAM_CHANNEL=PlatformData
 
 # Controller Topics such as ContactReports etc. resent if dropped
 export CONTROL_EVENTS_CHANNEL=NULL
@@ -119,7 +137,7 @@ echo "
 PLATFORM_EVENTS_CHANNEL = $PLATFORM_EVENTS_CHANNEL
 PLATFORM_FULL_STATUS_CHANNEL = $PLATFORM_FULL_STATUS_CHANNEL
 PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL = $PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL
-PLATFORM_TEAM_COMMS_CHANNEL = $PLATFORM_TEAM_COMMS_CHANNEL
+PLATFORM_TEAM_CHANNEL = $PLATFORM_TEAM_CHANNEL
 CONTROL_EVENTS_CHANNEL = $CONTROL_EVENTS_CHANNEL
 CONTROL_COMMANDS_CHANNEL = $CONTROL_COMMANDS_CHANNEL
 CONTROL_COMMAND_FILTER_FIELD = $CONTROL_COMMAND_FILTER_FIELD

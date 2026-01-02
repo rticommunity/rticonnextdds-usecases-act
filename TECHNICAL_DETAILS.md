@@ -36,8 +36,8 @@ rticonnextdds-usecases-act/
 │       └── routing_service_config.xml
 ├── params/                      # Parameter files
 │   ├── system_params.sh        # System-wide parameters
-│   ├── platform_10_params.sh   # Platform 10 configuration
-│   ├── platform_11_params.sh   # Platform 11 configuration
+│   ├── platform_10_params.sh   # Platform 30 configuration
+│   ├── platform_11_params.sh   # Platform 31 configuration
 │   └── control_20_params.sh         # Control-20 configuration
 ├── scripts/                    # Launch scripts and remote admin wrapper
 │   ├── start_platform10_router.sh
@@ -222,7 +222,7 @@ Understanding QoS delivery patterns is key to efficient system design. Two prima
 
 **Used By**:
 - `PLATFORM_STATUS_*_CHANNEL`: PlatformStatus, Telemetry (periodic)
-- `PLATFORM_TEAM_COMMS_CHANNEL`: PlatformData (periodic sharing)
+- `PLATFORM_TEAM_CHANNEL`: PlatformData (periodic sharing)
 
 **Trade-offs**:
 - ➕ Lower bandwidth usage
@@ -286,7 +286,7 @@ Data channels provide an **abstraction layer** for routing configuration. Instea
 ```bash
 export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport,Alert
 export PLATFORM_FULL_STATUS_CHANNEL=Telemetry
-export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
+export PLATFORM_TEAM_CHANNEL=PlatformData
 ```
 
 ### Available Channels
@@ -315,7 +315,7 @@ export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
 - Conserves bandwidth on constrained links
 
 #### Platform-to-Platform
-**Variable**: `PLATFORM_TEAM_COMMS_CHANNEL`  
+**Variable**: `PLATFORM_TEAM_CHANNEL`  
 **QoS**: BEST_EFFORT (Status QoS)  
 **Purpose**: Peer-to-peer data sharing  
 **Direction**: Platform ↔ Platform (via WAN)  
