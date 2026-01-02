@@ -30,8 +30,8 @@ class PlatformSim:
       )
 
       #Pull in DynamicData types
-      self.c2_cmd_type = self.qos_provider.type("c2_command")
-      self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
+      self.control_cmd_type = self.qos_provider.type("control_command")
+      self.control_cmd_ack_type = self.qos_provider.type("control_command_ack")
       self.platform_status_type = self.qos_provider.type("platform_status")
       self.platform_data_type = self.qos_provider.type("platform_data")
       self.contact_report_type = self.qos_provider.type("contact_report")
@@ -39,15 +39,15 @@ class PlatformSim:
 
 
       # Create Topics and associate with types
-      self.c2_cmd_topic = dds.DynamicData.Topic(
+      self.control_cmd_topic = dds.DynamicData.Topic(
           self.participant,
           "ControlCommand",
-          self.c2_cmd_type
+          self.control_cmd_type
       )
-      self.c2_cmd_ack_topic = dds.DynamicData.Topic(
+      self.control_cmd_ack_topic = dds.DynamicData.Topic(
           self.participant,
           "PlatformCommandAck",
-          self.c2_cmd_ack_type
+          self.control_cmd_ack_type
       )
       self.platform_status_topic = dds.DynamicData.Topic(
           self.participant,
@@ -66,8 +66,8 @@ class PlatformSim:
       )
 
       # Create DataWriters/DataReaders with the specified QoS profiles
-      self.c2_cmd_reader = dds.DynamicData.DataReader(
-          self.c2_cmd_topic,
+      self.control_cmd_reader = dds.DynamicData.DataReader(
+          self.control_cmd_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.platform_data_reader = dds.DynamicData.DataReader(
@@ -78,8 +78,8 @@ class PlatformSim:
           self.contact_report_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
-      self.c2_cmd_ack_writer = dds.DynamicData.DataWriter(
-          self.c2_cmd_ack_topic,
+      self.control_cmd_ack_writer = dds.DynamicData.DataWriter(
+          self.control_cmd_ack_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
       self.platform_status_writer = dds.DynamicData.DataWriter(
@@ -106,10 +106,10 @@ class PlatformSim:
           self.contact_report_writer.instance_handle)
 
 
-    async def read_c2_command(self):
-      print("Waiting for C2 Commands")
-      async for data in self.c2_cmd_reader.take_data_async():
-        print(f'- Received Command with Session ID: {data["msg.session[1]"]}')
+    async def read_control_command(self):
+      print("Waiting for Control Commands")
+      async for data in self.control_cmd_reader.take_data_async():
+        print(f'- Received Control Command with Session ID: {data["msg.session[1]"]}')
 
     async def read_platform_data(self):
       print("Waiting for Platform Data ")
@@ -125,7 +125,7 @@ class PlatformSim:
 
     async def write_cmd_ack(self):
       # Create sample
-      cmd_ack_sample = dds.DynamicData(self.c2_cmd_ack_type)
+      cmd_ack_sample = dds.DynamicData(self.control_cmd_ack_type)
 
       # Set Source
       cmd_ack_sample["msg.source"] = args.source
@@ -142,7 +142,7 @@ class PlatformSim:
       cmd_ack_sample["msg.payload"] = payload
 
       while True:
-          self.c2_cmd_ack_writer.write(cmd_ack_sample)
+          self.control_cmd_ack_writer.write(cmd_ack_sample)
           print("Writing to ControlCommandAck topic")
           await asyncio.sleep(1)
 
@@ -220,7 +220,7 @@ class PlatformSim:
 
     async def run(self) -> None:
         await asyncio.gather(
-            self.read_c2_command(),
+            self.read_control_command(),
             self.read_platform_data(),
             self.read_contact_report(),
             self.write_cmd_ack(),

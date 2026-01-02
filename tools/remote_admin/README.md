@@ -129,7 +129,7 @@ cd tools/remote_admin
 
 **Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
 - Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_10, Platform_11)
-- C2 nodes: Use ROUTER_NAME from `params/c2_*_params.sh` (e.g., Control_20)
+- Control nodes: Use ROUTER_NAME from `params/control_*_params.sh` (e.g., Control_20)
 
 The wrapper script:
 - Sources `system_params.sh` automatically from `config/params/`

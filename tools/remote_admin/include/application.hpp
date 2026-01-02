@@ -52,13 +52,15 @@ struct ApplicationArguments {
 
     // Required parameters - empty means "not provided"
     std::string name = "";
-    std::string node_type = "platform";  // "platform" or "c2"
+    std::string node_type = "platform";  // "platform" or "control"
     std::string team = "";
 
     // Flags with sensible defaults
     bool update_team = false;
     bool enable_team_comms = false;
     bool update_enable_team_comms = false;
+    bool enable_full_status = false;
+    bool update_enable_full_status = false;
 };
 
 // Parses application arguments.
@@ -98,10 +100,10 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                 (argc > arg_processing + 1)
                 && (strcmp(argv[arg_processing], "--type") == 0)) {
             std::string type_value = argv[arg_processing + 1];
-            if (type_value == "platform" || type_value == "c2") {
+            if (type_value == "platform" || type_value == "control") {
                 args.node_type = type_value;
             } else {
-                std::cout << "Bad parameter value for --type. Use 'platform' or 'c2'." << std::endl;
+                std::cout << "Bad parameter value for --type. Use 'platform' or 'control'." << std::endl;
                 show_usage = true;
                 args.parse_result = ParseReturn::failure;
                 break;
@@ -124,6 +126,22 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
             args.update_enable_team_comms = true;
             arg_processing += 2;
         } else if (
+                (argc > arg_processing + 1)
+                && strcmp(argv[arg_processing], "--enable-full-status") == 0) {
+            std::string full_status_value = argv[arg_processing + 1];
+            if (full_status_value == "true" || full_status_value == "1") {
+                args.enable_full_status = true;
+            } else if (full_status_value == "false" || full_status_value == "0") {
+                args.enable_full_status = false;
+            } else {
+                std::cout << "Bad parameter value for --enable-full-status. Use 'true' or 'false'." << std::endl;
+                show_usage = true;
+                args.parse_result = ParseReturn::failure;
+                break;
+            }
+            args.update_enable_full_status = true;
+            arg_processing += 2;
+        } else if (
                 strcmp(argv[arg_processing], "-h") == 0
                 || strcmp(argv[arg_processing], "--help") == 0) {
             std::cout << "Remote Admin Service Controller." << std::endl;
@@ -144,12 +162,15 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                      "   -n, --name       <string>          Resource name "
                      "(routing service instance) i.e. 'Platform-10' \n"
                      "                                      REQUIRED\n"
-                     "   --type           <string>          Node type: 'platform' or 'c2' (default: platform)\n"
+                     "   --type           <string>          Node type: 'platform' or 'control' (default: platform)\n"
                      "   -t, --team       <int>             Team ID (DDS Partition) to assign "
                      "resource to \n"
                      "Only applicable to Platforms: \n"
                      "   --enable-team-comms <bool>        Enable (true) or disable (false) "
                      "Platform to Platform topic routes within team.\n"
+                     "   --enable-full-status <bool>       Enable (true) or disable (false) "
+                     "full-rate platform status data transmission.\n"
+                     "                                      When disabled, only 1Hz status is transmitted.\n"
                      "\n"
                      "Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.\n"
                      "      Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh\n"

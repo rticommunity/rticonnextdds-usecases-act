@@ -21,10 +21,10 @@ to use the software.
         <member name="session" type="byte" arrayDimensions="16"/>
         <member name="payload" type="byte" sequenceMaxLength="100"/>
       </struct>
-      <struct name="c2_command">
+      <struct name="control_command">
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>
-      <struct name="c2_command_ack">
+      <struct name="control_command_ack">
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>
       <struct name="platform_status">

@@ -24,7 +24,7 @@ to use the software.
     <value>
 
       <!-- 
-        This will either be the Platform or C2 name depending on where this is being run 
+        This will either be the Platform or Control name depending on where this is being run 
         -->
       <element>
         <name>ROUTER_NAME</name>
@@ -52,7 +52,7 @@ to use the software.
       <!-- ________________________ QOS Profiles____________________________ -->
 
       <!-- 
-        Generally both "sides" i.e. Platform and C2 likely are using the same QoS 
+        Generally both "sides" i.e. Platform and Control likely are using the same QoS 
         however there could be scenarios where they would be different(separate teams ownership).
         In that case, assign each side independently.
       -->
@@ -94,17 +94,17 @@ to use the software.
       </element>
 
       <element>
-        <name>C2_PARTICIPANT_QOS</name>
+        <name>CONTROL_PARTICIPANT_QOS</name>
         <value>LAN::domain_participant_qos</value>
       </element>
 
       <element>
-        <name>C2_EVENT_QOS</name>
+        <name>CONTROL_EVENT_QOS</name>
         <value>LAN::event_qos</value>
       </element>
 
       <element>
-        <name>C2_STATUS_QOS</name>
+        <name>CONTROL_STATUS_QOS</name>
         <value>LAN::status_qos</value>
       </element>
 
@@ -116,8 +116,8 @@ to use the software.
       </element>
 
       <element>
-        <name>WAN_C2_PARTICIPANT_QOS</name>
-        <value>WAN::c2_participant_udpv4_qos</value>
+        <name>WAN_CONTROL_PARTICIPANT_QOS</name>
+        <value>WAN::control_participant_udpv4_qos</value>
       </element>
 
       <element>
@@ -177,7 +177,7 @@ to use the software.
       <!-- 
         ___________________________DATA "CHANNELS"______________________________
 
-        Add Topics with REGEX match to move between C2/PLATFORM 
+        Add Topics with REGEX match to move between Control/PLATFORM 
         NOTE: No spaces in the lists or they break silently
 
         ___________________________DATA "CHANNELS"______________________________
@@ -185,27 +185,27 @@ to use the software.
         -->
 
       <element>
-        <!-- PLATFORM -> C2 Aperiodic Events/CommandAcks- Ensure Delivery (RELIABILITY QoS) -->
+        <!-- PLATFORM -> Control Aperiodic Events/CommandAcks- Ensure Delivery (RELIABILITY QoS) -->
         <name>PLATFORM_EVENTS_CHANNEL</name>
         <value>PlatformCommandAck,ContactReport</value>
         </element>
 
       <element>
-        <!-- PLATFORM -> C2 Periodic- FULL RATE -->
+        <!-- PLATFORM -> Control Periodic- FULL RATE -->
         <name>PLATFORM_FULL_STATUS_CHANNEL</name>
         <value>NULL</value>
       </element>
 
       <element>
         <!-- 
-          PLATFORM -> C2 Periodic Enabled by Default - Downsampled (SAMPLE every 1 SEC)
+          PLATFORM -> Control Periodic Enabled by Default - Downsampled (SAMPLE every 1 SEC)
           -->
         <name>PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL</name>
         <value>PlatformStatus</value>
       </element>
 
       <!-- 
-        C2 -> PLATFORM Aperiodic- FILTERED by destination.parentID
+        Control -> PLATFORM Aperiodic- FILTER is applied
         (Content Filter that will only allow messages to the matching parentID)
         -->
       <element>
@@ -252,7 +252,7 @@ to use the software.
 
     <annotation>
       <documentation>
-        This configuration defines message routing on the C2 side.
+        This configuration defines message routing on the Control side.
 
         Sessions are created where thread pools/prioritization can be assigned.
         They can also be enabled/disabled dynamically.
@@ -309,21 +309,21 @@ to use the software.
 
     <domain_route name = "dr">
 
-      <!-- Define DomainParticipants for the C2 side -->
+      <!-- Define DomainParticipants for the Control side -->
       <participant name="control_wan">
         <domain_id>$(WAN_DOMAIN)</domain_id>
-        <domain_participant_qos base_name="$(WAN_C2_PARTICIPANT_QOS)">
+        <domain_participant_qos base_name="$(WAN_CONTROL_PARTICIPANT_QOS)">
         </domain_participant_qos>
       </participant>
 
       <participant name="control_lan">
         <domain_id>$(CONTROL_DOMAIN)</domain_id>
-        <domain_participant_qos base_name="$(C2_PARTICIPANT_QOS)">
+        <domain_participant_qos base_name="$(CONTROL_PARTICIPANT_QOS)">
         </domain_participant_qos>
       </participant>
 
 
-      <session name="c2_to_wan_cmd_filter">
+      <session name="control_to_wan_cmd_filter">
 
         <!-- Internal LAN Partition to match with ALL Publishers -->
         <subscriber_qos>
@@ -343,12 +343,12 @@ to use the software.
           </partition>
         </publisher_qos>
 
-        <!-- C2 -> WAN Commands Filtered by Destination-->
+        <!-- Control -> WAN Commands Filtered by Destination-->
         <auto_topic_route name="control_command_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_lan">
             <allow_topic_name_filter>$(CONTROL_COMMANDS_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(C2_EVENT_QOS)" />
+            <datareader_qos base_name="$(CONTROL_EVENT_QOS)" />
           </input>
           <output participant="control_wan">
             <allow_topic_name_filter>$(CONTROL_COMMANDS_CHANNEL)</allow_topic_name_filter>
@@ -356,11 +356,11 @@ to use the software.
           </output>
         </auto_topic_route>
 
-        <auto_topic_route name="c2_events">
+        <auto_topic_route name="control_events">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_lan">
             <allow_topic_name_filter>$(CONTROL_EVENTS_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(C2_EVENT_QOS)" />
+            <datareader_qos base_name="$(CONTROL_EVENT_QOS)" />
           </input>
           <output participant="control_wan">
             <allow_topic_name_filter>$(CONTROL_EVENTS_CHANNEL)</allow_topic_name_filter>
@@ -369,7 +369,7 @@ to use the software.
         </auto_topic_route>
       </session>
 
-      <session name="wan_to_c2_status">
+      <session name="wan_to_control_status">
 
         <!-- External WAN Partition to match ONLY with PLATFORM Publishers -->
         <subscriber_qos>
@@ -390,7 +390,7 @@ to use the software.
         </publisher_qos>
 
         <!-- WAN -> Control Status -->
-        <auto_topic_route name="platform_status_filter" enabled="$(FULL_STATUS_ENABLE)">
+        <auto_topic_route name="platform_status_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_wan">
             <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
@@ -398,7 +398,7 @@ to use the software.
           </input>
           <output participant="control_lan">
             <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_STATUS_QOS)" />
+            <datawriter_qos base_name="$(CONTROL_STATUS_QOS)" />
           </output>
         </auto_topic_route>
 
@@ -410,17 +410,16 @@ to use the software.
           </input>
           <output participant="control_lan">
             <allow_topic_name_filter>$(PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_STATUS_QOS)" />
+            <datawriter_qos base_name="$(CONTROL_STATUS_QOS)" />
           </output>
         </auto_topic_route>
 
       </session>
 
       <!-- 
-        Separate Session from PlatformStatus to allow for CommandAck Prioritization 
-        or Resource assignment as necessary 
+        Session moving Event data from the WAN to the Control Domain
       -->
-      <session name="wan_to_c2_event">
+      <session name="wan_to_control_event">
 
         <!-- External WAN Partition to match ONLY with PLATFORM Publishers -->
         <subscriber_qos>
@@ -440,7 +439,7 @@ to use the software.
           </partition>
         </publisher_qos>
 
-        <!-- WAN -> C2 Platform Events (Command Ack/ContactReports etc) -->
+        <!-- WAN -> Control Platform Events (Command Ack/ContactReports etc) -->
         <auto_topic_route name="platform_event_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_wan">
@@ -449,7 +448,7 @@ to use the software.
           </input>
           <output participant="control_lan">
             <allow_topic_name_filter>$(PLATFORM_EVENTS_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_EVENT_QOS)" />
+            <datawriter_qos base_name="$(CONTROL_EVENT_QOS)" />
           </output>
         </auto_topic_route>
       </session>
@@ -462,7 +461,7 @@ to use the software.
 
     <annotation>
       <documentation>
-        This configuration defines message routing on the C2 side.
+        This configuration defines message routing on the Platform side.
 
         Sessions are created where thread pools/prioritization can be assigned.
         They can also be enabled/disabled dynamically.
@@ -537,7 +536,7 @@ to use the software.
         </domain_participant_qos>
       </participant>
 
-      <session name="platform_to_wan_status">
+      <session name="platform_to_wan_full_status" enabled="$(FULL_STATUS_ENABLE)">
 
         <!-- Internal LAN Partition to match with ALL Publishers -->
         <subscriber_qos>
@@ -557,8 +556,8 @@ to use the software.
           </partition>
         </publisher_qos>
 
-        <!-- PLATFORM -> WAN Status messages -->
-        <auto_topic_route name="platform_status_route" enabled="$(FULL_STATUS_ENABLE)">
+        <!-- PLATFORM -> WAN Full-rate Status messages -->
+        <auto_topic_route name="platform_status_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
             <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
@@ -570,7 +569,29 @@ to use the software.
           </output>
         </auto_topic_route>
 
-        <!-- PLATFORM -> WAN Status messages every 1 SEC-->
+      </session>
+
+      <session name="platform_to_wan_primary_status">
+
+        <!-- Internal LAN Partition to match with ALL Publishers -->
+        <subscriber_qos>
+          <partition>
+            <name>
+              <element>*</element>
+            </name>
+          </partition>
+        </subscriber_qos>
+
+        <!-- External WAN Partition to match ONLY with PLATFORM Subscribers -->
+        <publisher_qos>
+          <partition>
+            <name>
+              <element>PLATFORM</element>
+            </name>
+          </partition>
+        </publisher_qos>
+
+        <!-- PLATFORM -> WAN Primary Status messages every 1 SEC-->
         <auto_topic_route name="platform_status_1sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
@@ -663,7 +684,7 @@ to use the software.
         </auto_topic_route>
 
         <!-- WAN -> PLATFORM Events (ContactReports etc) -->
-        <auto_topic_route name="c2_event">
+        <auto_topic_route name="control_event">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_wan">
             <allow_topic_name_filter>$(CONTROL_EVENTS_CHANNEL)</allow_topic_name_filter>

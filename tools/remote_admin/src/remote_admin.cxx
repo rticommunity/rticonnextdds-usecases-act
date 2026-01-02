@@ -31,8 +31,9 @@ using namespace RTI::Service::Admin;
 static constexpr unsigned int WAIT_TIMEOUT_SEC_MAX = 10;
 
 // Session names
-static const std::string PLATFORM_TO_WAN_TEAM = "platform_to_wan_team";
-static const std::string WAN_TO_PLATFORM_TEAM = "wan_to_platform_team";
+static const std::string PLATFORM_TO_WAN_TEAM_SESSION = "platform_to_wan_team";
+static const std::string WAN_TO_PLATFORM_TEAM_SESSION = "wan_to_platform_team";
+static const std::string PLATFORM_TO_WAN_FULL_STATUS_SESSION = "platform_to_wan_full_status";
 
 // Participant and routing service configuration names
 static const std::string PLATFORM_WAN_PARTICIPANT = "platform_wan";
@@ -57,7 +58,7 @@ static const std::string XML_PARTICIPANT_END =
     "</element></name></partition></domain_participant_qos></participant>\"";
 
 
-static void send_route_update(
+static void send_session_update(
         rti::request::Requester<
                 RTI::Service::Admin::CommandRequest,
                 RTI::Service::Admin::CommandReply> &requester,
@@ -85,7 +86,7 @@ static void send_route_update(
         request.resource_identifier(resource_identifier);
         request.application_name(args.name);
 
-        std::cout << "Sending Remote Admin ROUTE UPDATE: \n"
+        std::cout << "Sending Remote Admin SESSION UPDATE: \n"
                      "resource_identifier: "
                   << resource_identifier
                   << "\n"
@@ -97,13 +98,13 @@ static void send_route_update(
             dds::topic::topic_type_support<EntityState>::to_cdr_buffer(
                     reinterpret_cast<std::vector<char> &>(request.octet_body()),
                     EntityState(EntityStateKind::ENABLED));
-            std::cout << "Enabling State" << std::endl;
+            std::cout << "Enabling Session" << std::endl;
         } else {
             // Sets state to Disabled
             dds::topic::topic_type_support<EntityState>::to_cdr_buffer(
                     reinterpret_cast<std::vector<char> &>(request.octet_body()),
                     EntityState(EntityStateKind::DISABLED));
-            std::cout << "Disabling State" << std::endl;
+            std::cout << "Disabling Session" << std::endl;
         }
 
         /*
@@ -254,15 +255,25 @@ int main(int argc, char *argv[])
 
         if (arguments.update_enable_team_comms) {
             // Enable or disable both TEAM sessions based on --enable-team-comms flag
-            send_route_update(
+            send_session_update(
                     requester,
                     arguments,
-                    PLATFORM_TO_WAN_TEAM,
+                    PLATFORM_TO_WAN_TEAM_SESSION,
                     RS_CONFIG_NAME_PLATFORM);
-            send_route_update(
+            send_session_update(
                     requester,
                     arguments,
-                    WAN_TO_PLATFORM_TEAM,
+                    WAN_TO_PLATFORM_TEAM_SESSION,
+                    RS_CONFIG_NAME_PLATFORM);
+        }
+
+        if (arguments.update_enable_full_status) {
+            // Enable or disable full platform status session
+            // Only applicable to platform nodes - updates platform side only
+            send_session_update(
+                    requester,
+                    arguments,
+                    PLATFORM_TO_WAN_FULL_STATUS_SESSION,
                     RS_CONFIG_NAME_PLATFORM);
         }
 

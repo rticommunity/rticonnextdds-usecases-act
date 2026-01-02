@@ -90,8 +90,8 @@ rticonnextdds-usecases-act/
 
 The ACT architecture is designed to meet the following requirements:
 
-- ✅ Platforms must be able to receive select topics from Control ([C2 Events](#c2-events))
-- ✅ Platforms must be able to receive *only* commands addressed to them ([C2 Filtered Commands](#c2-command-filtering))
+- ✅ Platforms must be able to receive select topics from Control ([Control Events](#control-events))
+- ✅ Platforms must be able to receive *only* commands addressed to them ([Control Filtered Commands](#control-command-filtering))
 - ✅ *Only* Control stations can receive select topics from Platforms ([Platform Events](#platform-events))
 - ✅ Control must be able to receive select *downsampled* topics from Platforms ([Platform Status](#platform-status))
 - ✅ Platforms must be able to receive select topics from other Platforms ([Platform to Platform](#platform-to-platform))

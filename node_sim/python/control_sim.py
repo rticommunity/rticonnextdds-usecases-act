@@ -30,22 +30,22 @@ class C2Sim:
       )
 
       #Pull in DynamicData types
-      self.c2_cmd_type = self.qos_provider.type("c2_command")
-      self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
+      self.control_cmd_type = self.qos_provider.type("control_command")
+      self.control_cmd_ack_type = self.qos_provider.type("control_command_ack")
       self.platform_status_type = self.qos_provider.type("platform_status")
       self.contact_report_type = self.qos_provider.type("contact_report")
 
 
       # Create Topics and associate with types
-      self.c2_cmd_topic = dds.DynamicData.Topic(
+      self.control_cmd_topic = dds.DynamicData.Topic(
           self.participant,
           "ControlCommand",
-          self.c2_cmd_type
+          self.control_cmd_type
       )
       self.platform_cmd_ack_topic = dds.DynamicData.Topic(
           self.participant,
           "PlatformCommandAck",
-          self.c2_cmd_ack_type
+          self.control_cmd_ack_type
       )
       self.platform_status_topic = dds.DynamicData.Topic(
           self.participant,
@@ -60,11 +60,11 @@ class C2Sim:
       )
 
       # Create DataWriters/DataReaders with the specified QoS profiles
-      self.c2_cmd_writer = dds.DynamicData.DataWriter(
-          self.c2_cmd_topic,
+      self.control_cmd_writer = dds.DynamicData.DataWriter(
+          self.control_cmd_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
-      self.c2_contact_report_writer = dds.DynamicData.DataWriter(
+      self.control_contact_report_writer = dds.DynamicData.DataWriter(
           self.contact_report_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
@@ -83,7 +83,7 @@ class C2Sim:
 
       print("ignoring self published ContactReports")
       self.participant.ignore_datawriter(
-          self.c2_contact_report_writer.instance_handle)
+          self.control_contact_report_writer.instance_handle)
 
     async def read_status_data(self):
       print("Waiting for Status data")
@@ -104,7 +104,7 @@ class C2Sim:
 
     async def write_cmd(self):
       # Create Command sample
-      cmd_sample = dds.DynamicData(self.c2_cmd_type)
+      cmd_sample = dds.DynamicData(self.control_cmd_type)
 
       # Set Source
       cmd_sample["msg.source"] = args.source
@@ -122,7 +122,7 @@ class C2Sim:
 
 
       # Create Contact Report sample
-      contact_report_sample = dds.DynamicData(self.c2_cmd_type)
+      contact_report_sample = dds.DynamicData(self.contact_report_type)
 
       # Set Source Name
       contact_report_sample["msg.source"] = args.source
@@ -144,11 +144,11 @@ class C2Sim:
 
       while True:
           # Send C2 Command
-          self.c2_cmd_writer.write(cmd_sample)
+          self.control_cmd_writer.write(cmd_sample)
           print("Writing to ControlCommand topic")
 
           # Send C2 Contact Report
-          self.c2_contact_report_writer.write(contact_report_sample)
+          self.control_contact_report_writer.write(contact_report_sample)
           print("Writing to ContactReport topic")
 
           await asyncio.sleep(1)
