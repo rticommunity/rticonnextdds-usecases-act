@@ -176,46 +176,22 @@ to use the software.
 
       <element>
         <!-- PLATFORM -> C2 Aperiodic Events/CommandAcks- Ensure Delivery (RELIABILITY QoS) -->
-        <name>PLATFORM_EVENT_CHANNEL</name>
+        <name>PLATFORM_EVENTS_CHANNEL</name>
         <value>PlatformCommandAck,ContactReport</value>
         </element>
 
       <element>
         <!-- PLATFORM -> C2 Periodic- FULL RATE -->
-        <name>PLATFORM_STATUS_FULL_CHANNEL</name>
+        <name>PLATFORM_FULL_STATUS_CHANNEL</name>
         <value>NULL</value>
       </element>
 
       <element>
         <!-- 
-          PLATFORM -> C2 Periodic - Downsampled (SAMPLE every 1 SEC)
+          PLATFORM -> C2 Periodic Enabled by Default - Downsampled (SAMPLE every 1 SEC)
           -->
-        <name>PLATFORM_STATUS_1SEC_CHANNEL</name>
+        <name>PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL</name>
         <value>PlatformStatus</value>
-      </element>
-
-      <element>
-        <!-- 
-          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 10 SECs)
-          -->
-        <name>PLATFORM_STATUS_10SEC_CHANNEL</name>
-        <value>NULL</value>
-      </element>
-
-      <element>
-        <!-- 
-          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 30 SECs)
-          -->
-        <name>PLATFORM_STATUS_30SEC_CHANNEL</name>
-        <value>NULL</value>
-      </element>
-
-      <element>
-        <!-- 
-          PLATFORM -> C2 Periodic- Downsampled (SAMPLE every 60 SECs)
-          -->
-        <name>PLATFORM_STATUS_60SEC_CHANNEL</name>
-        <value>NULL</value>
       </element>
 
       <!-- 
@@ -223,7 +199,7 @@ to use the software.
         (Content Filter that will only allow messages to the matching parentID)
         -->
       <element>
-        <name>C2_COMMAND_FILTER_CHANNEL</name>
+        <name>CONTROLLER_COMMANDS_CHANNEL</name>
         <value>C2Command</value>
       </element>
 
@@ -238,13 +214,13 @@ to use the software.
       </element>
 
       <element>
-        <name>C2_EVENT_CHANNEL</name>
+        <name>CONTROLLER_EVENTS_CHANNEL</name>
         <value>ContactReport</value>
       </element>
 
       <!-- PLATFORM -> PLATFORM -->
       <element>
-        <name>PLATFORM_TO_PLATFORM_CHANNEL</name>
+        <name>PLATFORM_TEAM_COMMS_CHANNEL</name>
         <value>PlatformData</value>
       </element>
     </value>
@@ -361,11 +337,11 @@ to use the software.
         <auto_topic_route name="c2_command_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_lan">
-            <allow_topic_name_filter>$(C2_COMMAND_FILTER_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_COMMANDS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(C2_EVENT_QOS)" />
           </input>
           <output participant="c2_wan">
-            <allow_topic_name_filter>$(C2_COMMAND_FILTER_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_COMMANDS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -373,11 +349,11 @@ to use the software.
         <auto_topic_route name="c2_events">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_lan">
-            <allow_topic_name_filter>$(C2_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(C2_EVENT_QOS)" />
           </input>
           <output participant="c2_wan">
-            <allow_topic_name_filter>$(C2_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -407,11 +383,11 @@ to use the software.
         <auto_topic_route name="platform_status_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(C2_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -419,47 +395,11 @@ to use the software.
         <auto_topic_route name="platform_status_1sec_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-        <auto_topic_route name="platform_status_10sec_filter">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_STATUS_QOS)" />
-          </input>
-          <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-        <auto_topic_route name="platform_status_30sec_filter">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_STATUS_QOS)" />
-          </input>
-          <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(C2_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-        <auto_topic_route name="platform_status_60sec_filter">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(WAN_STATUS_QOS)" />
-          </input>
-          <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(C2_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -494,11 +434,11 @@ to use the software.
         <auto_topic_route name="platform_event_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="c2_wan">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
           </input>
           <output participant="c2_lan">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(C2_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -611,11 +551,11 @@ to use the software.
         <auto_topic_route name="platform_status_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_FULL_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -624,52 +564,11 @@ to use the software.
         <auto_topic_route name="platform_status_1sec_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_1SEC_QOS)" />
           </input>
           <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_1SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-
-        <!-- PLATFORM -> WAN Status messages every 10 SEC-->
-        <auto_topic_route name="platform_status_10sec_route">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(PLATFORM_STATUS_10SEC_QOS)" />
-          </input>
-          <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_10SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-        <!-- PLATFORM -> WAN Status messages every 30 SEC-->
-        <auto_topic_route name="platform_status_30sec_route">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(PLATFORM_STATUS_30SEC_QOS)" />
-          </input>
-          <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_30SEC_CHANNEL)</allow_topic_name_filter>
-            <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
-          </output>
-        </auto_topic_route>
-
-
-        <!-- PLATFORM -> WAN Status messages every 60 SEC-->
-        <auto_topic_route name="platform_status_60sec_route">
-          <publish_with_original_info>true</publish_with_original_info>
-          <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_CHANNEL)</allow_topic_name_filter>
-            <datareader_qos base_name="$(PLATFORM_STATUS_60SEC_QOS)" />
-          </input>
-          <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_STATUS_60SEC_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -704,11 +603,11 @@ to use the software.
         <auto_topic_route name="platform_event_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </input>
           <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -736,10 +635,10 @@ to use the software.
         </publisher_qos>
 
         <!-- WAN -> PLATFORM Commands if MATCH filter expression -->
-        <auto_topic_route name="C2_COMMAND_FILTER_CHANNEL">
+        <auto_topic_route name="CONTROLLER_COMMANDS_CHANNEL">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_wan">
-            <allow_topic_name_filter>$(C2_COMMAND_FILTER_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_COMMANDS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
 
             <!-- Use a SQL style syntax to filter on message content -->
@@ -748,7 +647,7 @@ to use the software.
             </content_filter>
           </input>
           <output participant="platform_lan">
-            <allow_topic_name_filter>$(C2_COMMAND_FILTER_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_COMMANDS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -757,11 +656,11 @@ to use the software.
         <auto_topic_route name="c2_event">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_wan">
-            <allow_topic_name_filter>$(C2_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_EVENT_QOS)" />
           </input>
           <output participant="platform_lan">
-            <allow_topic_name_filter>$(C2_EVENT_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(CONTROLLER_EVENTS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_EVENT_QOS)" />
           </output>
         </auto_topic_route>
@@ -777,11 +676,11 @@ to use the software.
         <auto_topic_route name="platform_to_wan">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="team_wan">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_TEAM_QOS)" />
           </output>
         </auto_topic_route>
@@ -796,11 +695,11 @@ to use the software.
         <auto_topic_route name="wan_to_platform">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="team_wan">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_TEAM_QOS)" />
           </input>
           <output participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_TO_PLATFORM_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_TEAM_COMMS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </output>
         </auto_topic_route>

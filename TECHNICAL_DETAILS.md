@@ -194,9 +194,9 @@ Understanding QoS delivery patterns is key to efficient system design. Two prima
 - Tunable via WAN parameters (see [WAN Tuning](#wan-tuning) below)
 
 **Used By**:
-- `PLATFORM_EVENT_CHANNEL`: PlatformCommandAck, ContactReport, Alerts
-- `C2_EVENT_CHANNEL`: Mission updates, new targets
-- `C2_COMMAND_FILTER_CHANNEL`: C2Command (targeted delivery)
+- `PLATFORM_EVENTS_CHANNEL`: PlatformCommandAck, ContactReport, Alerts
+- `CONTROLLER_EVENTS_CHANNEL`: Mission updates, new targets
+- `CONTROLLER_COMMANDS_CHANNEL`: C2Command (targeted delivery)
 
 **Trade-offs**:
 - ➕ Guaranteed delivery (within timeout)
@@ -222,7 +222,7 @@ Understanding QoS delivery patterns is key to efficient system design. Two prima
 
 **Used By**:
 - `PLATFORM_STATUS_*_CHANNEL`: PlatformStatus, Telemetry (periodic)
-- `PLATFORM_TO_PLATFORM_CHANNEL`: PlatformData (periodic sharing)
+- `PLATFORM_TEAM_COMMS_CHANNEL`: PlatformData (periodic sharing)
 
 **Trade-offs**:
 - ➕ Lower bandwidth usage
@@ -284,15 +284,15 @@ Data channels provide an **abstraction layer** for routing configuration. Instea
 
 **Example**:
 ```bash
-export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport,Alert
-export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus,Telemetry
-export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
+export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport,Alert
+export PLATFORM_FULL_STATUS_CHANNEL=Telemetry
+export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
 ```
 
 ### Available Channels
 
 #### Platform Events
-**Variable**: `PLATFORM_EVENT_CHANNEL`  
+**Variable**: `PLATFORM_EVENTS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Critical, aperiodic data from platforms  
 **Direction**: Platform → C2  
@@ -300,11 +300,8 @@ export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
 
 #### Platform Status (Downsampled)
 **Variables**: 
-- `PLATFORM_STATUS_FULL_CHANNEL` - No downsampling
-- `PLATFORM_STATUS_1SEC_CHANNEL` - 1 Hz updates
-- `PLATFORM_STATUS_10SEC_CHANNEL` - 0.1 Hz updates
-- `PLATFORM_STATUS_30SEC_CHANNEL` - ~0.033 Hz updates
-- `PLATFORM_STATUS_60SEC_CHANNEL` - ~0.017 Hz updates
+- `PLATFORM_FULL_STATUS_CHANNEL` - No downsampling
+- `PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL` - 1 Hz updates
 
 **QoS**: BEST_EFFORT (Status QoS)  
 **Purpose**: Periodic status updates at various rates  
@@ -318,7 +315,7 @@ export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
 - Conserves bandwidth on constrained links
 
 #### Platform-to-Platform
-**Variable**: `PLATFORM_TO_PLATFORM_CHANNEL`  
+**Variable**: `PLATFORM_TEAM_COMMS_CHANNEL`  
 **QoS**: BEST_EFFORT (Status QoS)  
 **Purpose**: Peer-to-peer data sharing  
 **Direction**: Platform ↔ Platform (via WAN)  
@@ -330,21 +327,21 @@ export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
 - Useful for collaborative behaviors
 
 #### C2 Events
-**Variable**: `C2_EVENT_CHANNEL`  
+**Variable**: `CONTROLLER_EVENTS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Critical commands/updates from C2  
 **Direction**: C2 → Platform  
 **Examples**: MissionUpdate, NewTarget, ConfigChange
 
 #### C2 Command Filtering
-**Variable**: `C2_COMMAND_FILTER_CHANNEL`  
+**Variable**: `CONTROLLER_COMMANDS_CHANNEL`  
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Content-filtered commands to specific platforms  
 **Direction**: C2 → Platform (filtered)
 
 **Filter Configuration**:
 ```bash
-export C2_COMMAND_FILTER_CHANNEL="C2Command"
+export CONTROLLER_COMMANDS_CHANNEL="C2Command"
 export C2_COMMAND_FILTER_FIELD="msg.destination"    # Field path in message
 export C2_COMMAND_FILTER_MATCH=$ROUTER_NAME         # Match platform name
 ```
@@ -375,7 +372,7 @@ To add a new topic to the system:
 **Example**:
 ```bash
 # Add new critical event topic
-export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport,Alert,NewEmergencyTopic
+export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport,Alert,NewEmergencyTopic
 ```
 
 No XML file changes required!

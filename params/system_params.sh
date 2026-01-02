@@ -88,29 +88,40 @@ WAN_MAX_BLOCKING_SEC = $WAN_MAX_BLOCKING_SEC Seconds
 ################################################################################
 
 # Comma separated, no spaces, NULL if empty 
-export PLATFORM_EVENT_CHANNEL=PlatformCommandAck,ContactReport
-export PLATFORM_STATUS_FULL_CHANNEL=NULL
-export PLATFORM_STATUS_1SEC_CHANNEL=NULL
-export PLATFORM_STATUS_10SEC_CHANNEL=PlatformStatus
-export PLATFORM_STATUS_30SEC_CHANNEL=NULL
-export PLATFORM_STATUS_60SEC_CHANNEL=NULL
-export PLATFORM_TO_PLATFORM_CHANNEL=PlatformData
-export C2_EVENT_CHANNEL=NULL
-export C2_COMMAND_FILTER_CHANNEL=C2Command
+
+# Platform Event Topics that are Aperiodic and need samples resent if dropped
+export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport
+
+# Platform Status Topics that will be published by default such as Position/high level status
+# Downsampled to 1 HZ
+export PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL=PlatformStatus
+
+# Platform Status Topics to be enabled dynamically, FULL rate
+export PLATFORM_FULL_STATUS_CHANNEL=NULL
+
+# Platform topics to be shared within the Team
+export PLATFORM_TEAM_COMMS_CHANNEL=PlatformData
+
+# Controller Topics such as ContactReports etc. resent if dropped
+export CONTROLLER_EVENTS_CHANNEL=NULL
+
+# Controller Commands filtered by destination
+export CONTROLLER_COMMANDS_CHANNEL=C2Command
+
+# Message field to filter on for Commands Destination
 export C2_COMMAND_FILTER_FIELD=msg.destination
+
+# Value to use as Filter- In this case unique identifier of Router Name
 export C2_COMMAND_FILTER_MATCH=$ROUTER_NAME
 
 echo "
 -----------------------------DATA CHANNELS--------------------------------------
-PLATFORM_EVENT_CHANNEL = $PLATFORM_EVENT_CHANNEL
-PLATFORM_STATUS_FULL_CHANNEL = $PLATFORM_STATUS_FULL_CHANNEL
-PLATFORM_STATUS_1SEC_CHANNEL = $PLATFORM_STATUS_1SEC_CHANNEL
-PLATFORM_STATUS_10SEC_CHANNEL = $PLATFORM_STATUS_10SEC_CHANNEL
-PLATFORM_STATUS_30SEC_CHANNEL = $PLATFORM_STATUS_30SEC_CHANNEL
-PLATFORM_STATUS_60SEC_CHANNEL = $PLATFORM_STATUS_60SEC_CHANNEL
-PLATFORM_TO_PLATFORM_CHANNEL = $PLATFORM_TO_PLATFORM_CHANNEL
-C2_EVENT_CHANNEL = $C2_EVENT_CHANNEL
-C2_COMMAND_FILTER_CHANNEL = $C2_COMMAND_FILTER_CHANNEL
+PLATFORM_EVENTS_CHANNEL = $PLATFORM_EVENTS_CHANNEL
+PLATFORM_FULL_STATUS_CHANNEL = $PLATFORM_FULL_STATUS_CHANNEL
+PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL = $PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL
+PLATFORM_TEAM_COMMS_CHANNEL = $PLATFORM_TEAM_COMMS_CHANNEL
+CONTROLLER_EVENTS_CHANNEL = $CONTROLLER_EVENTS_CHANNEL
+CONTROLLER_COMMANDS_CHANNEL = $CONTROLLER_COMMANDS_CHANNEL
 C2_COMMAND_FILTER_FIELD = $C2_COMMAND_FILTER_FIELD
 C2_COMMAND_FILTER_MATCH = $C2_COMMAND_FILTER_MATCH
 -----------------------------DATA CHANNELS--------------------------------------"

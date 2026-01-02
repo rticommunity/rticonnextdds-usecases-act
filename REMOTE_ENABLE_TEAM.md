@@ -31,7 +31,7 @@ cd scripts
 ./start_platform10_sim.sh
 ```
 
-Leave this running. Platform_10 will publish PlatformData on the PLATFORM_TO_PLATFORM_CHANNEL.
+Leave this running. Platform_10 will publish PlatformData on the PLATFORM_TEAM_COMMS_CHANNEL.
 
 ### Terminal 2: Start Platform_10 Routing Service
 
