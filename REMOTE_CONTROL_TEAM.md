@@ -1,70 +1,78 @@
 # Remote Control Team Assignment Example
 
-This example demonstrates how to use the RemoteAdmin tool to dynamically assign nodes to different groups (DDS partitions) and verify that team isolation prevents cross-team communication. You'll see how changing a platform's team assignment stops Control from receiving its data.
+This example demonstrates how to use the RemoteAdmin tool to dynamically assign platforms to different teams (DDS partitions) using letter designations (A, B, C, etc.) to isolate platform-to-platform communication within the PLATFORM_TEAM_CHANNEL.
 
 ## Concept
 
-In the ACT architecture, **groups** are implemented using DDS Domain Participant partitions to logically isolate communication between nodes. Only nodes assigned to the same team can exchange data. This is useful for:
+In the ACT architecture, **teams** are implemented using DDS Domain Participant partitions to logically isolate platform-to-platform communication. Platforms assigned to different teams cannot exchange data with each other via the PLATFORM_TEAM_CHANNEL. This is useful for:
 
-- **Mission separation**: Different teams or operations on separate groups
-- **Security zones**: Restricting data flow to authorized participants
-- **Testing isolation**: Running multiple configurations without interference
-- **Dynamic reorganization**: Moving nodes between groups during runtime
+- **Mission separation**: Different teams operating independently
+- **Security zones**: Restricting platform-to-platform data flow to authorized team members
+- **Testing isolation**: Running multiple platform configurations without cross-team interference
+- **Dynamic reorganization**: Moving platforms between teams during runtime
 
-The RemoteAdmin tool allows you to change a node's team assignment without restarting the routing service, enabling dynamic reconfiguration.
+For details on the partition mechanism, see [DDS PARTITION QoS Policy](https://community.rti.com/static/documentation/connext-dds/7.3.1/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm?Highlight=partition).
+
+The RemoteAdmin tool allows you to change a platform's team assignment without restarting the routing service, enabling dynamic reconfiguration.
+
+**Note:** Team assignments affect platform-to-platform communication only. All platforms can still communicate with Control nodes regardless of team assignment. This is because each routing service uses separate DDS Domain Participants: one for platform-to-Control communication and one for platform-to-platform (TEAM) communication. The RemoteAdmin tool only modifies the partition on the TEAM participant, leaving Control communication unaffected.
 
 ## Scenario
 
 In this example, we will:
 
 1. Start two platform simulators (Platform_30 and Platform_31)
-2. Start their corresponding routing services (both initially in default team)
+2. Start their corresponding routing services (both initially in default team "ALL")
 3. Start a Control simulator that receives data from both platforms
-4. Use RemoteAdmin to assign Platform_31 to a different team (team 5)
-5. Verify that Control no longer receives data from Platform_31 but still receives from Platform_30
+4. Use RemoteAdmin to assign Platform_31 to a different team (team "B")
+5. Verify that Platform_30 and Platform_31 can no longer exchange data with each other (platform-to-platform isolation), but both can still communicate with Control
 
 ## Architecture
 
-### Initial State (All in Default Team)
+### Initial State (All in Default Team "ALL")
 
 ```
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ Platform_30 │           │ Platform_31 │           │    Control_20    │
-│  Simulator  │           │  Simulator  │           │  Simulator  │
-└──────┬──────┘           └──────┬──────┘           └──────┬──────┘
+│ Platform_30 │           │ Platform_31 │           │ Control_20   │
+│  Simulator  │           │  Simulator  │           │  Simulator   │
+└──────┬──────┘           └──────┬──────┘           └──────┬───────┘
        │                         │                         │
-       │ LAN Domain 0            │ LAN Domain 1            │ Control Domain 2
+       │ Platform Domain 30      │ Platform Domain 31      │ Control Domain 20
        │                         │                         │
-┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
-│ Platform_30 │           │ Platform_31 │           │    Control_20    │
-│   Router    │◄──────────┤   Router    │──────────►│   Router    │
-│  (default)  │  WAN      │  (default)  │  WAN      │  (default)  │
-└─────────────┘  Domain 10└─────────────┘  Domain 10└─────────────┘
-      ▲                                                     │
-      │                                                     │
-      └─────────────────────────────────────────────────────┘
-           Control receives data from both Platform_30 and Platform_31
+┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼───────┐
+│ Platform_30 │           │ Platform_31 │           │  Control_20  │
+│   Router    │◄─────────►│   Router    │           │   Router     │
+│  (Team ALL) │  P2P Comms│  (Team ALL) │           │  (Team ALL)  │
+└──────┬──────┘  via TEAM └──────┬──────┘           └──────┬───────┘
+       │         Channel         │                         │
+       │                         │                         │
+       └────────────────┬────────┴─────────────────────────┘
+                        │ WAN Domain 200
+              All platforms communicate with Control
+              Platforms can communicate with each other (Team ALL)
 ```
 
-### After Team Change (Platform-11 → Team 5)
+### After Team Change (Platform_31 → Team B)
 
 ```
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ Platform-10 │           │ Platform-11 │           │    Control-20    │
-│  Simulator  │           │  Simulator  │           │  Simulator  │
-└──────┬──────┘           └──────┬──────┘           └──────┬──────┘
+│ Platform_30 │           │ Platform_31 │           │ Control_20   │
+│  Simulator  │           │  Simulator  │           │  Simulator   │
+└──────┬──────┘           └──────┬──────┘           └──────┬───────┘
        │                         │                         │
-       │ LAN Domain 0            │ LAN Domain 1            │ Control Domain 2
+       │ Platform Domain 30      │ Platform Domain 31      │ Control Domain 20
        │                         │                         │
-┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼──────┐
-│ Platform-10 │           │ Platform-11 │           │    Control-20    │
-│   Router    │     X     │   Router    │     X     │   Router    │
-│  (default)  │◄─────────┤│  (team 5) ││──────────►│  (default)  │
-└─────────────┘  ISOLATED └─────────────┘  ISOLATED └─────────────┘
-      ▲              └──────────┘                          │
-      │             Team Mismatch                         │
-      └────────────────────────────────────────────────────┘
-           Control receives data ONLY from Platform-10
+┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼───────┐
+│ Platform_30 │     X     │ Platform_31 │           │  Control_20  │
+│   Router    │◄─────────►│   Router    │           │   Router     │
+│  (Team ALL) │  ISOLATED │  (Team B)   │           │  (Team ALL)  │
+└──────┬──────┘  P2P Only └──────┬──────┘           └──────┬───────┘
+       │                         │                         │
+       │                         │                         │
+       └────────────────┬────────┴─────────────────────────┘
+                        │ WAN Domain 200
+              Both platforms still communicate with Control
+              Platform_30 ✗ Platform_31 (different teams - P2P blocked)
 ```
 
 ## Prerequisites
@@ -152,11 +160,11 @@ Before making any changes, confirm Control is receiving from both platforms. Let
 
 ### Terminal 8: Change Platform_31 Team Assignment
 
-Now use RemoteAdmin to assign Platform_31 to team 5:
+Now use RemoteAdmin to assign Platform_31 to team "B":
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_31 --type platform --team 5
+./send_remote_cmd.sh -n Platform_31 --type platform --team B
 ```
 
 Expected output:
@@ -172,31 +180,28 @@ Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qo
 Waiting for a matching replier...
 Sending Remote TEAM UPDATE: 
 resource_identifier: /routing_services/Platform_31/domain_routes/dr/participants/platform_wan
-body_text: str://"<participant><domain_participant_qos><partition><name><element>5</element></name></partition></domain_participant_qos></participant>"
-application_name: Platform_31
+Partition XML being sent:
+<participant><domain_participant_qos><partition><name><element>B</element></name></partition></domain_participant_qos></participant>
+
 Command returned: OK
 ```
 
-### Terminal 5 (C2): Verify Team Isolation
+### Terminal 5 (Control_20): Verify Team Isolation
 
-Switch back to Terminal 5 where the Control simulator is running. You should now see:
+Switch back to Terminal 5 where the Control simulator is running. 
 
-**Before team change:**
+**Important**: Control will still receive data from **both** Platform_30 and Platform_31:
+
 ```
 - Received ContactReport Data: 10 from source: Platform_30 type: Platform
 - Received ContactReport Data: 11 from source: Platform_31 type: Platform
 ```
 
-**After team change:**
-```
-- Received ContactReport Data: 10 from source: Platform_30 type: Platform
-```
+**Team isolation affects platform-to-platform communication only.** To verify the team isolation is working, you would need to enable the PLATFORM_TEAM_CHANNEL (see REMOTE_ENABLE_TEAM.md) and observe that platforms in different teams cannot exchange data with each other via that channel.
 
-Notice that after the team change, you only see ContactReports from Platform_30. Platform_31's data is no longer received because it's in a different team (partition).
+### Terminal 8: Reset Platform_31 to Default Team
 
-### Terminal 8: Reset Platform_31 to Default Partition
-
-To restore communication, reset Platform_31's Domain Participant Partition back to "ALL" (the default):
+To restore platform-to-platform communication capability, reset Platform_31's Domain Participant Partition back to "ALL" (the default):
 
 ```bash
 cd tools/remote_admin
@@ -205,23 +210,19 @@ cd tools/remote_admin
 
 **Note**: The default Domain Participant Partition is "ALL", not an empty string.
 
-### Terminal 5 (C2): Verify Communication Restored
+### Verify Platform-to-Platform Communication Restored
 
-After moving Platform_31 back to the default team, Control should start receiving data from both platforms again:
-
-```
-- Received ContactReport Data: 10 from source: Platform_30 type: Platform
-- Received ContactReport Data: 11 from source: Platform_31 type: Platform
-```
+After moving Platform_31 back to team "ALL", both platforms are now in the same team and can exchange data via the PLATFORM_TEAM_CHANNEL (when enabled). Control continues to receive data from both platforms regardless of team assignments.
 
 ## What's Happening Behind the Scenes
 
-When you run `./send_remote_cmd.sh -n Platform_31 --team 5`:
+When you run `./send_remote_cmd.sh -n Platform_31 --team B`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
    /routing_services/Platform_31/domain_routes/dr/participants/platform_wan
    ```
+   This targets the WAN participant responsible for TEAM (platform-to-platform) communication, not the participant used for Control communication.
 
 2. **Creates an XML QoS update** to set the partition:
    ```xml
@@ -229,26 +230,26 @@ When you run `./send_remote_cmd.sh -n Platform_31 --team 5`:
      <domain_participant_qos>
        <partition>
          <name>
-           <element>5</element>
+           <element>B</element>
          </name>
        </partition>
      </domain_participant_qos>
    </participant>
    ```
 
-3. **Sends a CommandRequest** on the admin domain (100) to Platform-11's routing service
+3. **Sends a CommandRequest** on the admin domain (100) to Platform_31's routing service
 
-4. **Platform-11 router updates** its WAN participant's QoS to use partition "5"
+4. **Platform_31 router updates** its WAN participant's QoS to use partition "B"
 
 5. **DDS enforces isolation**: Only participants with matching partitions can communicate
 
 ## Key Observations
 
-- **Team isolation is immediate**: As soon as the team change is applied, communication stops
+- **Team isolation affects PLATFORM_TEAM_CHANNEL only**: Platform-to-platform communication is isolated by team assignment
+- **Control communication unaffected**: All platforms can communicate with Control regardless of team assignment
+- **Team changes are immediate**: As soon as the team change is applied, platform-to-platform isolation takes effect
 - **No restart required**: The routing service remains running during the reconfiguration
-- **Session IDs continue**: Platform_31 keeps publishing, but Control can't receive it
-- **Bidirectional isolation**: Platform_31 also can't receive data meant for the default team
-- **Default partition is "ALL"**: The default Domain Participant Partition is set to "ALL", not an empty string or "0"
+- **Default team is "ALL"**: The default Domain Participant Partition is set to "ALL". Teams can be assigned using letter designations (A, B, C, etc.)
 
 ## Advanced: Assign Control to a Team
 
@@ -257,19 +258,19 @@ You can also assign Control to a specific team to create an isolated communicati
 ```bash
 cd tools/remote_admin
 
-# Move Platform_30 to team 3 (using ROUTER_NAME from params/platform_10_params.sh)
-./send_remote_cmd.sh -n Platform_30 --team 3 --type platform
+# Move Platform_30 to team A (using ROUTER_NAME from params/platform_10_params.sh)
+./send_remote_cmd.sh -n Platform_30 --team A --type platform
 
-# Move Control_20 to team 3 (using ROUTER_NAME from params/control_20_params.sh)
-./send_remote_cmd.sh -n Control_20 --team 3 --type control
+# Move Control_20 to team A (using ROUTER_NAME from params/control_20_params.sh)
+./send_remote_cmd.sh -n Control_20 --team A --type control
 
 # Platform_31 stays in default team
 ```
 
 Now:
-- Platform_30 and Control_20 communicate (both in team 3)
+- Platform_30 and Control_20 communicate (both in team A)
 - Platform_31 is isolated (in default team)
-- To add Platform_31 to the team: `./send_remote_cmd.sh -n Platform_31 --team 3 --type platform`
+- To add Platform_31 to the team: `./send_remote_cmd.sh -n Platform_31 --team A --type platform`
 
 ## Troubleshooting
 
@@ -315,12 +316,12 @@ To stop all processes, press `Ctrl+C` in each terminal:
 This example demonstrates:
 
 ✅ Dynamic team assignment using RemoteAdmin  
-✅ [DDS Domain Participant Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)-based isolation between groups  
+✅ [DDS Domain Participant Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)-based isolation between teams  
 ✅ Runtime reconfiguration without service restarts  
 ✅ Verification of team isolation through message observation  
-✅ Restoring communication by reassigning groups  
+✅ Restoring communication by reassigning teams  
 
-Groups provide a powerful mechanism for organizing and isolating communication in complex distributed systems. Use RemoteAdmin to dynamically manage these assignments as operational requirements change.
+Teams provide a powerful mechanism for organizing and isolating platform-to-platform communication in complex distributed systems. Use RemoteAdmin to dynamically manage these assignments as operational requirements change.
 
 ---
 

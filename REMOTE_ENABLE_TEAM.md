@@ -129,7 +129,7 @@ Platform_31 should stop receiving messages from Platform_30.
 │     │       │                        │      │      │
 │     ▼       │                        │      ▼      │
 │ Routing Svc │                        │ Routing Svc │
-│  (TEAM OFF)  │ ────────X──────────────│  (TEAM OFF)  │
+│  (TEAM OFF) │ ────────X──────────────│  (TEAM OFF) │
 └─────────────┘     No Data Flow       └─────────────┘
 ```
 
@@ -147,8 +147,8 @@ Platform_31 should stop receiving messages from Platform_30.
 │     │  ▲    │                        │     │  ▲    │
 │     ▼  │    │                        │     ▼  │    │
 │ Routing Svc │                        │ Routing Svc │
-│  (TEAM ON)   │ ◄────────────────────► │  (TEAM ON)   │
-└─────────────┘   Bidirectional TEAM ✓  └─────────────┘
+│  (TEAM ON)  │ ◄────────────────────► │  (TEAM ON)  │
+└─────────────┘   Bidirectional TEAM ✓ └─────────────┘
 ```
 
 ## How It Works
