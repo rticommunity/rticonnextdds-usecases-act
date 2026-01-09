@@ -12,15 +12,15 @@ Understanding these key terms will help you use the Remote Admin tool effectivel
 
 ### Resource
 The **resource** is the name of the RTI Routing Service instance you want to control. This corresponds to the `-appName` parameter used when starting the routing service.
-- **Example**: `Platform-10`, `Platform-11`, `C2-20`, `USV-1`
+- **Example**: `Platform_30`, `Platform_31`, `Control_20`
 - **Usage**: Specified with `-n` or `--name` flag
 
 ### Resource ID / Resource Identifier
 The **resource identifier** is the full hierarchical path to a specific entity within a routing service instance. It follows RTI's resource naming convention for remote administration.
 - **Format**: `/routing_services/<name>/domain_routes/<config_name>/...`
-  - `<name>` = routing service instance name (e.g., "Platform-10")
+  - `<name>` = routing service instance name (e.g., "Platform_30")
   - `<config_name>` = routing service configuration ("platform" or "control")
-- **Example**: `/routing_services/Platform-10/domain_routes/platform/sessions/platform_to_wan_p2p/state`
+- **Example**: `/routing_services/Platform_30/domain_routes/platform/sessions/platform_to_wan_team/state`
 - **Purpose**: Uniquely identifies the entity to be controlled or queried
 
 ### Domain Route
@@ -35,9 +35,9 @@ A **domain route** is a configuration block within Routing Service that defines 
 ### Session
 A **session** within Routing Service represents a logical grouping of topic routes. Sessions can be enabled or disabled to control specific data flows.
 - **Common Sessions**:
-  - `platform_to_wan_p2p` - Platform to WAN peer-to-peer communication
-  - `wan_to_platform_p2p` - WAN to Platform peer-to-peer communication
-- **Example Path**: `/sessions/platform_to_wan_p2p/state`
+  - `platform_to_wan_team` - Platform to WAN team communication
+  - `wan_to_platform_team` - WAN to Platform team communication
+- **Example Path**: `/sessions/platform_to_wan_team/state`
 
 ### TEAM (Peer-to-Peer)
 **TEAM** or **platform-to-platform** communication refers to direct data exchange between platforms without involving C2 stations. This is useful for collaborative autonomous operations.

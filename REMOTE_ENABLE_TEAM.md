@@ -28,7 +28,7 @@ Two platforms (Platform_30 and Platform_31) are running with routing services. W
 
 ```bash
 cd scripts
-./start_platform10_sim.sh
+./start_platform30_sim.sh
 ```
 
 Leave this running. Platform_30 will publish PlatformData on the PLATFORM_TEAM_CHANNEL.
@@ -37,7 +37,7 @@ Leave this running. Platform_30 will publish PlatformData on the PLATFORM_TEAM_C
 
 ```bash
 cd scripts
-./start_platform10_router.sh
+./start_platform30_router.sh
 ```
 
 Leave this running. The routing service starts with TEAM routes available but can be enabled/disabled remotely.
@@ -46,7 +46,7 @@ Leave this running. The routing service starts with TEAM routes available but ca
 
 ```bash
 cd scripts
-./start_platform11_sim.sh
+./start_platform31_sim.sh
 ```
 
 Leave this running. Platform_31 will subscribe to PlatformData from other platforms. Initially, you won't see any messages.
@@ -55,7 +55,7 @@ Leave this running. Platform_31 will subscribe to PlatformData from other platfo
 
 ```bash
 cd scripts
-./start_platform11_router.sh
+./start_platform31_router.sh
 ```
 
 Leave this running.
@@ -120,12 +120,12 @@ Platform_31 should stop receiving messages from Platform_30.
 ```
 ┌─────────────┐                        ┌─────────────┐
 │ Platform_30 │                        │ Platform_31 │
-│ Domain: 10  │                        │ Domain: 11  │
+│ Domain: 30  │                        │ Domain: 31  │
 │             │                        │             │
 │ Simulator   │                        │ Simulator   │
 │     │       │                        │      │      │
 │     ▼       │                        │      ▼      │
-│ PlatformData│       WAN Domain 0     │ PlatformData│
+│ PlatformData│       WAN Domain 200   │ PlatformData│
 │     │       │                        │      │      │
 │     ▼       │                        │      ▼      │
 │ Routing Svc │                        │ Routing Svc │
@@ -138,12 +138,12 @@ Platform_31 should stop receiving messages from Platform_30.
 ```
 ┌─────────────┐                        ┌─────────────┐
 │ Platform_30 │                        │ Platform_31 │
-│ Domain: 10  │                        │ Domain: 11  │
+│ Domain: 30  │                        │ Domain: 31  │
 │             │                        │             │
 │ Simulator   │                        │ Simulator   │
 │     │  ▲    │                        │     │  ▲    │
 │     ▼  │    │                        │     ▼  │    │
-│ PlatformData│       WAN Domain 0     │ PlatformData│
+│ PlatformData│       WAN Domain 200   │ PlatformData│
 │     │  ▲    │                        │     │  ▲    │
 │     ▼  │    │                        │     ▼  │    │
 │ Routing Svc │                        │ Routing Svc │
@@ -155,7 +155,7 @@ Platform_31 should stop receiving messages from Platform_30.
 
 1. **Initial State**: Routing services are running but TEAM sessions are disabled
 2. **RemoteAdmin Command**: Sends UPDATE command to routing service on admin domain (100)
-3. **Session Update**: Routing service enables `platform_to_wan_p2p` and `wan_to_platform_p2p` sessions
+3. **Session Update**: Routing service enables `platform_to_wan_team` and `wan_to_platform_team` sessions
 4. **Data Flow**: PlatformData now flows: Platform_30 → WAN → Platform_31
 5. **Validation**: Platform_31 simulator receives and displays the data
 

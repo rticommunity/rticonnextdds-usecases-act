@@ -1,6 +1,6 @@
 # Autonomous Collaborative Teaming (ACT) - Routing Service Architecture
 
-RTI Routing Service architecture for Autonomous Collaborative Teaming use cases to manage message flow between Platforms (vehicles/UAVs/USVs) and Control (Command and Control) stations.
+RTI Routing Service architecture for Autonomous Collaborative Teaming use cases to manage message flow between Platforms (UxV's) and Control stations.
 
 This use case is centered around a Maritime ISR scenario but can be adapted for other collaborative teaming applications.
 

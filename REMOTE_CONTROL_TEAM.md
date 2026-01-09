@@ -42,7 +42,7 @@ In this example, we will:
 ┌──────▼──────┐           ┌──────▼──────┐           ┌──────▼───────┐
 │ Platform_30 │           │ Platform_31 │           │  Control_20  │
 │   Router    │◄─────────►│   Router    │           │   Router     │
-│  (Team ALL) │  P2P Comms│  (Team ALL) │           │  (Team ALL)  │
+│  (Team ALL) │ TEAM Comms│  (Team ALL) │           │  (Team ALL)  │
 └──────┬──────┘  via TEAM └──────┬──────┘           └──────┬───────┘
        │         Channel         │                         │
        │                         │                         │
@@ -66,13 +66,13 @@ In this example, we will:
 │ Platform_30 │     X     │ Platform_31 │           │  Control_20  │
 │   Router    │◄─────────►│   Router    │           │   Router     │
 │  (Team ALL) │  ISOLATED │  (Team B)   │           │  (Team ALL)  │
-└──────┬──────┘  P2P Only └──────┬──────┘           └──────┬───────┘
+└──────┬──────┘ TEAM Only └──────┬──────┘           └──────┬───────┘
        │                         │                         │
        │                         │                         │
        └────────────────┬────────┴─────────────────────────┘
                         │ WAN Domain 200
               Both platforms still communicate with Control
-              Platform_30 ✗ Platform_31 (different teams - P2P blocked)
+              Platform_30 ✗ Platform_31 (different teams - TEAM blocked)
 ```
 
 ## Prerequisites
@@ -90,7 +90,7 @@ In this example, we will:
 
 ```bash
 cd scripts
-./start_platform10_sim.sh
+./start_platform30_sim.sh
 ```
 
 You should see output indicating the simulator is publishing `PlatformData`:
@@ -101,11 +101,11 @@ Publishing PlatformData with Session ID 1
 ...
 ```
 
-### Terminal 4: Start Platform_31 Router
+### Terminal 4: Start Platform_30 Router
 
 ```bash
 cd scripts
-./start_platform10_router.sh
+./start_platform30_router.sh
 ```
 
 The routing service will start and bridge Platform_30's LAN domain to the WAN domain. Look for:
@@ -118,16 +118,16 @@ RTI Routing Service started
 
 ```bash
 cd scripts
-./start_platform11_sim.sh
+./start_platform31_sim.sh
 ```
 
 Similar output as Platform_30, publishing session data.
 
-### Terminal 4: Start Platform-11 Router
+### Terminal 4: Start Platform_31 Router
 
 ```bash
 cd scripts
-./start_platform11_router.sh
+./start_platform31_router.sh
 ```
 
 ### Terminal 5: Start Control Simulator
@@ -258,7 +258,7 @@ You can also assign Control to a specific team to create an isolated communicati
 ```bash
 cd tools/remote_admin
 
-# Move Platform_30 to team A (using ROUTER_NAME from params/platform_10_params.sh)
+# Move Platform_30 to team A (using ROUTER_NAME from params/platform_30_params.sh)
 ./send_remote_cmd.sh -n Platform_30 --team A --type platform
 
 # Move Control_20 to team A (using ROUTER_NAME from params/control_20_params.sh)
@@ -278,7 +278,7 @@ Now:
 
 - **Verify the command succeeded**: Check RemoteAdmin output for "Command returned: entity updated OK"
 - **Check routing service logs**: Look for partition updates in the router terminal
-- **Confirm correct resource name**: Use `-n Platform_31` not `-n platform_11` (case-sensitive)
+- **Confirm correct resource name**: Use `-n Platform_31` not `-n platform_31` (case-sensitive)
 - **Wait a few seconds**: There may be a small delay for DDS discovery to update
 
 ### RemoteAdmin Shows "No matching replier found"

@@ -36,14 +36,14 @@ rticonnextdds-usecases-act/
 │       └── routing_service_config.xml
 ├── params/                      # Parameter files
 │   ├── system_params.sh        # System-wide parameters
-│   ├── platform_10_params.sh   # Platform 30 configuration
-│   ├── platform_11_params.sh   # Platform 31 configuration
+│   ├── platform_30_params.sh   # Platform 30 configuration
+│   ├── platform_31_params.sh   # Platform 31 configuration
 │   └── control_20_params.sh         # Control-20 configuration
 ├── scripts/                    # Launch scripts and remote admin wrapper
-│   ├── start_platform10_router.sh
-│   ├── start_platform10_sim.sh
-│   ├── start_platform11_router.sh
-│   ├── start_platform11_sim.sh
+│   ├── start_platform30_router.sh
+│   ├── start_platform30_sim.sh
+│   ├── start_platform31_router.sh
+│   ├── start_platform31_sim.sh
 │   ├── start_control_20_router.sh
 │   └── start_control_20_sim.sh
 ├── node_sim/                    # Node simulator components
@@ -344,9 +344,9 @@ export CONTROL_COMMAND_FILTER_MATCH=$ROUTER_NAME         # Match platform name
 ```
 
 **How It Works**:
-1. Control publishes ControlCommand with `destination` field set (e.g., "USV_10")
-2. Routing service evaluates filter: `msg.destination == "USV_10"`
-3. Only Platform-10's router forwards the message
+1. Control publishes ControlCommand with `destination` field set (e.g., "Platform_30")
+2. Routing service evaluates filter: `msg.destination == "Platform_30"`
+3. Only Platform-30's router forwards the message
 4. Other platforms never see the command
 
 **Important**: 

@@ -5,8 +5,8 @@ This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming)
 ## Overview
 
 This example launches:
-- **Platform 10 (Platform_30)**: First unmanned surface vehicle
-- **Platform 11 (Platform_31)**: Second unmanned surface vehicle
+- **Platform 30 (Platform_30)**: First unmanned surface vehicle
+- **Platform 31 (Platform_31)**: Second unmanned surface vehicle
 - **Control Station 20**: Command and control station
 
 Key features demonstrated:
@@ -27,28 +27,28 @@ Key features demonstrated:
 
 Open **6 terminals** and run the following commands from the repository root:
 
-### Terminal 1: Platform 10 Router
+### Terminal 1: Platform 30 Router
 ```bash
 cd scripts
-./start_platform10_router.sh
+./start_platform30_router.sh
 ```
 
-### Terminal 2: Platform 10 Simulator
+### Terminal 2: Platform 30 Simulator
 ```bash
 cd scripts
-./start_platform10_sim.sh
+./start_platform30_sim.sh
 ```
 
-### Terminal 3: Platform 11 Router
+### Terminal 3: Platform 31 Router
 ```bash
 cd scripts
-./start_platform11_router.sh
+./start_platform31_router.sh
 ```
 
-### Terminal 4: Platform 11 Simulator
+### Terminal 4: Platform 31 Simulator
 ```bash
 cd scripts
-./start_platform11_sim.sh
+./start_platform31_sim.sh
 ```
 
 ### Terminal 5: Control-20 Router
@@ -68,13 +68,13 @@ cd scripts
 ### Architecture
 
 ```
-┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-│ Platform 10 │         │ Platform 11 │         │    Control-20    │
-│  (Domain 10)│◄───────►│  (Domain 11)│◄───────►│  (Domain 20)│
-└──────┬──────┘    TEAM  └──────┬──────┘    WAN  └──────┬──────┘
-       │                        │                        │
-       └────────────────────────┴────────────────────────┘
-                          WAN Domain 0
+┌──────────────┐         ┌─────────────┐         ┌───────────────┐
+│ Platform 30  │         │ Platform 31 │         │    Control-20 │
+│  (Domain 30) │◄───────►│  (Domain 31)│◄───────►│  (Domain 20)  │
+└──────┬───────┘   TEAM  └──────┬──────┘    WAN  └──────┬────────┘
+       │                        │                       │
+       └────────────────────────┴───────────────────────┘
+                          WAN Domain 200
 ```
 
 ### Communication Flows
@@ -119,10 +119,10 @@ rtiadminconsole
 ```
 
 You should see:
-- Domain 10: Platform_30 publications/subscriptions
-- Domain 11: Platform_31 publications/subscriptions
+- Domain 30: Platform_30 publications/subscriptions
+- Domain 31: Platform_31 publications/subscriptions
 - Domain 20: Control_20 publications/subscriptions
-- Domain 0: WAN routing traffic
+- Domain 200: WAN routing traffic
 
 ## Testing TEAM Communication
 
@@ -130,7 +130,7 @@ The TEAM communication happens automatically between platforms. To verify:
 
 1. Watch for `PlatformData` messages in the simulator output
 2. Both platforms should see each other's data
-3. Use RTI Admin Console to monitor domain 10 and 11 directly
+3. Use RTI Admin Console to monitor domain 30 and 31 directly
 
 ## Advanced: Remote Administration
 
@@ -154,24 +154,24 @@ See [REMOTE_ENABLE_TEAM.md](REMOTE_ENABLE_TEAM.md) and [REMOTE_CONTROL_TEAM.md](
 
 ## Scaling to More Platforms
 
-To add Platform 12:
+To add Platform 32:
 
 1. Copy an existing platform param file:
    ```bash
    cd params
-   cp platform_10_params.sh platform_12_params.sh
+   cp platform_30_params.sh platform_32_params.sh
    ```
 
-2. Edit `platform_12_params.sh`:
+2. Edit `platform_32_params.sh`:
    - Change `PLATFORM_DOMAIN=32`
-   - Change `ROUTER_NAME="Platform_12"`
+   - Change `ROUTER_NAME="Platform_32"`
    - Change `SESSION_ID=32`
 
 3. Copy and update start scripts:
    ```bash
-   cp start_platform10_router.sh start_platform12_router.sh
-   cp start_platform10_sim.sh start_platform12_sim.sh
-   # Update both to source platform_12_params.sh
+   cp start_platform30_router.sh start_platform32_router.sh
+   cp start_platform30_sim.sh start_platform32_sim.sh
+   # Update both to source platform_32_params.sh
    ```
 
 4. Run the new scripts in two additional terminals
@@ -179,8 +179,8 @@ To add Platform 12:
 ## Configuration Details
 
 All configurations are in `params/`:
-- `platform_10_params.sh`: Platform_30 on domain 10
-- `platform_11_params.sh`: Platform_31 on domain 11
+- `platform_30_params.sh`: Platform_30 on domain 30
+- `platform_31_params.sh`: Platform_31 on domain 31
 - `control_20_params.sh`: Control_20 on domain 20
 - `system_params.sh`: WAN timing, channel setup and network parameters
 

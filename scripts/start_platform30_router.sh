@@ -10,8 +10,8 @@
 # any incidental or consequential damages arising out of the use or inability
 # to use the software.
 
-# Source Platform 11 parameters
-source ../params/platform_11_params.sh
+# Source Platform 30 parameters
+source ../params/platform_30_params.sh
 
 # Source SYSTEM parameters
 source ../params/system_params.sh
