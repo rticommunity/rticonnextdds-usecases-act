@@ -5,8 +5,8 @@ This example demonstrates a more advanced ACT (Autonomous Collaborative Teaming)
 ## Overview
 
 This example launches:
-- **Platform 30 (Platform_30)**: First unmanned surface vehicle
-- **Platform 31 (Platform_31)**: Second unmanned surface vehicle
+- **Platform 30 (Platform_30)**: First unmanned "Platform"
+- **Platform 31 (Platform_31)**: Second unmanned "Platform"
 - **Control Station 20**: Command and control station
 
 Key features demonstrated:
@@ -146,11 +146,11 @@ cd tools/remote_admin
 ```
 
 RemoteAdmin allows you to:
-- Enable/disable TEAM routes dynamically
-- Assign nodes to different groups for isolation
+- Assign platforms to different teams for isolation
+- Enable full-rate status telemetry on-demand
 - Control data flow without restarting services
 
-See [REMOTE_ENABLE_TEAM.md](REMOTE_ENABLE_TEAM.md) and [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) for detailed examples.
+See [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) and [REMOTE_ENABLE_FULL_STATUS.md](REMOTE_ENABLE_FULL_STATUS.md) for detailed examples.
 
 ## Scaling to More Platforms
 

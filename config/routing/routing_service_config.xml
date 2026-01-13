@@ -133,7 +133,7 @@ to use the software.
       -->
       <element>
         <name>TEAM_ENABLE</name>
-        <value>false</value>
+        <value>true</value>
       </element>
 
       <!-- 
@@ -524,6 +524,14 @@ to use the software.
       <participant name="team_wan">
         <domain_id>$(WAN_DOMAIN)</domain_id>
         <domain_participant_qos base_name="$(WAN_PLATFORM_PARTICIPANT_QOS)">
+
+        <!-- Set this to be unique by default so there is no discovery between platforms.
+        Remotely change this to be the Team name to allow Platform to Platform communications -->
+          <partition>
+            <name>
+              <element>$(ROUTER_NAME)</element>
+            </name>
+          </partition>
         </domain_participant_qos>
       </participant>
 

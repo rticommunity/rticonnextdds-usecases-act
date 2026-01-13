@@ -140,6 +140,6 @@ Control_20 will revert to receiving only 1Hz status data from Platform_30, reduc
 
 ## Related Documentation
 
-- **REMOTE_ENABLE_TEAM.md**: Enable direct platform-to-platform communication
 - **REMOTE_CONTROL_TEAM.md**: Assign platforms to teams using DDS partitions
 - **SYSTEM_ARCH.md**: Architecture overview including channel definitions and QoS profiles
+- **tools/remote_admin/README.md**: RemoteAdmin tool documentation

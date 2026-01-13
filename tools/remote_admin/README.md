@@ -174,8 +174,7 @@ Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
 
 For complete step-by-step walkthroughs demonstrating RemoteAdmin usage, see:
 
-- **[REMOTE_ENABLE_TEAM.md](../../REMOTE_ENABLE_TEAM.md)**: Enable peer-to-peer communication between platforms
-- **[REMOTE_CONTROL_TEAM.md](../../REMOTE_CONTROL_TEAM.md)**: Dynamically assign nodes to different groups and verify isolation
+- **[REMOTE_CONTROL_TEAM.md](../../REMOTE_CONTROL_TEAM.md)**: Dynamically assign platforms to teams and verify isolation
 - **[REMOTE_ENABLE_FULL_STATUS.md](../../REMOTE_ENABLE_FULL_STATUS.md)**: Enable on-demand high-bandwidth telemetry from platforms
 
 ## How It Works

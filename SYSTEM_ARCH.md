@@ -142,7 +142,7 @@ The architecture must implement a Multi-Tier DDS Domain Model. DDS data is isola
 
 **Architecture Note:** Each Platform node creates TWO separate Domain Participants on WAN_DOMAIN:
   1. **Control Participant:** Always active for control-to-platform communication. Subscribes to CONTROL_COMMANDS_CHANNEL, publishes PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL and PLATFORM_EVENTS_CHANNEL.
-  2. **Team Participant:** Partition-controlled for platform-to-platform team communication. Uses Partition QoS (e.g., "Red_Team", "Blue_Team", "Default") for team isolation. PLATFORM_TEAM_CHANNEL sessions disabled by default, enabled dynamically via Remote Administration when Platform is assigned to a Team.
+  2. **Team Participant:** Partition-controlled for platform-to-platform team communication. On startup, initialized with the platform's unique identifier (e.g., "Platform_30") as its partition. PLATFORM_TEAM_CHANNEL sessions are enabled by default, but platforms won't discover each other due to unique partition isolation. Upon team assignment, the partition is updated to the team name (e.g., "A", "B", "C") via Remote Administration, enabling discovery and communication with other team members.
 
 This dual-participant approach enables independent lifecycle management: control communication remains operational even when team sessions are disabled, while partition-based isolation ensures Team members only discover and communicate with their assigned teammates.
 
@@ -163,7 +163,12 @@ To meet US-C1 and US-C4:
 
 To meet US-C2:
 - **DTR-07 (Discovery Mechanism):** The WAN_DOMAIN shall utilize unicast discovery between Platform and Control nodes possibly utilizing Cloud Discovery Service (CDS) in combination with DNS host names if necessary.
-- **DTR-08 (Phased Initialization):** The Routing Service shall implement a Phased Initialization strategy within the WAN_DOMAIN where Platforms initially connect in a "lightly provisioned" state—restricted to Participant Discovery and minimal Topics such as position/high level status—while all high-fidelity data routes remain disabled by default. Full endpoint discovery and detailed topic resolution for team communications shall be incrementally enabled via Remote Administration commands only after a Platform is explicitly assigned to a Team, thereby preventing network saturation from the simultaneous broadcast of hundreds of unassigned endpoints
+- **DTR-08 (Phased Initialization):** The Routing Service shall implement a Phased Initialization strategy within the WAN_DOMAIN where:
+  - **Primary Status Channels (PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)** are enabled by default on startup, providing baseline telemetry to Control
+  - **Full Status Channels (PLATFORM_FULL_STATUS_CHANNEL)** remain disabled by default and can be enabled later by Control via Remote Administration to provide additional high-bandwidth topics when detailed monitoring is required
+  - **Team Channels (PLATFORM_TEAM_CHANNEL)** are enabled by default, but platform-to-platform discovery is constrained by unique partition identifiers until Platforms are explicitly assigned to a shared team partition via Remote Administration commands
+  
+  This approach prevents network saturation from the simultaneous broadcast of hundreds of unassigned endpoints while enabling controlled, on-demand activation of high-fidelity data routes and team collaboration
 
 ## 8. Implementation Details
 
@@ -250,8 +255,8 @@ The workflow transitions a set of autonomous platforms from an "Idle/Unassigned"
   - Publishes low-frequency (1Hz) topics over the PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL on the WAN_DOMAIN
   - Publishes events via PLATFORM_EVENTS_CHANNEL on the WAN_DOMAIN
 - **Routing Service WAN_DOMAIN Team Participant:**
-  - Initialized with a "Default" or "Unassigned" Domain Participant QoS Partition.
-  - All sessions (PLATFORM_TEAM_CHANNEL) disabled by default, to be enabled dynamically as needed.
+  - Initialized with the platform's unique identifier as its Domain Participant Partition (e.g., "Platform_30", "Platform_31").
+  - PLATFORM_TEAM_CHANNEL sessions are enabled by default, but platforms won't discover each other due to partition-based isolation (each platform has a unique partition).
 
 **CONTROLLER:**
 - **Routing Service WAN_DOMAIN Participant:**
@@ -278,11 +283,11 @@ The workflow transitions a set of autonomous platforms from an "Idle/Unassigned"
 **PLATFORM:**
 - **Autonomy:**
   - **Action:** Processes the command from the Controller UI
-  - **Action:** Uses Remote Admin commands to send an update for DP PartitionQoS of their WAN_DOMAIN Participant to the string "Red_Team".
-  - **Action:** Uses Remote Admin commands to enable Topic Sessions defined by the PLATFORM_TEAM_CHANNEL
+  - **Action:** Uses Remote Admin commands to update the Domain Participant Partition QoS of the WAN_DOMAIN Team Participant from the unique identifier (e.g., "Platform_30") to the team name (e.g., "A").
 - **Routing Service:**
   - **Action:** Receives the Remote Admin commands from the autonomy application
-  - **Action:** Updates the DP Partition QoS for the WAN_DOMAIN Participant to reflect "Red_Team"
+  - **Action:** Updates the DP Partition QoS for the WAN_DOMAIN Team Participant from the unique identifier to the team name (e.g., "A")
+  - **Result:** Platforms with the same team partition can now discover each other and exchange data via PLATFORM_TEAM_CHANNEL (sessions already enabled)
   - **Action:** Enables Sessions associated with the PLATFORM_TEAM_CHANNEL
 
 **Result:**

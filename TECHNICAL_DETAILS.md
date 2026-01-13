@@ -70,8 +70,8 @@ rticonnextdds-usecases-act/
 │   └── images/                 # Architecture diagrams
 ├── QUICKSTART.md                # Basic example
 ├── MULTI_PLATFORM.md            # Multi-platform example
-├── REMOTE_ENABLE_TEAM.md         # TEAM control example
 ├── REMOTE_CONTROL_TEAM.md      # Team assignment example
+├── REMOTE_ENABLE_FULL_STATUS.md # On-demand telemetry example
 ├── TECHNICAL_DETAILS.md         # This file
 └── README.md                    # Main entry point
 ```
@@ -385,12 +385,11 @@ No XML file changes required!
   - No service restarts required
 
 ### Documentation
-- **Examples**: See `examples/` for hands-on walkthroughs
-  - [QUICKSTART](examples/QUICKSTART.md): 1 Platform + 1 C2
-  - [MULTI_PLATFORM](examples/MULTI_PLATFORM.md): 2 Platforms + 1 C2
-  - [REMOTE_ENABLE_TEAM](examples/REMOTE_ENABLE_TEAM.md): Dynamic TEAM control
-  - [REMOTE_CONTROL_TEAM](examples/REMOTE_CONTROL_TEAM.md): Team assignment
-- **Deployment Guide**: See `templates/DEPLOYMENT.md` for production setup
+- **Examples**: See root directory for hands-on walkthroughs
+  - [QUICKSTART](QUICKSTART.md): 1 Platform + 1 C2
+  - [MULTI_PLATFORM](MULTI_PLATFORM.md): 2 Platforms + 1 C2
+  - [REMOTE_CONTROL_TEAM](REMOTE_CONTROL_TEAM.md): Team assignment
+  - [REMOTE_ENABLE_FULL_STATUS](REMOTE_ENABLE_FULL_STATUS.md): On-demand telemetry
 - **Architecture Diagrams**: See `docs/images/` for system visuals
 
 ### Configuration Files

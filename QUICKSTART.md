@@ -79,7 +79,7 @@ rtiadminconsole
 
 - Review scripts in `scripts/` and parameters in `params/`
 - Try the [Multi-Platform](MULTI_PLATFORM.md) example
-- Use [RemoteAdmin](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html) ([local tool docs](tools/remote_admin/README.md)) to control routers at runtime - see [REMOTE_ENABLE_TEAM.md](REMOTE_ENABLE_TEAM.md) and [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) for examples
+- Use [RemoteAdmin](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext-dds_professional/services/routing_service/remote_admin.html) ([local tool docs](tools/remote_admin/README.md)) to control routers at runtime - see [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) and [REMOTE_ENABLE_FULL_STATUS.md](REMOTE_ENABLE_FULL_STATUS.md) for examples
 
 ## Troubleshooting
 
