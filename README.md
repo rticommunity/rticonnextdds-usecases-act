@@ -4,8 +4,6 @@ RTI Routing Service architecture for Autonomous Collaborative Teaming use cases 
 
 This use case is centered around a Maritime ISR scenario but can be adapted for other collaborative teaming applications.
 
-![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
-
 ## Getting Started
 
 ### Clone with Submodules

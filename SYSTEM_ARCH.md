@@ -146,12 +146,85 @@ The architecture must implement a Multi-Tier DDS Domain Model. DDS data is isola
 
 This dual-participant approach enables independent lifecycle management: control communication remains operational even when team sessions are disabled, while partition-based isolation ensures Team members only discover and communicate with their assigned teammates.
 
+```mermaid
+graph TB
+    subgraph Platform["Platform Node"]
+        AUTO[Autonomy]
+        RS[Routing Service]
+        AUTO <--> RS
+    end
+    
+    subgraph WAN["WAN_DOMAIN (200)"]
+        CP[Control Participant<br/>Always Active]
+        TP[Team Participant<br/>Partition: 'Platform_30' or 'A']
+    end
+    
+    RS --> CP
+    RS --> TP
+    
+    CP -.->|Hub-Spoke| CTRL[Control Nodes]
+    TP -.->|Mesh<br/>Same Partition Only| TEAM[Team Members]
+    
+    style Platform fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style CP fill:#90caf9,stroke:#1565c0,stroke-width:2px,color:#000
+    style TP fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+```
+
 **DTR-04 (ADMIN_DOMAIN - Remote Administration):**
 - **Domain ID:** 100
 - **Scope:** Remote administration and monitoring across all nodes.
 - **Traffic:** Routing Service remote commands (session enable/disable, partition updates), monitoring telemetry.
 - **Transport:** Same as WAN_DOMAIN.
 - **Discovery:** Unicast
+
+**Platform Remote Administration - Team Assignment:**
+
+```mermaid
+graph LR
+    subgraph ADMIN["ADMIN_DOMAIN (100)"]
+        RA_P[RemoteAdmin Tool]
+    end
+    
+    subgraph Platform["Platform-30 Node"]
+        RS_P[Routing Service]
+        TEAM_PART[Team Participant<br/>WAN_DOMAIN]
+    end
+    
+    RA_P -->|"Update Team Partition<br/>--name Platform_30<br/>--team A"| RS_P
+    RS_P -->|Reconfigure| TEAM_PART
+    
+    TEAM_PART -.->|"Before: Partition='Platform_30'<br/>(Isolated)"| BEFORE[No Team Discovery]
+    TEAM_PART ==>|"After: Partition='A'<br/>(Team Enabled)"| AFTER[Discovers Team A Members]
+    
+    style ADMIN fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+    style Platform fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style TEAM_PART fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+```
+
+**Control Remote Administration - Detail Status Enable:**
+
+```mermaid
+graph LR
+    subgraph ADMIN["ADMIN_DOMAIN (100)"]
+        RA_C[RemoteAdmin Tool]
+    end
+    
+    subgraph Platform_Target["Platform-30 Node"]
+        RS_C[Routing Service]
+        SESSION[DETAIL_STATUS<br/>Session]
+    end
+    
+    RA_C -->|"Enable Detail Status<br/>--name Platform_30<br/>--detail true"| RS_C
+    RS_C -->|Enable| SESSION
+    
+    SESSION -.->|"Before: Disabled<br/>(No high-bandwidth data)"| BEFORE_C[Bandwidth Conserved]
+    SESSION ==>|"After: Enabled<br/>(Full sensor suite)"| AFTER_C[High-Rate Status to Control]
+    
+    style ADMIN fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+    style Platform_Target fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style SESSION fill:#ffb74d,stroke:#e65100,stroke-width:2px,color:#000
+```
 
 ### 7.2 Data Routing & Traffic Shaping
 
@@ -175,6 +248,35 @@ To meet US-C2:
 ### 8.1 Architecture Diagram Description
 The architecture functions as a "Hub-and-Spoke" for control-to-platform communication and a "Mesh" for platform-to-platform team communication, both within the WAN_DOMAIN.
 
+#### Platform Node Architecture
+
+```mermaid
+graph LR
+    subgraph Platform_Node["Platform Node"]
+        subgraph PLATFORM_DOMAIN["PLATFORM_DOMAIN (30)"]
+            AUTO[Autonomy<br/>Sensors<br/>Actuators]
+        end
+        
+        RS[Routing Service<br/>Gateway]
+        
+        subgraph WAN_PARTICIPANTS["WAN_DOMAIN (200)"]
+            CTRL_PART[Control Participant]
+            TEAM_PART[Team Participant]
+        end
+    end
+    
+    AUTO <-->|Local Topics| RS
+    RS <-->|Status/Events<br/>Commands| CTRL_PART
+    RS <-->|Team Coordination| TEAM_PART
+    
+    CTRL_PART -.->|To Control Nodes| EXTERNAL_C[Control-20]
+    TEAM_PART -.->|To Team Members| EXTERNAL_P[Platform-11]
+    
+    style PLATFORM_DOMAIN fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN_PARTICIPANTS fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style RS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+```
+
 **The Platform Node:**
 - **Internal:** Runs Autonomy Containers on PLATFORM_DOMAIN.
 - **Gateway:** Hosts a local Routing Service instance.
@@ -186,6 +288,33 @@ The architecture functions as a "Hub-and-Spoke" for control-to-platform communic
 - **Remote Administration:** 
   - Used to send "Update Domain Participant Partition" commands to the Platforms Routing Service, logically moving them from "Team A" to "Team B" on the WAN_DOMAIN.
   - Used to send "Enable/Disable Session" commands to the Platforms Routing Service allowing Topic messages to be sent/received within a Team after assignment.
+
+#### Control Node Architecture
+
+```mermaid
+graph LR
+    subgraph Control_Node["Control Node"]
+        subgraph CONTROL_DOMAIN["CONTROL_DOMAIN (20)"]
+            UI[UI<br/>Mission Mgmt<br/>Displays]
+        end
+        
+        RS_C[Routing Service<br/>Gateway]
+        
+        subgraph WAN_PARTICIPANT["WAN_DOMAIN (200)"]
+            CTRL_PART_C[Control Participant]
+        end
+    end
+    
+    UI <-->|Local Topics| RS_C
+    RS_C <-->|Status/Events<br/>Commands| CTRL_PART_C
+    
+    CTRL_PART_C -.->|To All Platforms| EXTERNAL_P1[Platform-10]
+    CTRL_PART_C -.->|To All Platforms| EXTERNAL_P2[Platform-11]
+    
+    style CONTROL_DOMAIN fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style WAN_PARTICIPANT fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style RS_C fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+```
 
 **The Control Node:**
 - **Internal:** Runs UI/Mission Management Containers on CONTROL_DOMAIN.
@@ -199,6 +328,46 @@ The architecture functions as a "Hub-and-Spoke" for control-to-platform communic
 
 ### 8.2 Channels
 In the Autonomous Collaborative Teaming (ACT) architecture, a Channel is a logical abstraction layer implemented via the RTI Routing Service that groups multiple distinct DDS Topics into a single configuration entity. This allows the system to apply a unified Quality of Service (QoS) profile and routing logic to a specific group of topics based on their operational intent (e.g., Command vs. Status) and their destination (e.g., Platform vs. Control), without requiring the operator to configure routes for every individual topic.
+
+#### Platform-to-Control Communication (Hub-Spoke Pattern)
+
+```mermaid
+graph LR
+    P[Platform-10]
+    C[Control-20]
+
+    %% CONTROL_COMMANDS_CHANNEL (Control → Platform, Reliable, Filtered)
+    C -->|"CONTROL_COMMANDS_CHANNEL<br/>(EVENT_QOS - Reliable)<br/>Content Filtered"| P
+
+    %% CONTROL_EVENTS_CHANNEL (Control → Platform, Reliable)
+    C -->|"CONTROL_EVENTS_CHANNEL<br/>(EVENT_QOS - Reliable)"| P
+
+    %% PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL (Platform → Control, Best-Effort, 1Hz)
+    P -.->|"PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL<br/>(STATUS_QOS - Best-Effort, 1Hz)<br/>Always Enabled"| C
+
+    %% PLATFORM_DETAIL_STATUS_CHANNEL (Platform → Control, Best-Effort, Full Rate, Disabled by Default)
+    P -.->|"PLATFORM_DETAIL_STATUS_CHANNEL<br/>(STATUS_QOS - Best-Effort, Full Rate)<br/>Disabled by Default"| C
+
+    %% PLATFORM_EVENTS_CHANNEL (Platform → Control, Reliable)
+    P -->|"PLATFORM_EVENTS_CHANNEL<br/>(EVENT_QOS - Reliable)"| C
+
+    style P fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style C fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+```
+
+#### Platform-to-Platform Communication (Mesh Pattern)
+
+```mermaid
+graph LR
+    P10[Platform-10<br/>Team A]
+    P11[Platform-11<br/>Team A]
+
+    %% PLATFORM_TEAM_CHANNEL (Platform ↔ Platform, Best-Effort, Partition-Based)
+    P10 <-.->|"PLATFORM_TEAM_CHANNEL<br/>(STATUS_QOS - Best-Effort)<br/>Same Team Partition Only<br/>Enabled when assigned to team"| P11
+
+    style P10 fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style P11 fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+```
 
 **Key Characteristics:**
 

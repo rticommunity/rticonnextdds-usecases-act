@@ -4,8 +4,6 @@ This document provides comprehensive technical information about the ACT (Autono
 
 For quick start information, see the main [README.md](README.md).
 
-![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
-
 ---
 
 ## Table of Contents
@@ -130,9 +128,6 @@ Data can flow in multiple patterns:
 
 **RTI Routing Service** acts as a relay mechanism between the *internal* LAN and the *external* WAN DDS Domain:
 
-![ACT Routing Architecture](docs/images/act_routing_arch.jpeg)
-
-
 **Benefits**:
 - **Network isolation**: DDS domains use unique port ranges, preventing direct communication
 - **Security**: Routing service controls exactly which data flows where
@@ -255,8 +250,6 @@ These ensure RELIABLE delivery works correctly over high-latency links.
 ---
 
 ## Data Channels
-
-![ACT Data Channels Logical View](docs/images/act_channels.jpeg)
 
 Data channels provide an **abstraction layer** for routing configuration. Instead of modifying XML files for every new topic, you define channels in `config/params/system_params.sh` that team topics by their data pattern and apply appropriate QoS policies.
 
@@ -386,7 +379,6 @@ No XML file changes required!
   - [MULTI_PLATFORM](MULTI_PLATFORM.md): 2 Platforms + 1 C2
   - [REMOTE_CONTROL_TEAM](REMOTE_CONTROL_TEAM.md): Team assignment
   - [REMOTE_ENABLE_DETAIL_STATUS](REMOTE_ENABLE_DETAIL_STATUS.md): On-demand telemetry
-- **Architecture Diagrams**: See `docs/images/` for system visuals
 
 ### Configuration Files
 - **QoS Profiles**: `config/qos/`
