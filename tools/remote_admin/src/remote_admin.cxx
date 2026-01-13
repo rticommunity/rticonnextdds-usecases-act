@@ -31,16 +31,13 @@ using namespace RTI::Service::Admin;
 static constexpr unsigned int WAIT_TIMEOUT_SEC_MAX = 10;
 
 // Session names
-static const std::string PLATFORM_TO_WAN_TEAM_SESSION = "platform_to_wan_team";
-static const std::string WAN_TO_PLATFORM_TEAM_SESSION = "wan_to_platform_team";
 static const std::string PLATFORM_TO_WAN_FULL_STATUS_SESSION = "platform_to_wan_full_status";
 
 // Participant and routing service configuration names
 static const std::string PLATFORM_WAN_PARTICIPANT = "platform_wan";
-static const std::string CONTROL_WAN_PARTICIPANT = "control_wan";
+static const std::string TEAM_WAN_PARTICIPANT = "team_wan";
 
 static const std::string RS_CONFIG_NAME_PLATFORM = "platform";
-static const std::string RS_CONFIG_NAME_CONTROL = "control";
 static const std::string DEFAULT_DOMAIN_ROUTE_NAME = "dr";
 
 // Resource identifier path segments
@@ -93,7 +90,7 @@ static void send_session_update(
                      "application_name: "
                   << args.name << std::endl;
 
-        if (args.enable_team_comms) {
+        if (args.detail) {
             // Sets state to Enabled
             dds::topic::topic_type_support<EntityState>::to_cdr_buffer(
                     reinterpret_cast<std::vector<char> &>(request.octet_body()),
@@ -135,8 +132,7 @@ static void send_team_update(
         rti::request::Requester<
                 RTI::Service::Admin::CommandRequest,
                 RTI::Service::Admin::CommandReply> &requester,
-        ApplicationArguments args,
-        std::string routing_service_config_name)
+        ApplicationArguments args)
 {
     try {
         /*
@@ -144,20 +140,14 @@ static void send_team_update(
          */
         CommandRequest request;
 
-        // Select participant name based on node type
-        std::string participant_name = (args.node_type == "control") 
-                                       ? CONTROL_WAN_PARTICIPANT 
-                                       : PLATFORM_WAN_PARTICIPANT;
-
-        // Configuration name is from the <routing_service name="..."> in
-        // routing_service_config.xml
+        // Team updates are platform-only, use team_wan participant
         std::string resource_identifier = 
                 PATH_ROUTING_SERVICES
-                + routing_service_config_name 
+                + RS_CONFIG_NAME_PLATFORM
                 + PATH_DOMAIN_ROUTES
                 + DEFAULT_DOMAIN_ROUTE_NAME 
                 + PATH_PARTICIPANTS
-                + participant_name;
+                + TEAM_WAN_PARTICIPANT;
 
         std::string string_body = XML_STR_PREFIX + XML_PARTICIPANT_START
                 + args.team + XML_PARTICIPANT_END;
@@ -166,11 +156,10 @@ static void send_team_update(
                      "resource_identifier: "
                   << resource_identifier
                   << "\n"
-                     "body_text: "
+                     "Partition XML being sent:\n"
                   << string_body
                   << "\n"
-                     "application_name: "
-                  << args.name << std::endl;
+                  << std::endl;
 
         // Build Message
         request.action(CommandActionKind::UPDATE_ACTION);
@@ -252,23 +241,8 @@ int main(int argc, char *argv[])
             throw dds::core::Error("No matching replier found.");
         }
 
-
-        if (arguments.update_enable_team_comms) {
-            // Enable or disable both TEAM sessions based on --enable-team-comms flag
-            send_session_update(
-                    requester,
-                    arguments,
-                    PLATFORM_TO_WAN_TEAM_SESSION,
-                    RS_CONFIG_NAME_PLATFORM);
-            send_session_update(
-                    requester,
-                    arguments,
-                    WAN_TO_PLATFORM_TEAM_SESSION,
-                    RS_CONFIG_NAME_PLATFORM);
-        }
-
-        if (arguments.update_enable_full_status) {
-            // Enable or disable full platform status session
+        if (arguments.update_detail) {
+            // Enable or disable detailed platform status session
             // Only applicable to platform nodes - updates platform side only
             send_session_update(
                     requester,
@@ -277,13 +251,9 @@ int main(int argc, char *argv[])
                     RS_CONFIG_NAME_PLATFORM);
         }
 
-
         if (arguments.update_team) {
-            // Select config name based on node type
-            std::string config_name = (arguments.node_type == "control") 
-                                      ? RS_CONFIG_NAME_CONTROL 
-                                      : RS_CONFIG_NAME_PLATFORM;
-            send_team_update(requester, arguments, config_name);
+            // Team updates are platform-only
+            send_team_update(requester, arguments);
         }
 
     } catch (const std::exception &ex) {

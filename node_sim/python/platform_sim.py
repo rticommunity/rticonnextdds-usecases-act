@@ -199,7 +199,9 @@ class PlatformSim:
       while True:
         self.platform_detail_status_writer.write(detail_status_sample)
         print("Writing to PlatformDetailStatus topic")
-        await asyncio.sleep(1)    async def write_data(self):
+        await asyncio.sleep(1)
+
+    async def write_data(self):
       # Create sample
       data_sample = dds.DynamicData(self.platform_data_type)
 

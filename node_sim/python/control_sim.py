@@ -32,7 +32,8 @@ class C2Sim:
       #Pull in DynamicData types
       self.control_cmd_type = self.qos_provider.type("control_command")
       self.control_cmd_ack_type = self.qos_provider.type("control_command_ack")
-      self.platform_status_type = self.qos_provider.type("platform_status")
+      self.platform_primary_status_type = self.qos_provider.type("platform_primary_status")
+      self.platform_detail_status_type = self.qos_provider.type("platform_detail_status")
       self.contact_report_type = self.qos_provider.type("contact_report")
 
 
@@ -47,10 +48,15 @@ class C2Sim:
           "PlatformCommandAck",
           self.control_cmd_ack_type
       )
-      self.platform_status_topic = dds.DynamicData.Topic(
+      self.platform_primary_status_topic = dds.DynamicData.Topic(
           self.participant,
-          "PlatformStatus",
-          self.platform_status_type
+          "PlatformPrimaryStatus",
+          self.platform_primary_status_type
+      )
+      self.platform_detail_status_topic = dds.DynamicData.Topic(
+          self.participant,
+          "PlatformDetailStatus",
+          self.platform_detail_status_type
       )
 
       self.contact_report_topic = dds.DynamicData.Topic(
@@ -72,8 +78,12 @@ class C2Sim:
           self.platform_cmd_ack_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
-      self.platform_status_reader = dds.DynamicData.DataReader(
-          self.platform_status_topic,
+      self.platform_primary_status_reader = dds.DynamicData.DataReader(
+          self.platform_primary_status_topic,
+          self.qos_provider.datareader_qos_from_profile(args.qos_profile)
+      )
+      self.platform_detail_status_reader = dds.DynamicData.DataReader(
+          self.platform_detail_status_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.contact_report_reader = dds.DynamicData.DataReader(
@@ -85,11 +95,16 @@ class C2Sim:
       self.participant.ignore_datawriter(
           self.control_contact_report_writer.instance_handle)
 
-    async def read_status_data(self):
-      print("Waiting for Status data")
-      async for data in self.platform_status_reader.take_data_async():
-        print(f'- Received PlatformStatus from {data["msg.source"]}')
+    async def read_primary_status_data(self):
+      print("Waiting for Primary Status data")
+      async for data in self.platform_primary_status_reader.take_data_async():
+        print(f'- Received PlatformPrimaryStatus from {data["msg.source"]}')
        
+
+    async def read_detail_status_data(self):
+      print("Waiting for Detail Status data")
+      async for data in self.platform_detail_status_reader.take_data_async():
+        print(f'- Received PlatformDetailStatus from {data["msg.source"]}')
 
     async def read_cmd_ack_data(self):
       print("Waiting for CommandAck data")
@@ -156,7 +171,8 @@ class C2Sim:
     async def run(self) -> None:
         await asyncio.gather(
             self.write_cmd(),
-            self.read_status_data(),
+            self.read_primary_status_data(),
+            self.read_detail_status_data(),
             self.read_cmd_ack_data(),
             self.read_contact_report_data()
             )

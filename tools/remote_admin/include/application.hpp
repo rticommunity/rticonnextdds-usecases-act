@@ -52,15 +52,12 @@ struct ApplicationArguments {
 
     // Required parameters - empty means "not provided"
     std::string name = "";
-    std::string node_type = "platform";  // "platform" or "control"
     std::string team = "";
 
     // Flags with sensible defaults
     bool update_team = false;
-    bool enable_team_comms = false;
-    bool update_enable_team_comms = false;
-    bool enable_full_status = false;
-    bool update_enable_full_status = false;
+    bool detail = false;
+    bool update_detail = false;
 };
 
 // Parses application arguments.
@@ -98,48 +95,19 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
             arg_processing += 2;
         } else if (
                 (argc > arg_processing + 1)
-                && (strcmp(argv[arg_processing], "--type") == 0)) {
-            std::string type_value = argv[arg_processing + 1];
-            if (type_value == "platform" || type_value == "control") {
-                args.node_type = type_value;
+                && strcmp(argv[arg_processing], "--detail") == 0) {
+            std::string detail_value = argv[arg_processing + 1];
+            if (detail_value == "true" || detail_value == "1") {
+                args.detail = true;
+            } else if (detail_value == "false" || detail_value == "0") {
+                args.detail = false;
             } else {
-                std::cout << "Bad parameter value for --type. Use 'platform' or 'control'." << std::endl;
+                std::cout << "Bad parameter value for --detail. Use 'true' or 'false'." << std::endl;
                 show_usage = true;
                 args.parse_result = ParseReturn::failure;
                 break;
             }
-            arg_processing += 2;
-        } else if (
-                (argc > arg_processing + 1)
-                && strcmp(argv[arg_processing], "--enable-team-comms") == 0) {
-            std::string team_comms_value = argv[arg_processing + 1];
-            if (team_comms_value == "true" || team_comms_value == "1") {
-                args.enable_team_comms = true;
-            } else if (team_comms_value == "false" || team_comms_value == "0") {
-                args.enable_team_comms = false;
-            } else {
-                std::cout << "Bad parameter value for --enable-team-comms. Use 'true' or 'false'." << std::endl;
-                show_usage = true;
-                args.parse_result = ParseReturn::failure;
-                break;
-            }
-            args.update_enable_team_comms = true;
-            arg_processing += 2;
-        } else if (
-                (argc > arg_processing + 1)
-                && strcmp(argv[arg_processing], "--enable-full-status") == 0) {
-            std::string full_status_value = argv[arg_processing + 1];
-            if (full_status_value == "true" || full_status_value == "1") {
-                args.enable_full_status = true;
-            } else if (full_status_value == "false" || full_status_value == "0") {
-                args.enable_full_status = false;
-            } else {
-                std::cout << "Bad parameter value for --enable-full-status. Use 'true' or 'false'." << std::endl;
-                show_usage = true;
-                args.parse_result = ParseReturn::failure;
-                break;
-            }
-            args.update_enable_full_status = true;
+            args.update_detail = true;
             arg_processing += 2;
         } else if (
                 strcmp(argv[arg_processing], "-h") == 0
@@ -162,15 +130,11 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                      "   -n, --name       <string>          Resource name "
                      "(routing service instance) i.e. 'Platform_30' \n"
                      "                                      REQUIRED\n"
-                     "   --type           <string>          Node type: 'platform' or 'control' (default: platform)\n"
                      "   -t, --team       <string>          Team ID (DDS Partition) to assign "
-                     "resource to (e.g., A, B, C, or ALL) \n"
-                     "Only applicable to Platforms: \n"
-                     "   --enable-team-comms <bool>        Enable (true) or disable (false) "
-                     "Platform to Platform topic routes within team.\n"
-                     "   --enable-full-status <bool>       Enable (true) or disable (false) "
-                     "full-rate platform status data transmission.\n"
-                     "                                      When disabled, only 1Hz status is transmitted.\n"
+                     "platform to (e.g., A, B, C, or ALL) \n"
+                     "   --detail <bool>                   Enable (true) or disable (false) "
+                     "detailed platform status data transmission.\n"
+                     "                                      When disabled, only primary status is transmitted.\n"
                      "\n"
                      "Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.\n"
                      "      Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh\n"

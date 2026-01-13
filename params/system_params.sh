@@ -112,10 +112,10 @@ export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport
 
 # Platform Status Topics that will be published by default such as Position/high level status
 # Downsampled to 1 HZ
-export PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL=PlatformStatus
+export PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL=PlatformPrimaryStatus
 
 # Platform Status Topics to be enabled dynamically, FULL rate
-export PLATFORM_FULL_STATUS_CHANNEL=NULL
+export PLATFORM_FULL_STATUS_CHANNEL=PlatformDetailStatus
 
 # Platform topics to be shared within the Team
 export PLATFORM_TEAM_CHANNEL=PlatformData
