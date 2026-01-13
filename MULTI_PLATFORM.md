@@ -138,19 +138,22 @@ Control routers at runtime using the [RemoteAdmin tool](https://community.rti.co
 
 ```bash
 cd tools/remote_admin
-# Enable TEAM on Platform_30
-./send_remote_cmd.sh -n Platform_30 --team true
+# Assign Platform_30 to team A
+./send_remote_cmd.sh -n Platform_30 -t A
 
-# Assign Platform_31 to team 5
-./send_remote_cmd.sh -n Platform_31 --type platform -g 5
+# Assign Platform_31 to team B
+./send_remote_cmd.sh -n Platform_31 -t B
+
+# Enable detailed status on Platform_30
+./send_remote_cmd.sh -n Platform_30 --detail true
 ```
 
 RemoteAdmin allows you to:
 - Assign platforms to different teams for isolation
-- Enable full-rate status telemetry on-demand
+- Enable detailed status telemetry on-demand
 - Control data flow without restarting services
 
-See [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) and [REMOTE_ENABLE_FULL_STATUS.md](REMOTE_ENABLE_FULL_STATUS.md) for detailed examples.
+See [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) and [REMOTE_ENABLE_DETAIL_STATUS.md](REMOTE_ENABLE_DETAIL_STATUS.md) for detailed examples.
 
 ## Scaling to More Platforms
 

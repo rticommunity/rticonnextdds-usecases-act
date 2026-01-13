@@ -170,12 +170,12 @@ Now use RemoteAdmin to assign both platforms to team "A":
 **Assign Platform_30 to team A:**
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_30 --type platform --team A
+./send_remote_cmd.sh -n Platform_30 -t A
 ```
 
 **Assign Platform_31 to team A:**
 ```bash
-./send_remote_cmd.sh -n Platform_31 --type platform --team A
+./send_remote_cmd.sh -n Platform_31 -t A
 ```
 
 Expected output for each command:
@@ -190,7 +190,7 @@ Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qo
 
 Waiting for a matching replier...
 Sending Remote TEAM UPDATE: 
-resource_identifier: /routing_services/Platform_30/domain_routes/dr/participants/platform_wan
+resource_identifier: /routing_services/platform/domain_routes/dr/participants/team_wan
 Partition XML being sent:
 <participant><domain_participant_qos><partition><name><element>A</element></name></partition></domain_participant_qos></participant>
 
@@ -209,15 +209,15 @@ To demonstrate team isolation, you can assign platforms to different teams:
 
 ```bash
 cd tools/remote_admin
-./send_remote_cmd.sh -n Platform_30 --team A --type platform
-./send_remote_cmd.sh -n Platform_31 --team B --type platform
+./send_remote_cmd.sh -n Platform_30 -t A
+./send_remote_cmd.sh -n Platform_31 -t B
 ```
 
 Now Platform_30 (team A) and Platform_31 (team B) cannot communicate with each other via PLATFORM_TEAM_CHANNEL, but both still communicate with Control.
 
 ## What's Happening Behind the Scenes
 
-When you run `./send_remote_cmd.sh -n Platform_30 --team A`:
+When you run `./send_remote_cmd.sh -n Platform_30 -t A`:
 
 1. **RemoteAdmin constructs a resource identifier**:
    ```
@@ -266,7 +266,7 @@ To stop all processes, press `Ctrl+C` in each terminal:
 
 ## Related Examples
 
-- **REMOTE_ENABLE_FULL_STATUS.md**: Enable on-demand high-bandwidth telemetry
+- **REMOTE_ENABLE_DETAIL_STATUS.md**: Enable on-demand high-bandwidth telemetry
 - **QUICKSTART.md**: Basic setup and initial testing
 - **MULTI_PLATFORM.md**: Scaling to many platforms
 

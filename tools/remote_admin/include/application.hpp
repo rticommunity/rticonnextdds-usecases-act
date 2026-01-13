@@ -131,7 +131,7 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                      "(routing service instance) i.e. 'Platform_30' \n"
                      "                                      REQUIRED\n"
                      "   -t, --team       <string>          Team ID (DDS Partition) to assign "
-                     "platform to (e.g., A, B, C, or ALL) \n"
+                     "platform to (e.g., A, B, C) \n"
                      "   --detail <bool>                   Enable (true) or disable (false) "
                      "detailed platform status data transmission.\n"
                      "                                      When disabled, only primary status is transmitted.\n"

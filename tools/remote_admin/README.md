@@ -146,12 +146,9 @@ Usage:
    -q, --qos        <string>          QOS Profile (library::profile)
    -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_30' 
                                       REQUIRED
-   --type           <string>          Node type: 'platform' or 'control' (default: platform)
-   -t, --team       <string>          Team ID (DDS Partition) to assign resource to (e.g., A, B, C, or ALL for default) 
-Only applicable to Platforms: 
-   --enable-team-comms <bool>        Enable (true) or disable (false) Platform to Platform topic routes within team.
-   --enable-full-status <bool>       Enable (true) or disable (false) full-rate platform status data transmission.
-                                      When disabled, only 1Hz status is transmitted.
+   -t, --team       <string>          Team ID (DDS Partition) to assign platform to (e.g., A, B, C) 
+   --detail <bool>                   Enable (true) or disable (false) detailed platform status data transmission.
+                                      When disabled, only primary status is transmitted.
 
 Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
       Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh
@@ -165,17 +162,15 @@ Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
 
 - `-d, --domain <int>`: Domain ID for remote administration (default: 100)
 - `-q, --qos <string>`: QoS profile to use (default: REMOTE_ADMIN::remote_admin_requester_qos)
-- `--type <string>`: Node type - either "platform" or "control" (default: platform). This determines which routing service configuration and participant names are used in the resource identifier path.
-- `-t, --team <string>`: Team ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the resource to. Use letter designations (A, B, C, etc.) or "ALL" for the default team.
-- `--enable-team-comms <bool>`: Enable (true) or disable (false) platform-to-platform communication routes (Platform nodes only)
-- `--enable-full-status <bool>`: Enable (true) or disable (false) full-rate platform status transmission (Platform nodes only). When disabled, only 1Hz status is transmitted to conserve bandwidth.
+- `-t, --team <string>`: Team ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the platform to. Use letter designations (A, B, C, etc.). By default, platforms use unique identifiers with no team assignment.
+- `--detail <bool>`: Enable (true) or disable (false) detailed status transmission. When disabled, only primary status is transmitted to conserve bandwidth.
 
 ## Usage Examples
 
 For complete step-by-step walkthroughs demonstrating RemoteAdmin usage, see:
 
 - **[REMOTE_CONTROL_TEAM.md](../../REMOTE_CONTROL_TEAM.md)**: Dynamically assign platforms to teams and verify isolation
-- **[REMOTE_ENABLE_FULL_STATUS.md](../../REMOTE_ENABLE_FULL_STATUS.md)**: Enable on-demand high-bandwidth telemetry from platforms
+- **[REMOTE_ENABLE_DETAIL_STATUS.md](../../REMOTE_ENABLE_DETAIL_STATUS.md)**: Enable on-demand high-bandwidth telemetry from platforms
 
 ## How It Works
 

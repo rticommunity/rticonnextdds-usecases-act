@@ -1,10 +1,10 @@
-# Remote Enable Full Status
+# Remote Enable Detailed Status
 
-This example demonstrates using the RemoteAdmin tool to dynamically enable full-rate platform status transmission from Control side. This allows Control stations to request high-bandwidth, detailed telemetry from platforms on-demand without having this data flow continuously.
+This example demonstrates using the RemoteAdmin tool to dynamically enable detailed platform status transmission from Control side. This allows Control stations to request high-bandwidth, detailed telemetry from platforms on-demand without having this data flow continuously.
 
 ## Architecture Background
 
-By default, platforms only transmit low-bandwidth 1Hz status data via `PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL`. The `PLATFORM_FULL_STATUS_CHANNEL` session provides full-rate, high-bandwidth telemetry including:
+By default, platforms only transmit low-bandwidth primary status data via `PLATFORM_PRIMARY_STATUS_CHANNEL`. The `PLATFORM_DETAIL_STATUS_CHANNEL` session provides detailed, high-bandwidth telemetry including:
 - Full sensor suite data
 - High-rate position updates
 - Detailed diagnostics
@@ -23,33 +23,33 @@ See the main README.md for how to start these components.
 ## Scenario Overview
 
 **Initial State:**
-- Platforms transmit 1Hz status only via `PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL`
-- Full status session `platform_to_wan_full_status` is disabled
+- Platforms transmit primary status only via `PLATFORM_PRIMARY_STATUS_CHANNEL`
+- Detailed status session `platform_to_wan_detail_status` is disabled
 - Control receives minimal bandwidth telemetry
 
-**After Enabling Full Status:**
-- Control enables `PLATFORM_FULL_STATUS_CHANNEL` on target platform(s)
-- Platform begins transmitting full-rate status data
+**After Enabling Detailed Status:**
+- Control enables `PLATFORM_DETAIL_STATUS_CHANNEL` on target platform(s)
+- Platform begins transmitting detailed status data
 - Control receives detailed, high-bandwidth telemetry
 
 ## Step 1: Verify Initial State
 
-Before enabling full status, verify that only 1Hz status is being received at Control_20.
+Before enabling detailed status, verify that only primary status is being received at Control_20.
 
 ```bash
 # In Control_20 terminal window, observe status message rate
-# You should see status updates at approximately 1Hz only
+# You should see only PlatformPrimaryStatus updates
 ```
 
-## Step 2: Enable Full Status from Control
+## Step 2: Enable Detailed Status from Control
 
-From the Control side, use RemoteAdmin to enable full status transmission on Platform_30:
+From the Control side, use RemoteAdmin to enable detailed status transmission on Platform_30:
 
 ```bash
 cd tools/remote_admin
 
-# Enable full status on Platform_30
-./send_remote_cmd.sh -n Platform_30 --enable-full-status true
+# Enable detailed status on Platform_30
+./send_remote_cmd.sh -n Platform_30 --detail true
 ```
 
 Expected output:
@@ -63,20 +63,20 @@ Exported NDDS_QOS_PROFILES: rticonnextdds-usecases-act/config/qos/remoteadmin_qo
 =============================================================
 
 Waiting for a matching replier...
-Sending Remote Admin SESSION UPDATE:
-resource_identifier: /routing_services/platform/domain_routes/dr/sessions/platform_to_wan_full_status/state
+Sending Remote Admin SESSION UPDATE: 
+resource_identifier: /routing_services/platform/domain_routes/dr/sessions/platform_to_wan_detail_status/state
 application_name: Platform_30
 Enabling Session
 Command returned: OK
 ```
 
-**Note**: The RemoteAdmin command targets a specific platform using the `-n` (name) parameter. This ensures only the specified platform (Platform_30) enables its full status transmission. Control can selectively enable full status on individual platforms as needed.
+**Note**: The RemoteAdmin command targets a specific platform using the `-n` (name) parameter. This ensures only the specified platform (Platform_30) enables its detailed status transmission. Control can selectively enable detailed status on individual platforms as needed.
 
 ## Expected Results
 
-After enabling full status:
+After enabling detailed status:
 
-1. **Platform_30** routing service enables the `platform_to_wan_full_status` session
+1. **Platform_30** routing service enables the `platform_to_wan_detail_status` session
 2. **Control_20** begins receiving high-rate, detailed telemetry from Platform_30
 3. Status data rate increases significantly (full sensor suite, high-rate position)
 4. **Platform_31** continues transmitting only 1Hz status (unchanged)
@@ -117,26 +117,26 @@ Platform_30 Domain (30)              WAN Domain (200)              Control Domai
 
 The RemoteAdmin command operates over **ADMIN_DOMAIN (100)** and updates the `platform_to_wan_full_status` session state on Platform_30's routing service from DISABLED to ENABLED.
 
-## Disable Full Status (Optional)
+## Disable Detailed Status (Optional)
 
-To disable full status and return to 1Hz-only transmission:
+To disable detailed status and return to primary-only transmission:
 
 ```bash
 cd tools/remote_admin
 
-# Disable full status on Platform_30
-./send_remote_cmd.sh -n Platform_30 --enable-full-status false
+# Disable detailed status on Platform_30
+./send_remote_cmd.sh -n Platform_30 --detail false
 ```
 
-Control_20 will revert to receiving only 1Hz status data from Platform_30, reducing bandwidth consumption.
+Control_20 will revert to receiving only primary status data from Platform_30, reducing bandwidth consumption.
 
 ## Key Concepts
 
-- **On-Demand Telemetry**: Full status is disabled by default and only enabled when detailed monitoring is required
+- **On-Demand Telemetry**: Detailed status is disabled by default and only enabled when detailed monitoring is required
 - **Bandwidth Conservation**: Prevents continuous high-bandwidth data transmission when not needed
-- **Selective Monitoring**: Control can enable full status on specific platforms independently
-- **Platform-Side Session**: The `--enable-full-status` command updates Platform routing service sessions (not Control side)
-- **Session Name**: Updates the `platform_to_wan_full_status` session on the platform's routing service
+- **Selective Monitoring**: Control can enable detailed status on specific platforms independently
+- **Platform-Side Session**: The `--detail` command updates Platform routing service sessions (not Control side)
+- **Session Name**: Updates the `platform_to_wan_detail_status` session on the platform's routing service
 
 ## Related Documentation
 

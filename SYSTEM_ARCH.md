@@ -165,7 +165,7 @@ To meet US-C2:
 - **DTR-07 (Discovery Mechanism):** The WAN_DOMAIN shall utilize unicast discovery between Platform and Control nodes possibly utilizing Cloud Discovery Service (CDS) in combination with DNS host names if necessary.
 - **DTR-08 (Phased Initialization):** The Routing Service shall implement a Phased Initialization strategy within the WAN_DOMAIN where:
   - **Primary Status Channels (PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL)** are enabled by default on startup, providing baseline telemetry to Control
-  - **Full Status Channels (PLATFORM_FULL_STATUS_CHANNEL)** remain disabled by default and can be enabled later by Control via Remote Administration to provide additional high-bandwidth topics when detailed monitoring is required
+  - **Detail Status Channels (PLATFORM_DETAIL_STATUS_CHANNEL)** remain disabled by default and can be enabled later by Control via Remote Administration to provide additional high-bandwidth topics when detailed monitoring is required
   - **Team Channels (PLATFORM_TEAM_CHANNEL)** are enabled by default, but platform-to-platform discovery is constrained by unique partition identifiers until Platforms are explicitly assigned to a shared team partition via Remote Administration commands
   
   This approach prevents network saturation from the simultaneous broadcast of hundreds of unassigned endpoints while enabling controlled, on-demand activation of high-fidelity data routes and team collaboration
@@ -214,7 +214,7 @@ The ACT architecture defines three primary channel types, each with specific QoS
 | CONTROL_COMMANDS_CHANNEL | EVENT_QOS | Control → Platform<br/>Utilizes Content Filtered Topics to target specific platforms (e.g., target_id = "Platform_30"), preventing the entire team from processing commands meant for a single agent. | ControlCommand<br/>MissionAssignment<br/>ReturnToBase |
 | PLATFORM_EVENTS_CHANNEL | EVENT_QOS | Platform → Control<br/>Used for critical alerts that must be delivered but occur infrequently. | ContactReport<br/>HazardDetection<br/>SystemFailure<br/>ControlCommandAck |
 | PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL | STATUS_QOS | Platform → Control<br/>Low-bandwidth, always-on status at 1Hz. This is the default status channel enabled at startup. | Fuel<br/>Battery<br/>Heading<br/>Speed<br/>Position (1Hz) |
-| PLATFORM_FULL_STATUS_CHANNEL | STATUS_QOS | Platform → Control<br/>High-bandwidth, on-demand full-rate status. Disabled by default, enabled via remote admin (FULL_STATUS_ENABLE) for detailed monitoring. | Full sensor suite<br/>High-rate position<br/>Detailed diagnostics |
+| PLATFORM_DETAIL_STATUS_CHANNEL | STATUS_QOS | Platform → Control<br/>High-bandwidth, on-demand detailed status. Disabled by default, enabled via remote admin for detailed monitoring. | Full sensor suite<br/>High-rate position<br/>Detailed diagnostics |
 | PLATFORM_TEAM_CHANNEL | STATUS_QOS | Platform ↔ Platform<br/>Used for peer-to-peer team coordination data. Disabled by default, enabled via remote admin (TEAM_ENABLE) when platforms are assigned to a team. | Position<br/>TeamStatus<br/>CoordinationData |
 
 **Implementation Mechanism:**

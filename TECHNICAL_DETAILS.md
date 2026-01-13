@@ -67,7 +67,7 @@ rticonnextdds-usecases-act/
 ├── QUICKSTART.md                # Basic example
 ├── MULTI_PLATFORM.md            # Multi-platform example
 ├── REMOTE_CONTROL_TEAM.md      # Team assignment example
-├── REMOTE_ENABLE_FULL_STATUS.md # On-demand telemetry example
+├── REMOTE_ENABLE_DETAIL_STATUS.md # On-demand telemetry example
 ├── TECHNICAL_DETAILS.md         # This file
 └── README.md                    # Main entry point
 ```
@@ -278,7 +278,7 @@ Data channels provide an **abstraction layer** for routing configuration. Instea
 **Example**:
 ```bash
 export PLATFORM_EVENTS_CHANNEL=PlatformCommandAck,ContactReport,Alert
-export PLATFORM_FULL_STATUS_CHANNEL=Telemetry
+export PLATFORM_DETAIL_STATUS_CHANNEL=Telemetry
 export PLATFORM_TEAM_CHANNEL=PlatformData
 ```
 
@@ -293,7 +293,7 @@ export PLATFORM_TEAM_CHANNEL=PlatformData
 
 #### Platform Status (Downsampled)
 **Variables**: 
-- `PLATFORM_FULL_STATUS_CHANNEL` - No downsampling
+- `PLATFORM_DETAIL_STATUS_CHANNEL` - No downsampling
 - `PLATFORM_PRIMARY_STATUS_1HZ_CHANNEL` - 1 Hz updates
 
 **QoS**: BEST_EFFORT (Status QoS)  
@@ -385,7 +385,7 @@ No XML file changes required!
   - [QUICKSTART](QUICKSTART.md): 1 Platform + 1 C2
   - [MULTI_PLATFORM](MULTI_PLATFORM.md): 2 Platforms + 1 C2
   - [REMOTE_CONTROL_TEAM](REMOTE_CONTROL_TEAM.md): Team assignment
-  - [REMOTE_ENABLE_FULL_STATUS](REMOTE_ENABLE_FULL_STATUS.md): On-demand telemetry
+  - [REMOTE_ENABLE_DETAIL_STATUS](REMOTE_ENABLE_DETAIL_STATUS.md): On-demand telemetry
 - **Architecture Diagrams**: See `docs/images/` for system visuals
 
 ### Configuration Files

@@ -142,7 +142,7 @@ to use the software.
         Enable on-demand for full diagnostic data.
       -->
       <element>
-        <name>FULL_STATUS_ENABLE</name>
+        <name>DETAIL_STATUS_ENABLE</name>
         <value>false</value>
       </element>
 
@@ -183,7 +183,7 @@ to use the software.
 
       <element>
         <!-- PLATFORM -> Control Periodic- FULL RATE -->
-        <name>PLATFORM_FULL_STATUS_CHANNEL</name>
+        <name>PLATFORM_DETAIL_STATUS_CHANNEL</name>
         <value>NULL</value>
       </element>
 
@@ -384,11 +384,11 @@ to use the software.
         <auto_topic_route name="platform_status_filter">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="control_wan">
-            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_DETAIL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(WAN_STATUS_QOS)" />
           </input>
           <output participant="control_lan">
-            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_DETAIL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(CONTROL_STATUS_QOS)" />
           </output>
         </auto_topic_route>
@@ -535,7 +535,7 @@ to use the software.
         </domain_participant_qos>
       </participant>
 
-      <session name="platform_to_wan_full_status" enabled="$(FULL_STATUS_ENABLE)">
+      <session name="platform_to_wan_detail_status" enabled="$(DETAIL_STATUS_ENABLE)">
 
         <!-- Internal LAN Partition to match with ALL Publishers -->
         <subscriber_qos>
@@ -559,11 +559,11 @@ to use the software.
         <auto_topic_route name="platform_status_route">
           <publish_with_original_info>true</publish_with_original_info>
           <input participant="platform_lan">
-            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_DETAIL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datareader_qos base_name="$(PLATFORM_STATUS_QOS)" />
           </input>
           <output participant="platform_wan">
-            <allow_topic_name_filter>$(PLATFORM_FULL_STATUS_CHANNEL)</allow_topic_name_filter>
+            <allow_topic_name_filter>$(PLATFORM_DETAIL_STATUS_CHANNEL)</allow_topic_name_filter>
             <datawriter_qos base_name="$(WAN_STATUS_QOS)" />
           </output>
         </auto_topic_route>

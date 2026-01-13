@@ -31,7 +31,7 @@ using namespace RTI::Service::Admin;
 static constexpr unsigned int WAIT_TIMEOUT_SEC_MAX = 10;
 
 // Session names
-static const std::string PLATFORM_TO_WAN_FULL_STATUS_SESSION = "platform_to_wan_full_status";
+static const std::string PLATFORM_TO_WAN_DETAIL_STATUS_SESSION = "platform_to_wan_detail_status";
 
 // Participant and routing service configuration names
 static const std::string PLATFORM_WAN_PARTICIPANT = "platform_wan";
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
             send_session_update(
                     requester,
                     arguments,
-                    PLATFORM_TO_WAN_FULL_STATUS_SESSION,
+                    PLATFORM_TO_WAN_DETAIL_STATUS_SESSION,
                     RS_CONFIG_NAME_PLATFORM);
         }
 

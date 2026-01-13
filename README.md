@@ -29,7 +29,7 @@ git submodule update --init --recursive
 - **[Quick Start](QUICKSTART.md)** - Single platform + Control communication (15 min)
 - **[Multi-Platform](MULTI_PLATFORM.md)** - Two platforms with TEAM communication (20 min)
 - **[Team Assignment](REMOTE_CONTROL_TEAM.md)** - Multi-tenant logical isolation (20 min)
-- **[Enable Full Status](REMOTE_ENABLE_FULL_STATUS.md)** - On-demand high-bandwidth telemetry (15 min)
+- **[Enable Detailed Status](REMOTE_ENABLE_DETAIL_STATUS.md)** - On-demand high-bandwidth telemetry (15 min)
 
 ### Technical Details
 
