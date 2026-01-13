@@ -25,13 +25,13 @@ Open **4 terminals** and run the following commands from the repository root:
 ### Terminal 1: Platform 30 Router
 ```bash
 cd scripts
-./start_platform30_router.sh
+./start_platform_router.sh --id 30
 ```
 
 ### Terminal 2: Platform 30 Simulator
 ```bash
 cd scripts
-./start_platform30_sim.sh
+./start_platform_sim.sh --id 30
 ```
 
 ### Terminal 3: Control-20 Router

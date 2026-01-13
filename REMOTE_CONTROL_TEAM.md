@@ -95,7 +95,7 @@ In this example, we will:
 
 ```bash
 cd scripts
-./start_platform30_sim.sh
+./start_platform_sim.sh --id 30
 ```
 
 You should see output indicating the simulator is publishing `PlatformData`:
@@ -110,7 +110,7 @@ Publishing PlatformData with Session ID 1
 
 ```bash
 cd scripts
-./start_platform30_router.sh
+./start_platform_router.sh --id 30
 ```
 
 The routing service will start and bridge Platform_30's platform domain to the WAN domain. Look for:
@@ -123,7 +123,7 @@ RTI Routing Service started
 
 ```bash
 cd scripts
-./start_platform31_sim.sh
+./start_platform_sim.sh --id 31
 ```
 
 Similar output as Platform_30, publishing session data.
@@ -132,7 +132,7 @@ Similar output as Platform_30, publishing session data.
 
 ```bash
 cd scripts
-./start_platform31_router.sh
+./start_platform_router.sh --id 31
 ```
 
 ### Terminal 5: Start Control Simulator

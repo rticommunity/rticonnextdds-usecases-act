@@ -30,25 +30,25 @@ Open **6 terminals** and run the following commands from the repository root:
 ### Terminal 1: Platform 30 Router
 ```bash
 cd scripts
-./start_platform30_router.sh
+./start_platform_router.sh --id 30
 ```
 
 ### Terminal 2: Platform 30 Simulator
 ```bash
 cd scripts
-./start_platform30_sim.sh
+./start_platform_sim.sh --id 30
 ```
 
 ### Terminal 3: Platform 31 Router
 ```bash
 cd scripts
-./start_platform31_router.sh
+./start_platform_router.sh --id 31
 ```
 
 ### Terminal 4: Platform 31 Simulator
 ```bash
 cd scripts
-./start_platform31_sim.sh
+./start_platform_sim.sh --id 31
 ```
 
 ### Terminal 5: Control-20 Router
@@ -154,35 +154,34 @@ See [REMOTE_CONTROL_TEAM.md](REMOTE_CONTROL_TEAM.md) and [REMOTE_ENABLE_FULL_STA
 
 ## Scaling to More Platforms
 
-To add Platform 32:
+Adding additional platforms is trivial. To add Platform 32:
 
-1. Copy an existing platform param file:
-   ```bash
-   cd params
-   cp platform_30_params.sh platform_32_params.sh
-   ```
+**Terminal 1: Platform 32 Router**
+```bash
+cd scripts
+./start_platform_router.sh --id 32
+```
 
-2. Edit `platform_32_params.sh`:
-   - Change `PLATFORM_DOMAIN=32`
-   - Change `ROUTER_NAME="Platform_32"`
-   - Change `SESSION_ID=32`
+**Terminal 2: Platform 32 Simulator**
+```bash
+cd scripts
+./start_platform_sim.sh --id 32
+```
 
-3. Copy and update start scripts:
-   ```bash
-   cp start_platform30_router.sh start_platform32_router.sh
-   cp start_platform30_sim.sh start_platform32_sim.sh
-   # Update both to source platform_32_params.sh
-   ```
+That's it! The scripts automatically:
+- Generate `ROUTER_NAME="Platform_32"`
+- Set `PLATFORM_DOMAIN=32`
+- Set `SESSION_ID=32`
+- Configure all other parameters
 
-4. Run the new scripts in two additional terminals
+You can add platforms 30-99 without creating any new files.
 
 ## Configuration Details
 
 All configurations are in `params/`:
-- `platform_30_params.sh`: Platform_30 on domain 30
-- `platform_31_params.sh`: Platform_31 on domain 31
-- `control_20_params.sh`: Control_20 on domain 20
 - `system_params.sh`: WAN timing, channel setup and network parameters
+- `control_20_params.sh`: Control_20 on domain 20
+- Platform configs are dynamic (via `start_platform_sim.sh --id <num>` and `start_platform_router.sh --id <num>`)
 
 QoS profiles are in `config/qos/`:
 - `lan_qos_lib.xml`: LAN domain QoS

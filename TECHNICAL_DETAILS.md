@@ -36,14 +36,10 @@ rticonnextdds-usecases-act/
 │       └── routing_service_config.xml
 ├── params/                      # Parameter files
 │   ├── system_params.sh        # System-wide parameters
-│   ├── platform_30_params.sh   # Platform 30 configuration
-│   ├── platform_31_params.sh   # Platform 31 configuration
-│   └── control_20_params.sh         # Control-20 configuration
-├── scripts/                    # Launch scripts and remote admin wrapper
-│   ├── start_platform30_router.sh
-│   ├── start_platform30_sim.sh
-│   ├── start_platform31_router.sh
-│   ├── start_platform31_sim.sh
+│   └── control_20_params.sh    # Control-20 configuration
+├── scripts/                    # Launch scripts
+│   ├── start_platform_router.sh  # Platform router (--id 30-99)
+│   ├── start_platform_sim.sh     # Platform simulator (--id 30-99)
 │   ├── start_control_20_router.sh
 │   └── start_control_20_sim.sh
 ├── node_sim/                    # Node simulator components

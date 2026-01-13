@@ -30,6 +30,12 @@ to use the software.
       <struct name="platform_status">
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>
+      <struct name="platform_primary_status">
+        <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
+      </struct>
+      <struct name="platform_detail_status">
+        <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
+      </struct>
       <struct name="platform_data">
         <member name="msg" type="nonBasic" nonBasicTypeName="base_type" />
       </struct>

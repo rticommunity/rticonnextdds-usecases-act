@@ -88,19 +88,18 @@ class C2Sim:
     async def read_status_data(self):
       print("Waiting for Status data")
       async for data in self.platform_status_reader.take_data_async():
-        print(f'- Received Status data with Session ID: {data["msg.session[1]"]}')
+        print(f'- Received PlatformStatus from {data["msg.source"]}')
        
 
     async def read_cmd_ack_data(self):
       print("Waiting for CommandAck data")
       async for data in self.platform_cmd_ack_reader.take_data_async():
-        print(f'- Received CommandAck data with Session ID: {data["msg.session[1]"]}')
+        print(f'- Received PlatformCommandAck from {data["msg.source"]}')
 
     async def read_contact_report_data(self):
       print("Waiting for ContactReport data")
       async for data in self.contact_report_reader.take_data_async():
-        print(
-            f'- Received ContactReport Data: {data["msg.session[1]"]} from source: {data["msg.source"]} type: {data["msg.source_type"]}')
+        print(f'- Received ContactReport from {data["msg.source"]}')
 
     async def write_cmd(self):
       # Create Command sample
