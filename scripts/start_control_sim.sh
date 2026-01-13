@@ -114,7 +114,7 @@ fi
 
 # Set fixed configuration values
 TYPE="control"
-LAN_QOS_PROFILE="LAN::domain_participant_qos"
+LAN_QOS_PROFILE="LAN_QOS_LIB::domain_participant_qos"
 DOMAIN_ID=$CONTROL_DOMAIN
 
 # XML Files for Control applications

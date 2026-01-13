@@ -66,64 +66,64 @@ to use the software.
       <!-- LAN QOS -->
       <element>
         <name>PLATFORM_PARTICIPANT_QOS</name>
-        <value>LAN::domain_participant_qos</value>
+        <value>LAN_QOS_LIB::platform_lan_participant_qos</value>
       </element>
 
       <element>
         <name>PLATFORM_EVENT_QOS</name>
-        <value>LAN::event_qos</value>
+        <value>LAN_QOS_LIB::platform_event_qos</value>
       </element>
 
       <element>
         <name>PLATFORM_STATUS_QOS</name>
-        <value>LAN::status_qos</value>
+        <value>LAN_QOS_LIB::platform_status_qos</value>
       </element>
 
       <element>
         <name>PLATFORM_STATUS_1SEC_QOS</name>
-        <value>LAN::status_1sec_qos</value>
+        <value>LAN_QOS_LIB::platform_status_1sec_qos</value>
       </element>
 
       <element>
         <name>CONTROL_PARTICIPANT_QOS</name>
-        <value>LAN::domain_participant_qos</value>
+        <value>LAN_QOS_LIB::control_lan_participant_qos</value>
       </element>
 
       <element>
         <name>CONTROL_EVENT_QOS</name>
-        <value>LAN::event_qos</value>
+        <value>LAN_QOS_LIB::control_event_qos</value>
       </element>
 
       <element>
         <name>CONTROL_STATUS_QOS</name>
-        <value>LAN::status_qos</value>
+        <value>LAN_QOS_LIB::control_status_qos</value>
       </element>
 
 
       <!-- WAN QOS -->
       <element>
         <name>WAN_PLATFORM_PARTICIPANT_QOS</name>
-        <value>WAN::platform_participant_udpv4_qos</value>
+        <value>WAN_QOS_LIB::platform_participant_udpv4_qos</value>
       </element>
 
       <element>
         <name>WAN_CONTROL_PARTICIPANT_QOS</name>
-        <value>WAN::control_participant_udpv4_qos</value>
+        <value>WAN_QOS_LIB::control_participant_udpv4_qos</value>
       </element>
 
       <element>
         <name>WAN_STATUS_QOS</name>
-        <value>WAN::status_qos</value>
+        <value>WAN_QOS_LIB::status_qos</value>
       </element>
 
       <element>
         <name>WAN_EVENT_QOS</name>
-        <value>WAN::event_qos</value>
+        <value>WAN_QOS_LIB::event_qos</value>
       </element>
 
       <element>
         <name>WAN_TEAM_QOS</name>
-        <value>WAN::status_qos</value>
+        <value>WAN_QOS_LIB::status_qos</value>
       </element>
 
 

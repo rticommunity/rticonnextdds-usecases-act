@@ -15,7 +15,7 @@ to use the software.
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_dds_qos_profiles.xsd">
 
-  <qos_library name="LAN">
+  <qos_library name="LAN_QOS_LIB">
     <!--              
     ____________________________________________________________________________
 
@@ -23,11 +23,20 @@ to use the software.
     ____________________________________________________________________________
     -->
 
-    <qos_profile name="domain_participant_qos">
+    <qos_profile name="platform_lan_participant_qos">
 
       <domain_participant_qos>
 
-        <!-- Match QoS in your LAN -->
+        <!-- Match QoS in your Platform LAN -->
+
+      </domain_participant_qos>
+    </qos_profile>
+
+    <qos_profile name="control_lan_participant_qos">
+
+      <domain_participant_qos>
+
+        <!-- Match QoS in your Control LAN -->
 
       </domain_participant_qos>
     </qos_profile>
@@ -70,7 +79,7 @@ to use the software.
       </datareader_qos>
     </qos_profile>
 
-    <qos_profile name="status_1sec_qos" base_name="LAN::status_qos">
+    <qos_profile name="status_1sec_qos" base_name="LAN_QOS_LIB::status_qos">
 
       <!-- Inheriting the status_qos profile and just adding a time based filter to downsample -->
 
@@ -94,6 +103,21 @@ to use the software.
     <qos_profile name="event_qos" base_name="BuiltinQosLib::Generic.Common">
       <!-- Update here per an Aperiodic Command Data Pattern/your system -->
 
+    </qos_profile>
+
+    <qos_profile name="platform_event_qos" base_name="LAN_QOS_LIB::event_qos">
+    </qos_profile>
+
+    <qos_profile name="control_event_qos" base_name="LAN_QOS_LIB::event_qos">
+    </qos_profile>
+
+    <qos_profile name="platform_status_qos" base_name="LAN_QOS_LIB::status_qos">
+    </qos_profile>
+
+    <qos_profile name="platform_status_1sec_qos" base_name="LAN_QOS_LIB::status_1sec_qos">
+    </qos_profile>
+
+    <qos_profile name="control_status_qos" base_name="LAN_QOS_LIB::status_qos">
     </qos_profile>
 
   </qos_library>

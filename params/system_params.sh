@@ -145,3 +145,75 @@ CONTROL_COMMAND_FILTER_MATCH = $CONTROL_COMMAND_FILTER_MATCH
 -----------------------------DATA CHANNELS--------------------------------------"
 
 ################################################################################
+#                             QOS PROFILE NAMES                                #
+################################################################################
+# These specify which QoS profiles from the XML files to use for each 
+# participant and endpoint type
+
+# Domain Participant QoS Profiles
+export PLATFORM_PARTICIPANT_QOS=LAN_QOS_LIB::platform_lan_participant_qos      # Platform local LAN
+export CONTROL_PARTICIPANT_QOS=LAN_QOS_LIB::control_lan_participant_qos        # Control local LAN
+
+# WAN Platform Participant QoS - Choose IPv4 or IPv6 transport
+export WAN_PLATFORM_PARTICIPANT_QOS=WAN_QOS_LIB::platform_participant_udpv4_qos    # Platform WAN side (IPv4)
+# export WAN_PLATFORM_PARTICIPANT_QOS=WAN_QOS_LIB::platform_participant_udpv6_qos  # Platform WAN side (IPv6) - uncomment to use
+
+# WAN Control Participant QoS - Choose IPv4 or IPv6 transport
+export WAN_CONTROL_PARTICIPANT_QOS=WAN_QOS_LIB::control_participant_udpv4_qos      # Control WAN side (IPv4)
+# export WAN_CONTROL_PARTICIPANT_QOS=WAN_QOS_LIB::control_participant_udpv6_qos    # Control WAN side (IPv6) - uncomment to use
+
+# DataReader/DataWriter QoS Profiles for Events (reliable, persistent)
+export PLATFORM_EVENT_QOS=LAN_QOS_LIB::platform_event_qos    # Platform side events
+export CONTROL_EVENT_QOS=LAN_QOS_LIB::control_event_qos      # Control side events  
+export WAN_EVENT_QOS=WAN_QOS_LIB::event_qos                  # WAN side events
+
+# DataReader/DataWriter QoS Profiles for Status (best-effort, periodic)
+export PLATFORM_STATUS_QOS=LAN_QOS_LIB::platform_status_qos  # Platform side status
+export CONTROL_STATUS_QOS=LAN_QOS_LIB::control_status_qos    # Control side status
+export WAN_STATUS_QOS=WAN_QOS_LIB::status_qos                # WAN side status
+
+# DataReader/DataWriter QoS Profiles for Team communication (partition-based)
+export WAN_TEAM_QOS=WAN_QOS_LIB::status_qos                  # WAN side team coordination
+
+################################################################################
+#                           SESSION ENABLE FLAGS                               #
+################################################################################
+# Control which routing sessions are enabled by default (true/false)
+
+# Enable remote administration interface on ADMIN_DOMAIN (default: true)
+export REMOTE_ADMIN_MODE=true
+
+# Enable detailed debug logging (default: false)
+export DEBUG_MODE=false
+
+# Enable platform detailed status transmission (disabled by default to save bandwidth)
+# Can be dynamically enabled via RemoteAdmin --detail command
+export DETAIL_STATUS_ENABLE=false
+
+# Enable platform-to-platform team communication (disabled by default)
+# Platforms must be assigned to teams via RemoteAdmin -t command
+export TEAM_ENABLE=false
+
+echo "
+-----------------------------QOS PROFILES---------------------------------------
+PLATFORM_PARTICIPANT_QOS = $PLATFORM_PARTICIPANT_QOS
+CONTROL_PARTICIPANT_QOS = $CONTROL_PARTICIPANT_QOS
+WAN_PLATFORM_PARTICIPANT_QOS = $WAN_PLATFORM_PARTICIPANT_QOS
+WAN_CONTROL_PARTICIPANT_QOS = $WAN_CONTROL_PARTICIPANT_QOS
+PLATFORM_EVENT_QOS = $PLATFORM_EVENT_QOS
+CONTROL_EVENT_QOS = $CONTROL_EVENT_QOS
+WAN_EVENT_QOS = $WAN_EVENT_QOS
+PLATFORM_STATUS_QOS = $PLATFORM_STATUS_QOS
+CONTROL_STATUS_QOS = $CONTROL_STATUS_QOS
+WAN_STATUS_QOS = $WAN_STATUS_QOS
+WAN_TEAM_QOS = $WAN_TEAM_QOS
+-----------------------------QOS PROFILES---------------------------------------
+
+-----------------------------SESSION FLAGS--------------------------------------
+REMOTE_ADMIN_MODE = $REMOTE_ADMIN_MODE
+DEBUG_MODE = $DEBUG_MODE
+DETAIL_STATUS_ENABLE = $DETAIL_STATUS_ENABLE
+TEAM_ENABLE = $TEAM_ENABLE
+-----------------------------SESSION FLAGS--------------------------------------"
+
+################################################################################
