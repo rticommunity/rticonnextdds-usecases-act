@@ -128,6 +128,51 @@ Data can flow in multiple patterns:
 
 **RTI Routing Service** acts as a relay mechanism between the *internal* LAN and the *external* WAN DDS Domain:
 
+```mermaid
+graph TB
+    subgraph Node1["Control Node"]
+        subgraph CONTROL["CONTROL_DOMAIN (20)"]
+            C_APP[Control Apps]
+        end
+        RS_C[Routing Service]
+        subgraph WAN_C["WAN Participant"]
+            WAN_CP[WAN_DOMAIN 200]
+        end
+        C_APP <--> RS_C
+        RS_C <--> WAN_CP
+    end
+    
+    subgraph Node2["Platform Node"]
+        subgraph PLATFORM["PLATFORM_DOMAIN (30)"]
+            P_APP[Platform Apps]
+        end
+        RS_P[Routing Service]
+        subgraph WAN_P["WAN Participants"]
+            WAN_CTRL[Control Participant<br/>Domain 200]
+            WAN_TEAM[Team Participant<br/>Domain 200]
+        end
+        P_APP <--> RS_P
+        RS_P --> WAN_CTRL
+        RS_P --> WAN_TEAM
+    end
+    
+    subgraph Network["Wide Area Network"]
+        WAN_NET[WAN_DOMAIN 200<br/>Hub-Spoke + Mesh]
+    end
+    
+    WAN_CP <-->|Commands & Status| WAN_NET
+    WAN_CTRL <-->|Commands & Status| WAN_NET
+    WAN_TEAM <-->|Team Coordination| WAN_NET
+    
+    style CONTROL fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style PLATFORM fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN_C fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style WAN_P fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style Network fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    style RS_C fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+    style RS_P fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+```
+
 **Benefits**:
 - **Network isolation**: DDS domains use unique port ranges, preventing direct communication
 - **Security**: Routing service controls exactly which data flows where
@@ -140,7 +185,7 @@ Data can flow in multiple patterns:
 The system uses **4 separate DDS domains** for network-level isolation:
 
 | Domain Type | Domain IDs | Purpose | Network |
-|-------------|------------|---------|---------||
+|-------------|------------|---------|---------|
 | **PLATFORM_DOMAIN** | 30-100 | Platform local network | LAN |
 | **CONTROL_DOMAIN** | 10-30 | Command & Control network | LAN |
 | **WAN_DOMAIN** | 200 | Wide Area Network (control-to-platform and platform-to-platform) | Satellite, Mesh Radio, etc. |
@@ -253,6 +298,79 @@ These ensure RELIABLE delivery works correctly over high-latency links.
 
 Data channels provide an **abstraction layer** for routing configuration. Instead of modifying XML files for every new topic, you define channels in `config/params/system_params.sh` that team topics by their data pattern and apply appropriate QoS policies.
 
+**Platform Node Perspective:**
+
+```mermaid
+graph TB
+    subgraph Platform["Platform Node"]
+        P_PUB[Publishers]
+    end
+    
+    subgraph Channels["Data Channels"]
+        EVENTS[PLATFORM_EVENTS_CHANNEL<br/>RELIABLE<br/>Acks, Alerts]
+        STATUS[PLATFORM_STATUS_CHANNEL<br/>BEST_EFFORT<br/>Telemetry - Downsampled]
+        TEAM[PLATFORM_TEAM_CHANNEL<br/>BEST_EFFORT<br/>Peer Data]
+    end
+    
+    subgraph Control["Control Node"]
+        C_SUB[Subscribers]
+    end
+    
+    subgraph Peers["Team Members"]
+        PEER_SUB[Subscribers]
+    end
+    
+    P_PUB -->|Critical Events| EVENTS
+    P_PUB -->|Periodic Status| STATUS
+    P_PUB -->|Team Data| TEAM
+    
+    EVENTS -->|Reliable| C_SUB
+    STATUS -->|Best Effort| C_SUB
+    TEAM -->|Best Effort| PEER_SUB
+    
+    style Platform fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style Control fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style Peers fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style Channels fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#000
+    style EVENTS fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    style STATUS fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style TEAM fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+```
+
+> **Note**: Platform status data can be downsampled by the Routing Service to conserve WAN bandwidth (e.g., 1 Hz updates instead of full-rate).
+
+**Control Node Perspective:**
+
+```mermaid
+graph TB
+    subgraph Control["Control Node"]
+        C_PUB[Publishers]
+    end
+    
+    subgraph Channels["Data Channels"]
+        CMD[CONTROL_COMMANDS_CHANNEL<br/>RELIABLE<br/>Targeted Commands]
+        CTRL_EVENTS[CONTROL_EVENTS_CHANNEL<br/>RELIABLE<br/>Mission Updates]
+    end
+    
+    subgraph Platforms["Platform Nodes"]
+        P_SUB[Subscribers]
+    end
+    
+    C_PUB -->|Targeted Commands| CMD
+    C_PUB -->|Broadcast Events| CTRL_EVENTS
+    
+    CMD -->|Content Filtered| P_SUB
+    CTRL_EVENTS -->|Broadcast| P_SUB
+    
+    style Control fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style Platforms fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style Channels fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#000
+    style CMD fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    style CTRL_EVENTS fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+```
+
+> **Note**: Control commands are content-filtered to deliver only to the intended platform recipient.
+
 **Key Benefits**:
 - Team topics by data pattern (periodic vs aperiodic)
 - Apply appropriate QoS policies per channel
@@ -324,6 +442,40 @@ export PLATFORM_TEAM_CHANNEL=PlatformData
 **QoS**: RELIABLE (Event QoS)  
 **Purpose**: Content-filtered commands to specific platforms  
 **Direction**: Control → Platform (filtered)
+
+```mermaid
+graph TB
+    CTRL[Control Station]
+    
+    subgraph WAN["WAN_DOMAIN"]
+        CMD[ControlCommand<br/>destination: Platform_30]
+    end
+    
+    subgraph P30["Platform-30 Router"]
+        FILTER30[Filter:<br/>destination == Platform_30]
+        RS30[Routing Service]
+    end
+    
+    subgraph P31["Platform-31 Router"]
+        FILTER31[Filter:<br/>destination == Platform_31]
+        BLOCKED31[❌ Filtered Out]
+    end
+    
+    CTRL -->|Publish| CMD
+    CMD --> FILTER30
+    CMD --> FILTER31
+    FILTER30 -->|✅ Match| RS30
+    FILTER31 -.->|❌ No Match| BLOCKED31
+    
+    RS30 --> APP30[Platform-30 App]
+    
+    style CTRL fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style P30 fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style P31 fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#000
+    style CMD fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    style RS30 fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+    style BLOCKED31 fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px,color:#000
+```
 
 **Filter Configuration**:
 ```bash

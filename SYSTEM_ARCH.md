@@ -10,21 +10,121 @@ It utilizes DDS (Data Distribution Service) and a Routing Service layer to abstr
 
 > **Note:** The requirements, scenarios, and use cases defined in this document are provided as reference examples only and can be modified as needed to target specific use cases. This architecture is intended to highlight various technical options and implementation patterns aligned with autonomous collaborative teaming scenarios.
 
+```mermaid
+graph TB
+    subgraph Node1["Control Node"]
+        subgraph CONTROL["CONTROL_DOMAIN (20)"]
+            C_APP[Control Apps]
+        end
+        RS_C[Routing Service]
+        subgraph WAN_C["WAN Participant"]
+            WAN_CP[WAN_DOMAIN 200]
+        end
+        C_APP <--> RS_C
+        RS_C <--> WAN_CP
+    end
+    
+    subgraph Node2["Platform Node"]
+        subgraph PLATFORM["PLATFORM_DOMAIN (30)"]
+            P_APP[Platform Apps]
+        end
+        RS_P[Routing Service]
+        subgraph WAN_P["WAN Participants"]
+            WAN_CTRL[Control Participant<br/>Domain 200]
+            WAN_TEAM[Team Participant<br/>Domain 200]
+        end
+        P_APP <--> RS_P
+        RS_P --> WAN_CTRL
+        RS_P --> WAN_TEAM
+    end
+    
+    subgraph Network["Wide Area Network"]
+        WAN_NET[WAN_DOMAIN 200<br/>Hub-Spoke + Mesh]
+    end
+    
+    WAN_CP <-->|Commands & Status| WAN_NET
+    WAN_CTRL <-->|Commands & Status| WAN_NET
+    WAN_TEAM <-->|Team Coordination| WAN_NET
+    
+    style CONTROL fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style PLATFORM fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN_C fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style WAN_P fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style Network fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    style RS_C fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+    style RS_P fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+```
+
 ## 2. Scenarios
 
 This architecture focuses on the DDS implementation of the message routing use case and is aligned with the following scenarios:
 
 ### Foundational Control: Single Operator to Heterogeneous Team (1:N)
 
-This scenario facilitates the transition from legacy 1:1 remote piloting to a single operator managing a diverse team of autonomous assets (1:N). The focus is on implementing basic "CRUD" (Create, Read, Update, Delete) functionality that allows an operator to provision heterogeneous robots—such as mixing UAVs with ground vehicles—into a cohesive team and assign missions through a "single pane of glass," abstracting away unique manufacturer interfaces.
+```mermaid
+graph TB
+    OP1[Single Operator]
+    P1[Platform 1]
+    P2[Platform 2]
+    P3[Platform 3]
+    
+    OP1 -->|Individual<br/>Commands| P1
+    OP1 -->|Individual<br/>Commands| P2
+    OP1 -->|Individual<br/>Commands| P3
+    P1 -->|Status| OP1
+    P2 -->|Status| OP1
+    P3 -->|Status| OP1
+    
+    style OP1 fill:#fff4e1,stroke:#f57c00,stroke-width:3px,color:#000
+    style P1 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style P2 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style P3 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+```
 
-### Tactical Teams: Dynamic Autonomous Formations (5 to 12 Platforms)
-
-Designed for tactical operations, this scenario models a team of approximately 8–12 autonomous platforms that dynamically split into smaller task forces, such as a "Green Team" (2 platforms) for scouting or a "Red Team" (4 platforms) for intervention. It relies on peer-to-peer mesh networking to maintain connectivity; if a platform loses line-of-sight with the controller, a peer automatically relays command and status data, ensuring the team remains operational even when partially disconnected.
+This scenario facilitates the transition from legacy 1:1 remote piloting to a single operator managing a diverse team of autonomous assets (1:N). The operator sends commands individually to each platform as necessary through a "single pane of glass," abstracting away unique manufacturer interfaces. Each platform independently receives commands and reports status back to the control station.
 
 ### Strategic Scale: Large-Scale Swarms and Bandwidth Constraints (32+ Platforms)
 
-This scenario manages formations of 32 to hundreds of attritable platforms operating under severe bandwidth constraints (e.g., 50 kbps jammed radio or 2.5 Mbps satellite links). To prevent network collapse from "discovery storms," the architecture utilizes hierarchical commands sent only to Team Leaders and "Topic Aggregation" to compress dozens of DDS topics into serialized "Command" and "Status" streams.
+```mermaid
+graph TB
+    OP2[Controller]
+    L[Leader]
+    F1[Follower]
+    F2[Follower]
+    F3[...]
+    
+    OP2 -->|Command to<br/>Leader| L
+    L -->|Relays| F1
+    L -->|Relays| F2
+    L -->|Relays| F3
+    
+    style OP2 fill:#fff4e1,stroke:#f57c00,stroke-width:3px,color:#000
+    style L fill:#81c784,stroke:#2e7d32,stroke-width:3px,color:#000
+    style F1 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style F2 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style F3 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+```
+
+This scenario manages formations of 32 to hundreds of attritable platforms operating under severe bandwidth constraints (e.g., 50 kbps jammed radio or 2.5 Mbps satellite links). To prevent network collapse from "discovery storms" and conserve bandwidth, the architecture utilizes hierarchical command relays where commands are sent to designated Team Leaders who then relay them to their Follower platforms, and "Topic Aggregation" to compress dozens of DDS topics into serialized "Command" and "Status" streams.
+
+### Platform-to-Platform Team Coordination
+
+```mermaid
+graph LR
+    P1[Platform 1<br/>Team A]
+    P2[Platform 2<br/>Team A]
+    P3[Platform 3<br/>Team A]
+    
+    P1 <-->|Position<br/>Status<br/>Mission Data| P2
+    P2 <-->|Position<br/>Status<br/>Mission Data| P3
+    P1 <-->|Position<br/>Status<br/>Mission Data| P3
+    
+    style P1 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style P2 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style P3 fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+```
+
+Platforms assigned to the same team can communicate directly with each other in a peer-to-peer mesh pattern, sharing position, status, and mission coordination data without requiring relays through the control station.
 
 ## 3. Assumed System Topology
 
@@ -125,12 +225,78 @@ The architecture must implement a Multi-Tier DDS Domain Model. DDS data is isola
 - **Transport:** Shared Memory (SHMEM) or UDP Loopback. NO routing to external radios.
 - **Discovery:** Multicast
 
+```mermaid
+graph TB
+    subgraph PLATFORM_DOMAIN["PLATFORM_DOMAIN (30)"]
+        AUTO[Autonomy Application]
+        SENS[Sensor Data Stream]
+        ACT[Actuator Control]
+        NAV[Navigation System]
+        SENS --> AUTO
+        AUTO --> ACT
+        AUTO --> NAV
+    end
+    
+    subgraph RS["Routing Service<br/>Gateway"]
+        FILTER[Topic Filter &<br/>QoS Transformation]
+    end
+    
+    subgraph WAN_DOMAIN["WAN_DOMAIN (200)"]
+        CP[Control Participant]
+        TP[Team Participant]
+    end
+    
+    AUTO -->|High-rate<br/>Local Topics| FILTER
+    FILTER -->|Filtered<br/>Status Topics| CP
+    FILTER -->|Team<br/>Coordination| TP
+    CP -.->|To Control<br/>Stations| EXT_C[Control Network]
+    TP -.->|To Team<br/>Members| EXT_T[Team Network]
+    
+    style PLATFORM_DOMAIN fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    style RS fill:#fff9c4,stroke:#f9a825,stroke-width:3px,color:#000
+    style WAN_DOMAIN fill:#f1f8e9,stroke:#558b2f,stroke-width:3px,color:#000
+    style CP fill:#90caf9,stroke:#1565c0,stroke-width:2px,color:#000
+    style TP fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+```
+
 **DTR-02 Control (CONTROL_DOMAIN):**
 - **Domain ID Range:** 10-30 (e.g., Control_20 uses domain 20)
 - **Scope:** Strictly local to a single Controller.
 - **Traffic:** Internal UI microservices, mission management.
 - **Transport:** Shared Memory (SHMEM) or UDP Loopback. NO routing to external radios.
 - **Discovery:** Multicast
+
+```mermaid
+graph TB
+    subgraph CONTROL_DOMAIN["CONTROL_DOMAIN (20)"]
+        UI[Control UI]
+        MISSION[Mission Planner]
+        MAP[Map Display]
+        TELEM[Telemetry Manager]
+        UI <--> MISSION
+        UI <--> MAP
+        MISSION <--> TELEM
+    end
+    
+    subgraph RS["Routing Service<br/>Gateway"]
+        ROUTE[Topic Router &<br/>Command Distributor]
+    end
+    
+    subgraph WAN_DOMAIN["WAN_DOMAIN (200)"]
+        WAN_PART[Control WAN Participant]
+    end
+    
+    MISSION -->|Commands| ROUTE
+    TELEM <-->|Status/Events| ROUTE
+    ROUTE <-->|Bidirectional<br/>Command & Status| WAN_PART
+    WAN_PART -.->|To All<br/>Platforms| EXT_P[Platform Network]
+    
+    style CONTROL_DOMAIN fill:#fff4e1,stroke:#f57c00,stroke-width:3px,color:#000
+    style RS fill:#fff9c4,stroke:#f9a825,stroke-width:3px,color:#000
+    style WAN_DOMAIN fill:#f1f8e9,stroke:#558b2f,stroke-width:3px,color:#000
+    style WAN_PART fill:#90caf9,stroke:#1565c0,stroke-width:2px,color:#000
+```
+
 **DTR-03 (WAN_DOMAIN - Wide Area Network):**
 - **Domain ID:** 200 (default)
 - **Scope:** All wide-area network communication (control-to-platform and platform-to-platform).
@@ -148,27 +314,47 @@ This dual-participant approach enables independent lifecycle management: control
 
 ```mermaid
 graph TB
-    subgraph Platform["Platform Node"]
-        AUTO[Autonomy]
-        RS[Routing Service]
-        AUTO <--> RS
+    subgraph Node1["Control Node"]
+        subgraph CONTROL["CONTROL_DOMAIN (20)"]
+            C_APP[Control Apps]
+        end
+        RS_C[Routing Service]
+        subgraph WAN_C["WAN Participant"]
+            WAN_CP[WAN_DOMAIN 200]
+        end
+        C_APP <--> RS_C
+        RS_C <--> WAN_CP
     end
     
-    subgraph WAN["WAN_DOMAIN (200)"]
-        CP[Control Participant<br/>Always Active]
-        TP[Team Participant<br/>Partition: 'Platform_30' or 'A']
+    subgraph Node2["Platform Node"]
+        subgraph PLATFORM["PLATFORM_DOMAIN (30)"]
+            P_APP[Platform Apps]
+        end
+        RS_P[Routing Service]
+        subgraph WAN_P["WAN Participants"]
+            WAN_CTRL[Control Participant<br/>Domain 200]
+            WAN_TEAM[Team Participant<br/>Domain 200]
+        end
+        P_APP <--> RS_P
+        RS_P --> WAN_CTRL
+        RS_P --> WAN_TEAM
     end
     
-    RS --> CP
-    RS --> TP
+    subgraph Network["Wide Area Network"]
+        WAN_NET[WAN_DOMAIN 200<br/>Hub-Spoke + Mesh]
+    end
     
-    CP -.->|Hub-Spoke| CTRL[Control Nodes]
-    TP -.->|Mesh<br/>Same Partition Only| TEAM[Team Members]
+    WAN_CP <-->|Commands & Status| WAN_NET
+    WAN_CTRL <-->|Commands & Status| WAN_NET
+    WAN_TEAM <-->|Team Coordination| WAN_NET
     
-    style Platform fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
-    style WAN fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
-    style CP fill:#90caf9,stroke:#1565c0,stroke-width:2px,color:#000
-    style TP fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+    style CONTROL fill:#fff4e1,stroke:#f57c00,stroke-width:2px,color:#000
+    style PLATFORM fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN_C fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style WAN_P fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style Network fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    style RS_C fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+    style RS_P fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
 ```
 
 **DTR-04 (ADMIN_DOMAIN - Remote Administration):**
@@ -177,6 +363,41 @@ graph TB
 - **Traffic:** Routing Service remote commands (session enable/disable, partition updates), monitoring telemetry.
 - **Transport:** Same as WAN_DOMAIN.
 - **Discovery:** Unicast
+
+```mermaid
+graph TB
+    subgraph Admin["RemoteAdmin Tool"]
+        ADMIN_APP[Admin CLI]
+    end
+    
+    subgraph ADMIN_DOMAIN["ADMIN_DOMAIN (100)"]
+        ADMIN_PART[Admin Participant]
+    end
+    
+    subgraph Platform["Platform-30 Node"]
+        RS_ADM[Routing Service<br/>Admin Interface]
+        RS_MAIN[Routing Service<br/>Main]
+        subgraph WAN_P["WAN_DOMAIN (200)"]
+            TEAM_PART[Team Participant<br/>Partition Control]
+        end
+    end
+    
+    ADMIN_APP --> ADMIN_PART
+    ADMIN_PART -.->|Remote<br/>Commands| RS_ADM
+    RS_ADM -->|Reconfigure<br/>Partition| RS_MAIN
+    RS_MAIN -->|Update| TEAM_PART
+    
+    TEAM_PART -.->|Before: Isolated<br/>After: Team 'A'| MESH[Team Mesh Network]
+    
+    style Admin fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+    style ADMIN_DOMAIN fill:#fce4ec,stroke:#c2185b,stroke-width:3px,color:#000
+    style Platform fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style WAN_P fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000
+    style RS_ADM fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+    style RS_MAIN fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#000
+```
+
+### 7.2. DTR-04: Remote Administration Commands
 
 **Platform Remote Administration - Team Assignment:**
 
@@ -410,6 +631,23 @@ JIRA: CDS-188: Add support for replication and horizontal scaling
 ### Dynamic Team Assignment (The "CRUD" Lifecycle):
 
 The workflow transitions a set of autonomous platforms from an "Idle/Unassigned" state into a specific "Team" (e.g., Red Team) to enable peer-to-peer collaboration, and finally dissolves them back to the pool.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Unassigned: Platform Powers On
+    Unassigned: Partition = "Platform_30"
+    Unassigned: No Team Discovery
+    
+    Unassigned --> Assigned: Operator Assigns<br/>to Team A
+    
+    Assigned: Partition = "A"
+    Assigned: Discovers Team Members
+    Assigned: Mesh Communication Active
+    
+    Assigned --> Unassigned: Operator Disbands<br/>Team
+    
+    Unassigned --> [*]: Platform Powers Off
+```
 
 #### 1. Phase 1: Initialization & "Light" Discovery
 
