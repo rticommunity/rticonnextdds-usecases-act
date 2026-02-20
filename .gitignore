@@ -8,3 +8,4 @@ test/__pycache__/
 tools/remote_admin/build/
 
 .vscode
+.vscode/
