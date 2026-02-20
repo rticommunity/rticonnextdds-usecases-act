@@ -30,27 +30,33 @@ class C2Sim:
       )
 
       #Pull in DynamicData types
-      self.c2_cmd_type = self.qos_provider.type("c2_command")
-      self.c2_cmd_ack_type = self.qos_provider.type("c2_command_ack")
-      self.platform_status_type = self.qos_provider.type("platform_status")
+      self.control_cmd_type = self.qos_provider.type("control_command")
+      self.control_cmd_ack_type = self.qos_provider.type("control_command_ack")
+      self.platform_primary_status_type = self.qos_provider.type("platform_primary_status")
+      self.platform_detail_status_type = self.qos_provider.type("platform_detail_status")
       self.contact_report_type = self.qos_provider.type("contact_report")
 
 
       # Create Topics and associate with types
-      self.c2_cmd_topic = dds.DynamicData.Topic(
+      self.control_cmd_topic = dds.DynamicData.Topic(
           self.participant,
-          "C2Command",
-          self.c2_cmd_type
+          "ControlCommand",
+          self.control_cmd_type
       )
       self.platform_cmd_ack_topic = dds.DynamicData.Topic(
           self.participant,
           "PlatformCommandAck",
-          self.c2_cmd_ack_type
+          self.control_cmd_ack_type
       )
-      self.platform_status_topic = dds.DynamicData.Topic(
+      self.platform_primary_status_topic = dds.DynamicData.Topic(
           self.participant,
-          "PlatformStatus",
-          self.platform_status_type
+          "PlatformPrimaryStatus",
+          self.platform_primary_status_type
+      )
+      self.platform_detail_status_topic = dds.DynamicData.Topic(
+          self.participant,
+          "PlatformDetailStatus",
+          self.platform_detail_status_type
       )
 
       self.contact_report_topic = dds.DynamicData.Topic(
@@ -60,11 +66,11 @@ class C2Sim:
       )
 
       # Create DataWriters/DataReaders with the specified QoS profiles
-      self.c2_cmd_writer = dds.DynamicData.DataWriter(
-          self.c2_cmd_topic,
+      self.control_cmd_writer = dds.DynamicData.DataWriter(
+          self.control_cmd_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
-      self.c2_contact_report_writer = dds.DynamicData.DataWriter(
+      self.control_contact_report_writer = dds.DynamicData.DataWriter(
           self.contact_report_topic,
           self.qos_provider.datawriter_qos_from_profile(args.qos_profile)
       )
@@ -72,8 +78,12 @@ class C2Sim:
           self.platform_cmd_ack_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
-      self.platform_status_reader = dds.DynamicData.DataReader(
-          self.platform_status_topic,
+      self.platform_primary_status_reader = dds.DynamicData.DataReader(
+          self.platform_primary_status_topic,
+          self.qos_provider.datareader_qos_from_profile(args.qos_profile)
+      )
+      self.platform_detail_status_reader = dds.DynamicData.DataReader(
+          self.platform_detail_status_topic,
           self.qos_provider.datareader_qos_from_profile(args.qos_profile)
       )
       self.contact_report_reader = dds.DynamicData.DataReader(
@@ -83,28 +93,32 @@ class C2Sim:
 
       print("ignoring self published ContactReports")
       self.participant.ignore_datawriter(
-          self.c2_contact_report_writer.instance_handle)
+          self.control_contact_report_writer.instance_handle)
 
-    async def read_status_data(self):
-      print("Waiting for Status data")
-      async for data in self.platform_status_reader.take_data_async():
-        print(f'- Received Status data with Session ID: {data["msg.session[1]"]}')
+    async def read_primary_status_data(self):
+      print("Waiting for Primary Status data")
+      async for data in self.platform_primary_status_reader.take_data_async():
+        print(f'- Received PlatformPrimaryStatus from {data["msg.source"]}')
        
+
+    async def read_detail_status_data(self):
+      print("Waiting for Detail Status data")
+      async for data in self.platform_detail_status_reader.take_data_async():
+        print(f'- Received PlatformDetailStatus from {data["msg.source"]}')
 
     async def read_cmd_ack_data(self):
       print("Waiting for CommandAck data")
       async for data in self.platform_cmd_ack_reader.take_data_async():
-        print(f'- Received CommandAck data with Session ID: {data["msg.session[1]"]}')
+        print(f'- Received PlatformCommandAck from {data["msg.source"]}')
 
     async def read_contact_report_data(self):
       print("Waiting for ContactReport data")
       async for data in self.contact_report_reader.take_data_async():
-        print(
-            f'- Received ContactReport Data: {data["msg.session[1]"]} from source: {data["msg.source"]} type: {data["msg.source_type"]}')
+        print(f'- Received ContactReport from {data["msg.source"]}')
 
     async def write_cmd(self):
       # Create Command sample
-      cmd_sample = dds.DynamicData(self.c2_cmd_type)
+      cmd_sample = dds.DynamicData(self.control_cmd_type)
 
       # Set Source
       cmd_sample["msg.source"] = args.source
@@ -122,7 +136,7 @@ class C2Sim:
 
 
       # Create Contact Report sample
-      contact_report_sample = dds.DynamicData(self.c2_cmd_type)
+      contact_report_sample = dds.DynamicData(self.contact_report_type)
 
       # Set Source Name
       contact_report_sample["msg.source"] = args.source
@@ -144,11 +158,11 @@ class C2Sim:
 
       while True:
           # Send C2 Command
-          self.c2_cmd_writer.write(cmd_sample)
-          print("Writing to C2Command topic")
+          self.control_cmd_writer.write(cmd_sample)
+          print("Writing to ControlCommand topic")
 
           # Send C2 Contact Report
-          self.c2_contact_report_writer.write(contact_report_sample)
+          self.control_contact_report_writer.write(contact_report_sample)
           print("Writing to ContactReport topic")
 
           await asyncio.sleep(1)
@@ -157,7 +171,8 @@ class C2Sim:
     async def run(self) -> None:
         await asyncio.gather(
             self.write_cmd(),
-            self.read_status_data(),
+            self.read_primary_status_data(),
+            self.read_detail_status_data(),
             self.read_cmd_ack_data(),
             self.read_contact_report_data()
             )

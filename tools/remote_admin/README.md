@@ -1,0 +1,225 @@
+# Remote Admin Service Controller
+
+A command-line utility for remotely controlling RTI Routing Service configurations, specifically designed to dynamically enable/disable platform-to-platform (TEAM) communication routes during runtime.
+
+## Overview
+
+The Remote Admin tool uses RTI Connext DDS Remote Administration capabilities to send commands to running Routing Service instances. It allows operators to modify routing service behavior without restarting the service, providing dynamic control over data flow between platforms and C2 stations.
+
+## Terminology
+
+Understanding these key terms will help you use the Remote Admin tool effectively:
+
+### Resource
+The **resource** is the name of the RTI Routing Service instance you want to control. This corresponds to the `-appName` parameter used when starting the routing service.
+- **Example**: `Platform_30`, `Platform_31`, `Control_20`
+- **Usage**: Specified with `-n` or `--name` flag
+
+### Resource ID / Resource Identifier
+The **resource identifier** is the full hierarchical path to a specific entity within a routing service instance. It follows RTI's resource naming convention for remote administration.
+- **Format**: `/routing_services/<name>/domain_routes/<config_name>/...`
+  - `<name>` = routing service instance name (e.g., "Platform_30")
+  - `<config_name>` = routing service configuration ("platform" or "control")
+- **Example**: `/routing_services/Platform_30/domain_routes/platform/sessions/platform_to_wan_team/state`
+- **Purpose**: Uniquely identifies the entity to be controlled or queried
+
+### Domain Route
+A **domain route** is a configuration block within Routing Service that defines participants and sessions for bridging DDS domains. In the ACT use case, domain routes connect the LAN, WAN, and C2 domains.
+- **In XML**: Defined as `<domain_route name="dr">` within a `<routing_service>` configuration block
+- **In Paths**: The segment `/domain_routes/dr/` where "dr" is the default domain route name
+- **Example Path**: `/routing_services/platform/domain_routes/dr/sessions/...`
+  - Here "platform" is the routing service configuration name from `<routing_service name="platform">`
+  - "dr" is the domain route name from `<domain_route name="dr">`
+- **Purpose**: Groups participants and sessions that handle domain-to-domain data flow
+
+### Session
+A **session** within Routing Service represents a logical grouping of topic routes. Sessions can be enabled or disabled to control specific data flows.
+- **Common Sessions**:
+  - `platform_to_wan_team` - Platform to WAN team communication
+  - `wan_to_platform_team` - WAN to Platform team communication
+- **Example Path**: `/sessions/platform_to_wan_team/state`
+
+### TEAM (Peer-to-Peer)
+**TEAM** or **platform-to-platform** communication refers to direct data exchange between platforms without involving C2 stations. This is useful for collaborative autonomous operations.
+- **Control**: Enable/disable with `--team true` or `--team false` flags
+- **Sessions**: Controls both `platform_to_wan_p2p` and `wan_to_platform_p2p` sessions
+
+### Participant
+A **participant** is a DDS Domain Participant within the routing service. It represents the routing service's presence in a specific DDS domain.
+- **Platform participants**: `platform_wan` - Platform node's WAN domain participant
+- **C2 participants**: `control_wan` - C2 node's WAN domain participant
+- **Path Example**: `/participants/platform_wan`
+
+### Team / Partition
+A **team** (implemented as a DDS Domain Participant partition) is used to logically separate and organize data flow. Assigning a resource to a team ensures it only communicates with others in the same team.
+- **Usage**: Specified with `-g` or `--team` flag
+- **Example**: Team `5` might represent a specific mission or team
+- **DDS Concept**: Implemented using DDS Domain Participant Partitions in QoS
+
+### QoS Profile
+A **QoS profile** is a named set of Quality of Service settings that control data delivery behavior (reliability, durability, etc.).
+- **Format**: `library_name::profile_name`
+- **Default**: `REMOTE_ADMIN::remote_admin_default`
+- **Usage**: Specified with `-q` or `--qos` flag
+- **Location**: Defined in XML QoS configuration files
+
+### Domain ID
+The **domain ID** is the DDS domain number on which remote administration commands are sent and received.
+- **Default**: `100` (administrative domain)
+- **Usage**: Specified with `-d` or `--domain` flag
+- **Purpose**: Separates administrative traffic from application data
+
+### Command Request/Reply
+Remote administration uses a request-reply pattern ([API Reference](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html#api-reference)) where:
+- **Command Request**: The command sent to the routing service (enable/disable, update configuration)
+- **Command Reply**: The response from the routing service indicating success or failure
+- **Topics**: `rti/service/admin/command_request` and `rti/service/admin/command_reply`
+
+### Entity State
+The **entity state** represents whether a routing service entity (like a session) is active or inactive.
+- **States**: `ENABLED`, `DISABLED`
+- **Control**: TEAM commands set session state to enable or disable data flow
+
+## Features
+
+- **Remote Control**: Send commands to Routing Service instances over DDS
+- **TEAM Route Management**: Enable/disable platform-to-platform communication routes
+- **Team Assignment**: Assign resources to specific groups
+- **Flexible Configuration**: Override domain ID and QoS settings
+
+## Building
+
+The project uses CMake and requires RTI Connext DDS 7.3.0 or later.
+
+### Prerequisites
+
+- RTI Connext DDS 7.3.0+
+- CMake 3.16+
+- C++11 compatible compiler
+- `NDDSHOME` environment variable set to your RTI Connext installation
+- Git submodules initialized (see [main README](../../README.md#getting-started) for clone instructions)
+
+### Build Instructions
+
+```bash
+# Ensure submodules are initialized (if not done during clone)
+git submodule update --init --recursive
+
+cd tools/remote_admin
+rm -rf build
+mkdir build
+cd build
+cmake ..
+make
+```
+
+The executable `RemoteAdmin` will be created in the `build` directory.
+
+
+## Usage
+
+**Important**: Use the `send_remote_cmd.sh` wrapper script to run RemoteAdmin. The wrapper automatically loads system parameters including WAN latency settings required for proper operation with the routing service.
+
+System parameters are located in `params/system_params.sh` at the repository root.
+
+```bash
+cd tools/remote_admin
+./send_remote_cmd.sh -n Platform_30 --team true
+```
+
+**Note**: The `-n` parameter uses the unique identifier (ROUTER_NAME) defined in each node's params file:
+- Platform nodes: Use ROUTER_NAME from `params/platform_*_params.sh` (e.g., Platform_30, Platform_31)
+- Control nodes: Use ROUTER_NAME from `params/control_*_params.sh` (e.g., Control_20)
+
+The wrapper script:
+- Sources `system_params.sh` automatically from `config/params/`
+- Exports `NDDS_QOS_PROFILES` environment variable for XML file loading
+- Uses the admin domain and QoS settings from system parameters
+- Passes through all command-line arguments to RemoteAdmin
+
+### Command-Line Arguments
+
+```
+Remote Admin Service Controller.
+Usage:
+   -d, --domain     <int>             Domain ID 
+   -q, --qos        <string>          QOS Profile (library::profile)
+   -n, --name       <string>          Resource name (routing service instance) i.e. 'Platform_30' 
+                                      REQUIRED
+   -t, --team       <string>          Team ID (DDS Partition) to assign platform to (e.g., A, B, C) 
+   --detail <bool>                   Enable (true) or disable (false) detailed platform status data transmission.
+                                      When disabled, only primary status is transmitted.
+
+Note: QoS XML files are loaded from NDDS_QOS_PROFILES environment variable.
+      Use the send_remote_cmd.sh wrapper script to automatically load system_params.sh
+```
+
+### Required Arguments
+
+- `-n, --name <string>`: The name of the routing service instance to control (e.g., 'Platform_30', 'Platform_31'). This must match the routing service's application name.
+
+### Optional Arguments
+
+- `-d, --domain <int>`: Domain ID for remote administration (default: 100)
+- `-q, --qos <string>`: QoS profile to use (default: REMOTE_ADMIN::remote_admin_requester_qos)
+- `-t, --team <string>`: Team ID ([DDS Partition](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/users_manual/users_manual/PARTITION_QosPolicy.htm)) to assign the platform to. Use letter designations (A, B, C, etc.). By default, platforms use unique identifiers with no team assignment.
+- `--detail <bool>`: Enable (true) or disable (false) detailed status transmission. When disabled, only primary status is transmitted to conserve bandwidth.
+
+## Usage Examples
+
+For complete step-by-step walkthroughs demonstrating RemoteAdmin usage, see:
+
+- **[REMOTE_CONTROL_TEAM.md](../../REMOTE_CONTROL_TEAM.md)**: Dynamically assign platforms to teams and verify isolation
+- **[REMOTE_ENABLE_DETAIL_STATUS.md](../../REMOTE_ENABLE_DETAIL_STATUS.md)**: Enable on-demand high-bandwidth telemetry from platforms
+
+## How It Works
+
+The Remote Admin tool ([API Reference](https://community.rti.com/static/documentation/connext-dds/current/doc/manuals/connext_dds_professional/services/routing_service/remote_admin.html#api-reference)):
+
+1. Creates a DDS Requester that communicates on the administrative domain (default: 100)
+2. Builds a `CommandRequest` message with:
+   - Action: `UPDATE_ACTION`
+   - Resource identifier: `/routing_services/<resource>/domain_routes/platform/sessions/platform_to_platform_session/state`
+   - Application name: The resource name provided
+   - Entity state: `ENABLED` or `DISABLED` based on the command
+3. Sends the request to the target routing service
+4. Waits up to 10 seconds for a reply
+5. Reports success or failure
+
+## Files
+
+- `send_remote_cmd.sh`: Wrapper script that sources system_params.sh and invokes RemoteAdmin
+- `src/remote_admin.cxx`: Main application source
+- `include/application.hpp`: Argument parsing and application utilities
+- `resources/types/ServiceAdmin.idl`: IDL definitions for admin commands
+- `resources/types/ServiceCommon.idl`: IDL definitions for common service types
+- `CMakeLists.txt`: Build configuration
+- `build/RemoteAdmin`: Compiled executable (after building)
+
+## Troubleshooting
+
+### No Response from Routing Service
+
+- Verify the routing service is running with the correct application name
+- Check that the remote administration domain matches (default: 100)
+- Ensure `NDDSHOME` is set correctly
+- Verify network connectivity between the RemoteAdmin tool and routing service
+
+### Build Errors
+
+- Ensure RTI Connext DDS 7.3.0+ is installed
+- Verify `NDDSHOME` environment variable is set
+- Check that CMake can find the RTI Connext installation
+- Clean the build directory and reconfigure if you encounter cached path issues
+
+### Invalid Command Response
+
+- Verify the resource identifier matches your routing service configuration
+- Check the routing service logs for error messages
+- Ensure the session path exists in your routing service configuration
+
+## License
+
+(c) Copyright, Real-Time Innovations, 2024. All rights reserved.
+
+RTI grants Licensee a license to use, modify, compile, and create derivative works of the software solely for use with RTI Connext DDS.
