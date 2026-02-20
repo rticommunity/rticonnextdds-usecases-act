@@ -29,6 +29,14 @@ to use the software.
 
         <!-- Match QoS in your Platform LAN -->
 
+        <discovery>
+          <initial_peers>
+            <element>$(PLATFORM_LAN_PEER1)</element>
+            <element>$(PLATFORM_LAN_PEER2)</element>
+            <element>$(PLATFORM_LAN_PEER3)</element>
+          </initial_peers>
+        </discovery>
+
       </domain_participant_qos>
     </qos_profile>
 
@@ -37,6 +45,14 @@ to use the software.
       <domain_participant_qos>
 
         <!-- Match QoS in your Control LAN -->
+
+        <discovery>
+          <initial_peers>
+            <element>$(CONTROL_LAN_PEER1)</element>
+            <element>$(CONTROL_LAN_PEER2)</element>
+            <element>$(CONTROL_LAN_PEER3)</element>
+          </initial_peers>
+        </discovery>
 
       </domain_participant_qos>
     </qos_profile>

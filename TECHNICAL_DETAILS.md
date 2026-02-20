@@ -33,13 +33,12 @@ rticonnextdds-usecases-act/
 │   └── routing/                # Routing Service configuration
 │       └── routing_service_config.xml
 ├── params/                      # Parameter files
-│   ├── system_params.sh        # System-wide parameters
-│   └── control_20_params.sh    # Control-20 configuration
+│   └── system_params.sh        # System-wide parameters
 ├── scripts/                    # Launch scripts
 │   ├── start_platform_router.sh  # Platform router (--id 30-99)
 │   ├── start_platform_sim.sh     # Platform simulator (--id 30-99)
-│   ├── start_control_20_router.sh
-│   └── start_control_20_sim.sh
+│   ├── start_control_router.sh   # Control router (--id 10-29)
+│   └── start_control_sim.sh      # Control simulator (--id 10-29)
 ├── node_sim/                    # Node simulator components
 │   ├── python/                 # Python simulators
 │   │   ├── platform_sim.py
