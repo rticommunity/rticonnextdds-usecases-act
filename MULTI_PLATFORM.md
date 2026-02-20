@@ -54,13 +54,13 @@ cd scripts
 ### Terminal 5: Control-20 Router
 ```bash
 cd scripts
-./start_control_20_router.sh
+./start_control_router.sh --id 20
 ```
 
 ### Terminal 6: Control-20 Simulator
 ```bash
 cd scripts
-./start_control_20_sim.sh
+./start_control_sim.sh --id 20
 ```
 
 ## What's Happening?
@@ -182,9 +182,11 @@ You can add platforms 30-99 without creating any new files.
 ## Configuration Details
 
 All configurations are in `params/`:
-- `system_params.sh`: WAN timing, channel setup and network parameters
-- `control_20_params.sh`: Control_20 on domain 20
-- Platform configs are dynamic (via `start_platform_sim.sh --id <num>` and `start_platform_router.sh --id <num>`)
+- `system_params.sh`: WAN timing, channel setup, discovery peers, and network parameters
+
+Node configs are dynamic:
+- Platform: `start_platform_sim.sh --id <num>` and `start_platform_router.sh --id <num>` (IDs 30-99)
+- Control: `start_control_sim.sh --id <num>` and `start_control_router.sh --id <num>` (IDs 10-29)
 
 QoS profiles are in `config/qos/`:
 - `lan_qos_lib.xml`: LAN domain QoS

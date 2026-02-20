@@ -37,13 +37,13 @@ cd scripts
 ### Terminal 3: Control-20 Router
 ```bash
 cd scripts
-./start_control_20_router.sh
+./start_control_router.sh --id 20
 ```
 
 ### Terminal 4: Control-20 Simulator
 ```bash
 cd scripts
-./start_control_20_sim.sh
+./start_control_sim.sh --id 20
 ```
 
 ## What's Happening?

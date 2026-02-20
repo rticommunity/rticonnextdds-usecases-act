@@ -33,7 +33,10 @@ NDDS_QOS_PROFILES+="../config/qos/lan_qos_lib.xml;"
 NDDS_QOS_PROFILES+="../config/qos/remoteadmin_qos_lib.xml;"
 
 # Routing Service file (relative path from params/ to config/routing/)
-NDDS_QOS_PROFILES+="../config/routing/routing_service_config.xml"
+NDDS_QOS_PROFILES+="../config/routing/routing_service_config.xml;"
+
+# Data Types for ACT applications
+NDDS_QOS_PROFILES+="../node_sim/datamodel/act_types.xml"
 
 ################################################################################
 #                            DOMAIN ARCHITECTURE                               #
@@ -74,6 +77,40 @@ export WAN_LATENCY_SEC=1.5 # Seconds
 # Timeout for WAN > intermittent loss of comms
 export WAN_TIMEOUT_SEC=300 # Seconds
 
+################################################################################
+#                           DISCOVERY INITIAL PEERS                            #
+################################################################################
+# These settings define initial peers for participant discovery.
+# Format: builtin.<transport>://<address> (e.g., builtin.udpv4://239.255.0.1)
+# Transports: udpv4, udpv6, shmem
+#
+# Reference: https://community.rti.com/static/documentation/connext-dds/current/doc/api/connext_dds/api_c/group__NDDS__DISCOVERY__PEERS.html
+
+# Base multicast addresses for discovery
+export LAN_MULTICAST_ADDRESS="builtin.udpv4://239.255.0.1"
+export WAN_MULTICAST_ADDRESS="builtin.udpv4://239.255.0.2"
+
+# Multicast receive addresses (derived from base addresses for QoS XML)
+export LAN_RECEIVE_MULTICAST="${LAN_MULTICAST_ADDRESS}"
+export WAN_RECEIVE_MULTICAST="${WAN_MULTICAST_ADDRESS}"
+
+# Platform LAN initial peers (multicast, loopback, and shmem)
+export PLATFORM_LAN_PEER1="${LAN_MULTICAST_ADDRESS}"
+export PLATFORM_LAN_PEER2="builtin.udpv4://127.0.0.1"
+export PLATFORM_LAN_PEER3="builtin.shmem://"
+
+# Platform WAN initial peers (multicast)
+# NOTE: For improved scalability or production, set to unicast IP addresses or
+# DNS names of Control stations (e.g., "builtin.udpv4://control1.example.com").
+export PLATFORM_WAN_PEER1="${WAN_MULTICAST_ADDRESS}"
+
+# Control LAN initial peers (multicast, loopback, and shmem)
+export CONTROL_LAN_PEER1="${LAN_MULTICAST_ADDRESS}"
+export CONTROL_LAN_PEER2="builtin.udpv4://127.0.0.1"
+export CONTROL_LAN_PEER3="builtin.shmem://"
+
+# Control WAN initial peers (multicast)
+export CONTROL_WAN_PEER1="${WAN_MULTICAST_ADDRESS}"
 
 
 #### Calculated from above

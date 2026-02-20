@@ -112,14 +112,13 @@ if [[ -z "${RTI_LICENSE_FILE}" ]] && [[ ! -f "${NDDSHOME}/rti_license.dat" ]]; t
     exit 1
 fi
 
+# Source system parameters (for initial peers, etc.)
+source ../params/system_params.sh
+
 # Set fixed configuration values
 TYPE="platform"
-LAN_QOS_PROFILE="LAN_QOS_LIB::domain_participant_qos"
+LAN_QOS_PROFILE="LAN_QOS_LIB::platform_lan_participant_qos"
 DOMAIN_ID=$PLATFORM_DOMAIN
-
-# XML Files for Platform applications
-XML_FILES="../config/qos/lan_qos_lib.xml;"
-XML_FILES+="../node_sim/datamodel/act_types.xml"
 
 # Print configuration if requested
 if [[ "$PRINT_CONFIG" == true ]]; then
@@ -132,7 +131,7 @@ TYPE:             $TYPE
 DOMAIN_ID:        $DOMAIN_ID
 DESTINATION:      $DESTINATION
 LAN_QOS_PROFILE:  $LAN_QOS_PROFILE
-XML_FILES:        $XML_FILES
+NDDS_QOS_PROFILES: $NDDS_QOS_PROFILES
 VERBOSITY:        $VERBOSITY
 ================================ PLATFORM SIM CONFIG ================================"
     exit 0
@@ -149,8 +148,7 @@ VERBOSITY:        $VERBOSITY
 ================================ PLATFORM SIM CONFIG ================================"
 
 # Run Platform Simulator
-python3 ../node_sim/python/platform_sim.py --files ${XML_FILES} \
-                                 --qos_profile ${LAN_QOS_PROFILE} \
+python3 ../node_sim/python/platform_sim.py --qos_profile ${LAN_QOS_PROFILE} \
                                  --domain_id ${DOMAIN_ID} \
                                  --source ${ROUTER_NAME} \
                                  --destination ${DESTINATION} \

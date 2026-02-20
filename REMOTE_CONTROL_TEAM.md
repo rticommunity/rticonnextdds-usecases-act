@@ -139,14 +139,14 @@ cd scripts
 
 ```bash
 cd scripts
-./start_control_20_sim.sh
+./start_control_sim.sh --id 20
 ```
 
 ### Terminal 6: Start Control_20 Router
 
 ```bash
 cd scripts
-./start_control_20_router.sh
+./start_control_router.sh --id 20
 ```
 
 **Important**: Watch the Control output carefully (Terminal 5). You should see it receiving data from **both** Platform_30 and Platform_31:

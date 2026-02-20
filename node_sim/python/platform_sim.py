@@ -20,8 +20,8 @@ import uuid
 class PlatformSim:
     def __init__(self, args):
 
-      # Load QoS/Types from XML files
-      self.qos_provider = dds.QosProvider(args.files)
+      # Load QoS/Types from XML files (uses NDDS_QOS_PROFILES env var)
+      self.qos_provider = dds.QosProvider.default
 
       # Create a Participant from specific QOS Profile
       self.participant = dds.DomainParticipant(
@@ -270,9 +270,6 @@ if __name__ == "__main__":
         description="Platform Sim"
     )
     print("\n\nRUNNING PLATFORM SIM\n\n")
-    parser.add_argument(
-        "-f", "--files", type=str, default="", help="XML Config files"
-    )
     parser.add_argument(
         "--source", type=str, default=0, help="Source"
     )
